@@ -1,0 +1,35 @@
+:root{--ink:#1C2433;--quiet:#4A5568;--line:#E6E1D8;--bg:#F7F4EE;--card:#fff;--brand:#C05621;--brand-l:#FCE9DC;--navy:#1F4E79}
+*{box-sizing:border-box}
+body{margin:0;font:17px/1.6 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:var(--bg)}
+a{color:var(--brand)}
+.wrap{max-width:980px;margin:0 auto;padding:0 20px}
+header{padding:18px 0;border-bottom:1px solid var(--line);background:var(--card)}
+header .wrap{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.logo{font:900 24px Georgia,serif;color:var(--brand);text-decoration:none}
+nav a{margin-left:18px;color:var(--quiet);text-decoration:none;font-size:15px}
+.hero{padding:64px 20px 40px}
+.hero h1{font:800 clamp(30px,5vw,46px)/1.15 Georgia,serif;margin:0 0 16px;max-width:760px}
+.hero p{font-size:19px;color:var(--quiet);max-width:680px;margin:0 0 24px}
+.btn{display:inline-block;background:var(--brand);color:#fff;text-decoration:none;font-weight:700;padding:13px 22px;border-radius:8px}
+.btn.alt{background:none;color:var(--brand);border:2px solid var(--brand);margin-left:10px}
+section{padding:40px 0}
+h2{font:800 28px/1.2 Georgia,serif;margin:0 0 18px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:22px}
+.card h3{margin:0 0 8px;font-size:18px}
+.card p{margin:0;color:var(--quiet);font-size:16px}
+.num{display:inline-block;width:30px;height:30px;border-radius:50%;background:var(--brand-l);color:var(--brand);font-weight:800;text-align:center;line-height:30px;margin-bottom:10px}
+.sample{display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:start}
+.sample img{width:100%;border-radius:10px;border:1px solid var(--line);box-shadow:0 2px 10px rgba(0,0,0,.06)}
+@media(max-width:760px){.sample{grid-template-columns:1fr}.btn.alt{margin:10px 0 0}}
+.price{border:2px solid var(--brand)}
+.price .big{font:800 40px Georgia,serif;color:var(--ink)}
+.price ul,.card ul{padding-left:20px;color:var(--quiet);margin:10px 0 0}
+details{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 18px;margin-bottom:10px}
+summary{font-weight:700;cursor:pointer}
+details p{color:var(--quiet);margin:10px 0 0}
+footer{border-top:1px solid var(--line);padding:28px 0;color:var(--quiet);font-size:14px;background:var(--card)}
+footer a{margin-right:16px}
+.legal h1{font:800 34px Georgia,serif;margin:40px 0 8px}
+.legal h2{font-size:21px;margin-top:28px}
+.legal p,.legal li{color:var(--quiet)}
