@@ -8,7 +8,7 @@ Run by the weekly GitHub Action after tools/update_bids.py refreshes the bid dat
 
 Legal clauses a lawyer should review are marked in the HTML with  <!-- LAWYER-REVIEW: ... -->
 """
-import html, json, os, shutil
+import html, json, os, re, shutil
 from datetime import date, datetime
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -52,7 +52,23 @@ BELL = ('<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="non
 
 
 def start_url():
-    return C['form_url'] or '/start/'
+    return '/start/'
+
+
+ICON = {
+    'check': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>',
+    'filter': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h18l-7 8.5V19l-4 2v-7.5L3 5z"/></svg>',
+    'pin': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>',
+    'doc': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg>',
+    'clock': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+    'dollar': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v20M17 6.5c0-1.9-2.2-3-5-3s-5 1.3-5 3.3S9 9.6 12 10.3s5 1.6 5 3.7-2.2 3.5-5 3.5-5-1.2-5-3"/></svg>',
+    'calendar': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16.5" rx="2"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4M8 14h3"/></svg>',
+    'arrow': '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
+}
+
+
+def checks(items):
+    return '<ul class="checks">' + ''.join(f'<li>{ICON["check"]}{x}</li>' for x in items) + '</ul>'
 
 
 def layout(path, title, desc, body, jsonld=None, updated=None, noindex=False, og_type='website'):
@@ -60,13 +76,17 @@ def layout(path, title, desc, body, jsonld=None, updated=None, noindex=False, og
     ld = ''.join(f'\n<script type="application/ld+json">{json.dumps(j, separators=(",", ":"))}</script>'
                  for j in (jsonld or []))
     upd = updated or TODAY
+    fp = C['founding_price']
+    popular = ['Texas', 'California', 'Virginia', 'Florida', 'Illinois', 'Massachusetts']
+    state_links = ''.join(f'<li><a href="/cleaning-bids/{slug(s)}/">{s}</a></li>' for s in popular)
     return f'''<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self'; style-src 'self'; font-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self'; style-src 'self'; font-src 'self'; connect-src 'self'; base-uri 'none'; form-action https://docs.google.com; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="color-scheme" content="light">
 <title>{E(title)}</title>
 <meta name="description" content="{E(desc)}">
 <link rel="canonical" href="{url}">
@@ -78,31 +98,42 @@ def layout(path, title, desc, body, jsonld=None, updated=None, noindex=False, og
 <meta property="og:url" content="{url}">
 <meta property="og:image" content="{BASE}/og.png">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0B1220" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#FFFFFF">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<link rel="preload" href="/fonts/instrument-serif-400.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="/fonts/geist-variable.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/source-serif-4.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/public-sans.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/style.css">{ld}
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
+<div class="topbar">Founding offer: <b>${fp}/month, locked in</b>, for the first {C['founding_spots']} cleaning companies. <a href="{E(start_url())}">Start 14 days free &rarr;</a></div>
 <header class="site-head"><div class="wrap">
   <a class="logo" href="/">{BELL}BidBell</a>
   <nav class="nav" aria-label="Main">
-    <a href="/#how">How it works</a><a href="/cleaning-bids/">Bid pages</a><a href="/#pricing">Pricing</a><a href="/#faq">FAQ</a>
-    <a class="btn small" href="{E(start_url())}">Start free</a>
+    <a href="/#features">Features</a><a href="/#how">How it works</a><a href="/cleaning-bids/">Free bid pages</a><a href="/#pricing">Pricing</a><a href="/#faq">FAQ</a>
+    <a class="btn small" href="{E(start_url())}">Start free trial</a>
   </nav>
 </div></header>
 <main id="main">
 {body}
 </main>
 <footer class="site-foot"><div class="wrap">
-  <nav aria-label="Footer">
-    <a href="/terms/">Terms</a><a href="/privacy/">Privacy</a><a href="/refunds/">Refunds</a><a href="/acceptable-use/">Acceptable use</a><a href="/disclaimer/">Disclaimer</a><a href="/email-policy/">Email policy</a><a href="/cleaning-bids/">Cleaning bids by state</a><a href="mailto:{C['email']}">{C['email']}</a>
-  </nav>
-  <p>BidBell is run by {E(C['owner_name'])}. Mailing address: {E(C['mailing_address'])}.</p>
-  <p>Not affiliated with SAM.gov, GSA or any government agency. Page updated {long_date(upd)}. &copy; {TODAY.year} BidBell.</p>
+  <div class="foot-grid">
+    <div class="brand">
+      <a class="logo" href="/">{BELL}BidBell</a>
+      <p class="foot-about">Daily federal cleaning bids for janitorial, carpet and window companies, filtered to the jobs you can win.</p>
+      <p class="small">{E(C['mailing_address'])}<br><a href="mailto:{C['email']}">{C['email']}</a></p>
+    </div>
+    <nav aria-label="Product"><h4>Product</h4><ul>
+      <li><a href="/#features">Features</a></li><li><a href="/#how">How it works</a></li><li><a href="/#sample">Sample alert</a></li><li><a href="/#pricing">Pricing</a></li><li><a href="{E(start_url())}">Start free trial</a></li></ul></nav>
+    <nav aria-label="Free bid pages"><h4>Free bid pages</h4><ul>{state_links}<li><a href="/cleaning-bids/">All states &rarr;</a></li></ul></nav>
+    <nav aria-label="Legal"><h4>Company</h4><ul>
+      <li><a href="/#about">About</a></li><li><a href="/terms/">Terms</a></li><li><a href="/privacy/">Privacy</a></li><li><a href="/refunds/">Refunds</a></li><li><a href="/acceptable-use/">Acceptable use</a></li><li><a href="/disclaimer/">Disclaimer</a></li><li><a href="/email-policy/">Email policy</a></li></ul></nav>
+  </div>
+  <div class="foot-bottom">
+    <span>&copy; {TODAY.year} BidBell. Run by {E(C['owner_name'])}. Page updated {long_date(upd)}.</span>
+    <span>Not affiliated with SAM.gov, GSA or any government agency.</span>
+  </div>
 </div></footer>
 </body>
 </html>
@@ -124,13 +155,14 @@ TYPE_WORDS = {'Solicitation': 'Bid open', 'Combined Synopsis/Solicitation': 'Bid
 
 SMALL = {'Of', 'The', 'And', 'For', 'In', 'On', 'At', 'To'}
 fix_case = lambda t: ' '.join(w if i == 0 or w not in SMALL else w.lower() for i, w in enumerate(t.split()))
+clean_title = lambda t: re.sub(r'\s+l\s+', ', ', re.sub(r'^[A-Z0-9]{1,4}--\s*', '', t or '')).strip()
 
 
 def bid_table(bids, caption):
     rows = []
     for b in bids:
         where = ', '.join(x for x in (b['city'], STATES.get(b['state'], b['state'])) if x)
-        rows.append(f'<tr><td data-label="Notice">{ext(b["link"], E(b["title"]))}<br><span class="small muted">{E(fix_case(b["agency"]))}'
+        rows.append(f'<tr><td data-label="Notice">{ext(b["link"], E(clean_title(b["title"])))}<br><span class="small muted">{E(agency_name(b["agency"]))}'
                     f'{" &middot; Ref " + E(b["sol"]) if b["sol"] else ""}</span></td>'
                     f'<td data-label="Work site">{E(where)}</td><td data-label="Respond by">{nice(b["due"])}</td>'
                     f'<td data-label="Stage">{E(TYPE_WORDS.get(b["type"], b["type"]))}</td>'
@@ -141,15 +173,22 @@ def bid_table(bids, caption):
 
 
 def cta_box(heading='Get the right bids every morning instead'):
-    return f'''<div class="card featured">
+    return f'''<div class="cta-band">
   <h2>{heading}</h2>
-  <p>This page is a free weekly snapshot of every open federal cleaning notice. BidBell subscribers get, every morning around 6am Eastern, only the bids in their states that their business is allowed to bid on, plus who holds each job now, what they were paid, and the contracts ending soon in their area.</p>
-  <div class="cta-row"><a class="btn" href="{E(start_url())}">Start 2 weeks free</a><a class="btn ghost" href="/#what-you-get">See what you get</a></div>
-  <p class="small">No card needed. ${C['founding_price']}/month after the trial for our first {C['founding_spots']} customers. Cancel anytime.</p>
+  <p>This page is a free weekly snapshot. BidBell subscribers get, every morning around 6 AM Eastern, only the bids in their states that their business is allowed to bid on.</p>
+  <div class="cta-row"><a class="btn light" href="{E(start_url())}">Start 14 days free {ICON['arrow']}</a></div>
+  {checks(['No card required', f"${C['founding_price']}/month after, first {C['founding_spots']} companies", 'Cancel anytime'])}
 </div>'''
 
 
 # ------------------------------------------------------------------ home
+WHO = {'Total Small Business Set-Aside': 'Small businesses', 'HUBZone Set-Aside': 'HUBZone businesses',
+       'Service-Disabled Veteran-Owned Small Business Set-Aside': 'Service-disabled veteran-owned',
+       'Service-Disabled Veteran-Owned Small Business Sole Source': 'One named veteran-owned firm',
+       '8(a) Set-Aside': '8(a) businesses', 'Women-Owned Small Business (WOSB) Program Set-Aside': 'Women-owned businesses'}
+STAGE = {'Solicitation': 'BID OPEN', 'Combined Synopsis/Solicitation': 'BID OPEN',
+         'Presolicitation': 'COMING SOON', 'Sources Sought': 'MARKET RESEARCH'}
+
 FAQ = [
     ('Where do the bids come from?',
      'From SAM.gov, the official US government website where federal agencies publish contract opportunities. '
@@ -166,148 +205,277 @@ FAQ = [
      'We find the previous contract for a site by matching the location and description in public award records. '
      'Most matches are exact; some are close, and some bids have no match. We label them honestly and link to the official record so you can check.'),
     ('How do I pay, and how do I cancel?',
-     f'After your free 2 weeks we email you a secure checkout link from Lemon Squeezy, our payment provider. '
-     f'You can cancel anytime from the link in your receipt or by replying to any BidBell email; you keep access until the end of the period you paid for.'),
+     'After your free 2 weeks we email you a secure checkout link from Lemon Squeezy, our payment provider. '
+     'You can cancel anytime from the link in your receipt or by replying to any BidBell email; you keep access until the end of the period you paid for.'),
     ('Is my information safe?',
      'We collect only what we need to send your alerts: your name, business details, trades, states and eligibility. '
      'We never see your card, we do not sell data, and this website has no tracking or advertising cookies.'),
 ]
 
 
+def agency_name(a):
+    a = (a or 'Federal agency').strip()
+    if a.lower().endswith(', department of'):
+        a = 'Department of ' + a[:-len(', department of')]
+    return fix_case(a.replace('Dept Of', 'Department Of'))
+
+
+def open_bids(min_days=0):
+    return sorted((b for b in DATA['bids'] if (date.fromisoformat(b['due']) - TODAY).days >= min_days), key=lambda b: b['due'])
+
+
+def mock_bid(b, show_left=True):
+    d = date.fromisoformat(b['due'])
+    left = (d - TODAY).days
+    soon = show_left and 0 <= left <= 5
+    due = f'Due {MONTHS[d.month - 1]} {d.day}'
+    sub = f'<small>{left} day{"s" if left != 1 else ""} left</small>' if show_left and left >= 0 else ''
+    where = ', '.join(x for x in (b['city'], b['state']) if x)
+    return f'''<div class="bid">
+        <div class="bid-top"><div><span class="tag">{STAGE.get(b["type"], "BID OPEN")}</span>{' <span class="tag soon">CLOSES SOON</span>' if soon else ''}</div><div class="due{' red' if soon else ''}">{due}{sub}</div></div>
+        <div class="bid-name">{E(clean_title(b["title"]))}</div>
+        <div class="bid-meta">{E(agency_name(b["agency"]))} &middot; {E(where)}</div>
+        <span class="who">Who can bid: {E(WHO.get(b["set_aside"], b["set_aside"] or "Any business"))}</span>
+      </div>'''
+
+
+def hero_mock():
+    pool = open_bids(2)
+    small = [b for b in pool if b['set_aside'] == 'Total Small Business Set-Aside' and b['type'] != 'Sources Sought']
+    pick, seen = [], set()
+    for b in small + [b for b in pool if b not in small]:
+        if b['state'] not in seen:
+            pick.append(b)
+            seen.add(b['state'])
+        if len(pick) == 3:
+            break
+    show_left = bool(pick)
+    if not pick:
+        pick = DATA['bids'][:3]
+    names = [STATES.get(b['state'], b['state']) for b in pick]
+    area = names[0] if len(names) == 1 else ', '.join(names[:-1]) + ' &amp; ' + names[-1]
+    n = len(pick)
+    day = f'{TODAY.strftime("%a")}, {MONTHS[TODAY.month - 1]} {TODAY.day}'
+    return f'''<figure class="mock">
+    <div class="mock-window">
+      <div class="mock-bar"><i></i><i></i><i></i><span>Inbox &middot; {day} &middot; 6:15 AM</span></div>
+      <div class="mail-head"><span><span class="dot">&#9679;</span> BidBell</span><small>{day}</small></div>
+      <div class="mail-body mail-fade">
+        <div class="mail-kicker">Janitorial &middot; {area}</div>
+        <div class="mail-title">{n} bid{"s" if n != 1 else ""} fit your business today.</div>
+        <p class="mail-sub">Sorted by deadline. Each one links to the official notice on SAM.gov.</p>
+        {''.join(mock_bid(b, show_left) for b in pick)}
+      </div>
+    </div>
+    <div class="float-card" aria-hidden="true">
+      <div class="k">{ICON['check']}Delivered &middot; 6:15 AM ET</div>
+      <div class="t">Only bids you can win</div>
+      <div class="m">Filtered by trade, state and set-aside</div>
+    </div>
+    <figcaption class="sr-only">Example BidBell alert built from real SAM.gov notices open on {long_date(TODAY)}.</figcaption>
+  </figure>'''
+
+
 def home():
     fp, sp, ap = C['founding_price'], C['standard_price'], C['annual_price']
+    n_open = len(open_bids(0))
     faq_html = ''.join(f'<details><summary>{E(q)}</summary><p>{E(a)}</p></details>' for q, a in FAQ)
+    pill = (f'<span class="live-dot" aria-hidden="true"></span><b>Live</b> {n_open} federal cleaning bids open this week'
+            if n_open else '<span class="live-dot" aria-hidden="true"></span><b>Live</b> New federal cleaning bids, checked every morning')
+    su = E(start_url())
+    feats = [
+        ('filter', 'Only bids you can win', 'Filtered by your trade, your states and your eligibility: small business, HUBZone, SDVOSB, 8(a) or women-owned.'),
+        ('pin', 'Where the work really is', 'We list the actual work site, not the contracting office three states away.'),
+        ('doc', 'Plain English', 'What the job is, where it is and what to do next. No government shorthand, no digging through PDFs.'),
+        ('dollar', 'What the job is worth', 'The likely current contractor and what the government paid them, from public USAspending.gov records.'),
+        ('calendar', 'Contracts ending soon', 'Contracts in your states that end in the next 3 to 6 months, so you can prepare before the new bid is posted.'),
+        ('clock', 'Deadline reminders', 'A reminder 3 days before each deadline and site visit for the bids in your alerts.'),
+    ]
+    feat_html = ''.join(f'<div class="feature"><div class="icon">{ICON[i]}</div><h3>{t}</h3><p>{d}</p></div>' for i, t, d in feats)
+    plan_items = lambda items: '<ul>' + ''.join(f'<li>{ICON["check"]}<span>{x}</span></li>' for x in items) + '</ul>'
     body = f'''
-<div class="wrap hero">
-  <p class="live"><span class="live-dot" aria-hidden="true"></span>New federal cleaning bids, checked every morning</p>
-  <h1>The federal cleaning bids worth your time. <em>Nothing else.</em></h1>
-  <div class="hero-row">
-    <p class="lead">BidBell emails your company the janitorial, carpet and window contracts in your states that you&rsquo;re eligible to bid on, in plain English, with the deadline first.</p>
-    <div class="cta-row"><a class="btn" href="{E(start_url())}">Try 14 days free</a><a class="btn ghost" href="#sample">See a real alert</a></div>
+<section class="hero"><div class="wrap">
+  <div class="copy">
+    <p class="pill">{pill}</p>
+    <h1>Every federal cleaning bid you can win. In your inbox by 6&nbsp;AM.</h1>
+    <p class="lead">BidBell reads every new contract notice on SAM.gov each morning and sends your company only the janitorial, carpet and window jobs in your states that you&rsquo;re eligible to bid on. Plain English, deadline first.</p>
+    <div class="cta-row"><a class="btn" href="{su}">Start 14 days free {ICON['arrow']}</a><a class="btn ghost" href="#sample">See a real alert</a></div>
+    {checks(['No card required', 'Set up in 2 minutes', 'Cancel anytime'])}
   </div>
-  <p class="small muted">No card needed &middot; Cancel anytime &middot; Not affiliated with SAM.gov or the US government</p>
-  <figure class="hero-photo">
-    <img srcset="/img/courthouse-900.webp 900w, /img/courthouse-1600.webp 1600w" sizes="(min-width: 81rem) 72rem, 100vw" src="/img/courthouse-1600.webp" width="1600" height="1069" fetchpriority="high" decoding="async" alt="Columns and a lamp post outside a US federal courthouse under a blue sky">
-    <div class="scan" aria-hidden="true"></div>
-    <ul class="chips">
-      <li class="chip"><span>Every morning</span><strong>Every new notice, read for you</strong></li>
-      <li class="chip"><span>Filtered</span><strong>Your trade &middot; your states &middot; your set-asides</strong></li>
-      <li class="chip dark"><span>In your inbox</span><strong>Around 6 AM Eastern</strong></li>
-    </ul>
-  </figure>
-</div>
+  {hero_mock()}
+</div></section>
 
-<section id="why" aria-labelledby="why-h"><div class="wrap">
-  <h2 id="why-h" class="sr-only">Why BidBell</h2>
-  <div class="vs">
-    <div class="before"><p class="eyebrow">Searching SAM.gov yourself</p><h3>An evening lost to filters and PDFs.</h3>
-      <ul><li>Dozens of search boxes and code numbers</li><li>Notices written in government shorthand</li><li>Deadlines buried in long documents</li><li>Jobs reserved for businesses you&rsquo;re not</li></ul></div>
-    <div class="after"><p class="eyebrow">With BidBell</p><h3>Two minutes over coffee.</h3>
-      <ul><li>One short email, only on days with matches</li><li>Plain English: what, where, when</li><li>Deadline and who can bid, at the top</li><li>Only jobs your company qualifies for</li></ul></div>
+<div class="agencies"><div class="wrap">
+  <p>This month&rsquo;s open cleaning bids came from agencies including</p>
+  <ul><li>Department of the Army</li><li>Veterans Affairs</li><li>Federal Aviation Administration</li><li>U.S. Forest Service</li><li>Department of Energy</li><li>Bureau of Indian Affairs</li></ul>
+</div></div>
+
+<section id="features" aria-labelledby="features-h"><div class="wrap">
+  <div class="section-head center">
+    <p class="eyebrow">Why cleaning companies use BidBell</p>
+    <h2 id="features-h">SAM.gov lists thousands of contracts. BidBell finds the few that fit you.</h2>
+    <p>Searching SAM.gov yourself means dozens of filters, code numbers and long PDFs. BidBell does it for you every morning and sends only what matters.</p>
+  </div>
+  <div class="features">{feat_html}</div>
+</div></section>
+
+<section id="filter" class="tint" aria-labelledby="filter-h"><div class="wrap two">
+  <div>
+    <p class="eyebrow">Eligibility filter</p>
+    <h2 id="filter-h">Only the bids you&rsquo;re allowed to bid on.</h2>
+    <p class="lead">Many federal cleaning contracts are reserved for HUBZone, veteran-owned, 8(a) or women-owned businesses. Tell us what your company qualifies for once, and BidBell leaves out everything else.</p>
+    <ul class="ticks">
+      <li>{ICON['check']}<span>Small business, HUBZone, SDVOSB, 8(a) and WOSB set-asides handled for you</span></li>
+      <li>{ICON['check']}<span>Award notices, duplicates and bids closing in under 2 days removed</span></li>
+      <li>{ICON['check']}<span>No matches today? No email. We never pad it.</span></li>
+    </ul>
+  </div>
+  <div class="panel">
+    <p class="panel-title">Example company</p>
+    <ul class="chips"><li class="chip on">Janitorial</li><li class="chip on">Texas</li><li class="chip on">Illinois</li><li class="chip on">Small business</li></ul>
+    <p class="panel-title">Open bids in Texas &amp; Illinois, September 29, 2026</p>
+    <div class="row off"><div><div class="n">Custodial Services at TX190, Denton</div><div class="s">Department of the Army &middot; Denton, TX</div></div><span class="badge-inline">HUBZone only</span></div>
+    <div class="row off"><div><div class="n">Fort Hood Installation Custodial Services</div><div class="s">Department of the Army &middot; Fort Hood, TX</div></div><span class="badge-inline">HUBZone only</span></div>
+    <div class="row off"><div><div class="n">88th RD Custodial Services at IL068</div><div class="s">Department of the Army &middot; Machesney Park, IL</div></div><span class="badge-inline">Veteran-owned only</span></div>
+    <div class="row"><div><div class="n">Housekeeping Services, Fermilab</div><div class="s">Department of Energy &middot; Batavia, IL &middot; due Oct 9</div></div><span class="tag">IN YOUR ALERT</span></div>
+    <p class="small muted panel-foot">4 open bids, 1 this company can bid on. That one is the whole email.</p>
   </div>
 </div></section>
 
-<section id="how" aria-labelledby="how-h"><div class="wrap">
-  <h2 id="how-h">How it works</h2>
-  <div class="grid">
-    <div class="card"><div class="step" aria-hidden="true">1</div><h3>Tell us once</h3><p>Your trade, the states you work in, and whether you are a small business, HUBZone, service-disabled veteran-owned, 8(a) or women-owned.</p></div>
-    <div class="card"><div class="step" aria-hidden="true">2</div><h3>We check every notice</h3><p>Each morning we read the new federal contract notices on SAM.gov, find where the work really is and who may bid, and match them to your business.</p></div>
-    <div class="card"><div class="step" aria-hidden="true">3</div><h3>One short email</h3><p>Around 6am Eastern you get only the bids you can use, each with the deadline, a plain-English next step and a link to the official notice.</p></div>
+<section id="value" aria-labelledby="value-h"><div class="wrap two flip">
+  <div>
+    <p class="eyebrow">Contract history</p>
+    <h2 id="value-h">Know what a job is worth before you bid.</h2>
+    <p class="lead">Next to each bid, BidBell shows the company that most likely holds the job now and what the government paid, from public USAspending.gov records. Price your bid with real numbers.</p>
+    <ul class="ticks">
+      <li>{ICON['check']}<span>Likely current contractor, contract total and period</span></li>
+      <li>{ICON['check']}<span>Contracts in your states ending in the next 3 to 6 months</span></li>
+      <li>{ICON['check']}<span>A link to the official record, so you can check it yourself</span></li>
+    </ul>
+  </div>
+  <div class="panel">
+    <p class="panel-title">Open bid &middot; responses due Oct 5, 2026</p>
+    <div class="bid-name panel-bid">Janitorial Services, Chattanooga National Cemetery</div>
+    <p class="bid-meta panel-meta">Department of Veterans Affairs &middot; Chattanooga, TN</p>
+    <div class="kv"><span>Likely current contractor</span><b>KB Federal Maintenance Inc</b></div>
+    <div class="kv"><span>Contract total</span><b>$302,108</b></div>
+    <div class="kv"><span>Period</span><b>May 2021 &ndash; Apr 2026</b></div>
+    <div class="kv"><span>About per year</span><b class="big-number">~$60,000</b></div>
+    <p class="small muted panel-foot">Source: {ext('https://www.usaspending.gov/search', 'USAspending.gov')} award records, checked September 29, 2026. Contract total is the amount the government committed (obligated).</p>
+  </div>
+</div></section>
+
+<section id="how" class="tint" aria-labelledby="how-h"><div class="wrap">
+  <div class="section-head center">
+    <p class="eyebrow">How it works</p>
+    <h2 id="how-h">Set it up once. Then just check your email.</h2>
+  </div>
+  <div class="steps">
+    <div class="step-card"><span class="time">2 minutes</span><div class="step-num">1</div><h3>Tell us about your business</h3><p>Your trade, the states you work in, and whether you are a small business, HUBZone, veteran-owned, 8(a) or women-owned.</p></div>
+    <div class="step-card"><span class="time">Every morning</span><div class="step-num">2</div><h3>We read every new notice</h3><p>We check the new federal contract notices on SAM.gov, find where the work really is and who may bid, and match them to you.</p></div>
+    <div class="step-card"><span class="time">~6 AM Eastern</span><div class="step-num">3</div><h3>One short email</h3><p>Only the bids you can use, each with the deadline, who can bid, a plain-English next step and the official link.</p></div>
+  </div>
+  <div class="stats mt">
+    <div><strong>50 + DC</strong><span>Every state and Washington, D.C. covered</span></div>
+    <div><strong>3 trades</strong><span>Janitorial, carpet, and window &amp; exterior cleaning</span></div>
+    <div><strong>6 AM</strong><span>Eastern, every morning with new matches</span></div>
+    <div><strong>$0</strong><span>For your first 14 days. No card needed.</span></div>
   </div>
 </div></section>
 
 <section id="sample" aria-labelledby="sample-h"><div class="wrap two">
   <div>
-    <h2 id="sample-h">A real alert</h2>
-    <p>This email was built from live SAM.gov notices on September 29, 2026, for a small cleaning company working in Massachusetts, Illinois and Kansas. Every bid, deadline and reference number in it is real.</p>
+    <p class="eyebrow">A real alert</p>
+    <h2 id="sample-h">This is the actual email.</h2>
+    <p class="lead">Built from live SAM.gov notices on September 29, 2026, for a small cleaning company working in Massachusetts, Illinois and Kansas. Every bid, deadline and reference number in it is real.</p>
     <ul class="ticks">
-      <li><strong>Real work site</strong>, not the contracting office in another state.</li>
-      <li><strong>Who can bid</strong>: bids reserved for groups you are not in are left out.</li>
-      <li><strong>No noise</strong>: award notices, duplicates and bids closing in under 2 days are removed.</li>
-      <li><strong>Nothing on quiet days</strong>: no matches, no email.</li>
+      <li>{ICON['check']}<span><strong>Deadline first</strong>, with the days left and a warning when it closes soon</span></li>
+      <li>{ICON['check']}<span><strong>Who can bid</strong>, so you never open a bid you can&rsquo;t win</span></li>
+      <li>{ICON['check']}<span><strong>What to do next</strong>, in one plain sentence</span></li>
+      <li>{ICON['check']}<span><strong>One button</strong> to the official notice on SAM.gov</span></li>
     </ul>
     <details><summary>Text version of this alert</summary>
-      <p>4 janitorial and cleaning bids, all open for small businesses:</p>
-      <ul>
-        <li>Kansas FY27 Mass Solicitation, Custodial Services (Army), Lawrence, Kansas. Respond by Oct 2, 2026. Ref W912DQ27QA001.</li>
-        <li>Housekeeping Services, Fermilab (Department of Energy), Illinois. Respond by Oct 9, 2026. Ref DH-377725.</li>
-        <li>Janitorial Services at the FMH SSC (FAA), Falmouth, Massachusetts. Respond by Oct 20, 2026. Ref 697DCK-27-R-00004.</li>
-        <li>Janitorial Services at the MVY ATCT (FAA), Massachusetts. Respond by Oct 22, 2026. Ref 697DCK-27-R-00001.</li>
-      </ul>
+      <p>4 janitorial and cleaning bids, all open to small businesses: Kansas FY27 Mass Solicitation, Custodial Services (Army), Lawrence, Kansas, respond by Oct 2, 2026, ref W912DQ27QA001. Housekeeping Services, Fermilab (Department of Energy), Illinois, respond by Oct 9, 2026, ref DH-377725. Janitorial Services at the FMH SSC (FAA), Falmouth, Massachusetts, respond by Oct 20, 2026, ref 697DCK-27-R-00004. Janitorial Services at the MVY ATCT (FAA), Massachusetts, respond by Oct 22, 2026, ref 697DCK-27-R-00001.</p>
     </details>
   </div>
-  <picture><source srcset="/sample-alert.webp" type="image/webp"><img class="shot" src="/sample-alert.jpg" width="720" height="1759" loading="lazy" decoding="async" alt="A BidBell alert email listing four open federal janitorial bids in Kansas, Illinois and Massachusetts, each showing the work site, who can bid, the deadline and a link to the official notice."></picture>
-</div></section>
-
-<section id="what-you-get" aria-labelledby="get-h"><div class="wrap">
-  <p class="eyebrow">What your $29 buys</p>
-  <h2 id="get-h">Know what a job is worth before you bid</h2>
-  <div class="grid">
-    <div class="card"><h3>Only bids you can win</h3><p>Filtered by your trade, your states and your eligibility: small business, HUBZone, SDVOSB, 8(a), WOSB.</p></div>
-    <div class="card"><h3>Who has the job now, and what they were paid</h3><p>From USAspending.gov, next to each bid: the likely current contractor, the contract total and roughly what it is worth per year.</p></div>
-    <div class="card"><h3>Contracts ending soon</h3><p>Contracts in your states that end in the next 3 to 6 months, so you can prepare before the new bid is even posted.</p></div>
-    <div class="card"><h3>Reminders</h3><p>A reminder 3 days before each deadline and site visit for the bids in your alerts.</p></div>
+  <div>
+    <div class="shot-frame"><picture><source srcset="/sample-alert.webp" type="image/webp"><img src="/sample-alert.jpg" width="720" height="1759" loading="lazy" decoding="async" alt="A BidBell alert email listing four open federal janitorial bids in Kansas, Illinois and Massachusetts, each showing the deadline, who can bid, and a button to the official notice."></picture></div>
+    <p class="photo-cap"><a href="/sample-alert.jpg">Open the full-size alert</a></p>
   </div>
-  <h3 class="mt">Two real examples from bids open on September 29, 2026</h3>
-  <div class="table-wrap"><table class="stack">
-    <caption>Likely current contract for two open janitorial bids</caption>
-    <thead><tr><th scope="col">Open bid</th><th scope="col">Likely current contractor</th><th scope="col">Contract total</th><th scope="col">Period</th><th scope="col">About per year</th></tr></thead>
-    <tbody>
-      <tr><td data-label="Open bid">Chattanooga National Cemetery janitorial (VA), respond by Oct 5, 2026</td><td data-label="Likely current contractor">KB Federal Maintenance Inc</td><td data-label="Contract total">$302,108</td><td data-label="Period">May 2021 &ndash; Apr 2026</td><td data-label="About per year">~$60,000</td></tr>
-      <tr><td data-label="Open bid">FAA janitorial, Falmouth, Massachusetts, respond by Oct 20, 2026</td><td data-label="Likely current contractor">Eco-Friendly Cleaning Specialist LLC</td><td data-label="Contract total">$85,441</td><td data-label="Period">Apr 2023 &ndash; Dec 2026</td><td data-label="About per year">~$23,000</td></tr>
-    </tbody></table></div>
-  <p class="small muted">Source: {ext('https://www.usaspending.gov/search', 'USAspending.gov')} award records, checked September 29, 2026. &ldquo;Contract total&rdquo; is the amount the government committed (obligated) to the contract; companies are paid in instalments as they invoice for work done. Matches are labelled &ldquo;likely current contract&rdquo; and link to the official record.</p>
 </div></section>
 
-<section id="compare" aria-labelledby="compare-h"><div class="wrap">
-  <h2 id="compare-h">Free pages or the daily alert</h2>
-  <p class="muted">Our {'<a href="/cleaning-bids/">free cleaning-bid pages</a>'} list every open federal cleaning notice by state, once a week. The paid alert does the work for you.</p>
+<section id="compare" class="tint" aria-labelledby="compare-h"><div class="wrap">
+  <div class="section-head center">
+    <p class="eyebrow">Free or paid</p>
+    <h2 id="compare-h">Free bid pages, or the daily alert</h2>
+    <p>Our <a href="/cleaning-bids/">free cleaning-bid pages</a> list every open federal cleaning notice by state, once a week. The paid alert does the work for you.</p>
+  </div>
   <div class="table-wrap"><table class="stack">
-    <caption>What each option includes</caption>
-    <thead><tr><th scope="col">Feature</th><th scope="col">Free state pages</th><th scope="col">${fp} daily alert</th></tr></thead>
+    <caption class="sr-only">What each option includes</caption>
+    <thead><tr><th scope="col">Feature</th><th scope="col">Free state pages</th><th scope="col">BidBell daily alert</th></tr></thead>
     <tbody>
-      <tr><th scope="row">Open bids</th><td data-label="Free state pages">Title, work site, deadline; updated weekly</td><td data-label="${fp} daily alert" class="yes">Every morning, around 6am Eastern</td></tr>
-      <tr><th scope="row">Filtered for your business</th><td data-label="Free state pages">No, everything in the state</td><td data-label="${fp} daily alert" class="yes">Your trade, states and eligibility</td></tr>
-      <tr><th scope="row">Who has the job now and what they were paid</th><td data-label="Free state pages">No</td><td data-label="${fp} daily alert" class="yes">Yes, where a match is found</td></tr>
-      <tr><th scope="row">Contracts ending in the next 3&ndash;6 months</th><td data-label="Free state pages">No</td><td data-label="${fp} daily alert" class="yes">Yes</td></tr>
-      <tr><th scope="row">Deadline and site-visit reminders</th><td data-label="Free state pages">No</td><td data-label="${fp} daily alert" class="yes">Yes</td></tr>
+      <tr><th scope="row">Open bids</th><td data-label="Free state pages">Title, work site, deadline; updated weekly</td><td data-label="BidBell daily alert" class="yes">Every morning, around 6 AM Eastern</td></tr>
+      <tr><th scope="row">Filtered for your business</th><td data-label="Free state pages">No, everything in the state</td><td data-label="BidBell daily alert" class="yes">Your trade, states and eligibility</td></tr>
+      <tr><th scope="row">Who has the job now and what they were paid</th><td data-label="Free state pages">No</td><td data-label="BidBell daily alert" class="yes">Yes, where a match is found</td></tr>
+      <tr><th scope="row">Contracts ending in the next 3&ndash;6 months</th><td data-label="Free state pages">No</td><td data-label="BidBell daily alert" class="yes">Yes</td></tr>
+      <tr><th scope="row">Deadline and site-visit reminders</th><td data-label="Free state pages">No</td><td data-label="BidBell daily alert" class="yes">Yes</td></tr>
     </tbody></table></div>
 </div></section>
 
 <section id="pricing" aria-labelledby="pricing-h"><div class="wrap">
-  <h2 id="pricing-h">Simple pricing</h2>
-  <div class="grid">
-    <div class="card featured"><p class="badge">First {C['founding_spots']} customers</p><h3>Founding</h3><p class="price">${fp}<span>/month</span></p>
-      <ul class="ticks"><li>Price locked for as long as you stay subscribed</li><li>One trade group, up to 10 states or nationwide</li><li>Everything in the daily alert</li><li>Cancel anytime</li></ul></div>
-    <div class="card"><h3>Standard</h3><p class="price">${sp}<span>/month</span></p>
-      <ul class="ticks"><li>Or ${ap} a year (2 months free)</li><li>Same service once founding places are taken</li><li>Cancel anytime</li></ul></div>
-    <div class="card"><h3>Try it first</h3><p>Every plan starts with <strong>2 weeks free, no card needed</strong>. You pay only if the alerts are useful to you.</p>
-      <div class="cta-row"><a class="btn" href="{E(start_url())}">Start free</a></div></div>
+  <div class="section-head center">
+    <p class="eyebrow">Pricing</p>
+    <h2 id="pricing-h">One simple plan. Free for 14 days.</h2>
+    <p>No card to start. If the alerts aren&rsquo;t useful, do nothing and they stop.</p>
   </div>
-  <p class="small muted">Prices in US dollars. Payments are handled by Lemon Squeezy, our merchant of record, which adds sales tax where it applies. See our <a href="/refunds/">refund policy</a>.</p>
+  <div class="plans">
+    <div class="plan best"><span class="badge">First {C['founding_spots']} companies</span><h3>Founding</h3>
+      <p class="price">${fp}<span> /month</span></p><p class="desc">Locked in for as long as you stay subscribed.</p>
+      {plan_items(['Daily alert filtered to your business', 'One trade group, up to 10 states or nationwide', 'Contract history and contracts ending soon', 'Deadline and site-visit reminders'])}
+      <a class="btn" href="{su}">Start 14 days free</a></div>
+    <div class="plan"><h3>Monthly</h3>
+      <p class="price">${sp}<span> /month</span></p><p class="desc">Standard price once the founding places are taken.</p>
+      {plan_items(['Everything in Founding', 'Cancel anytime', 'Full refund within 7 days of a payment'])}
+      <a class="btn ghost" href="{su}">Start 14 days free</a></div>
+    <div class="plan"><h3>Yearly</h3>
+      <p class="price">${ap}<span> /year</span></p><p class="desc">Two months free compared with paying monthly.</p>
+      {plan_items(['Everything in Founding', 'One payment a year', 'Full refund within 14 days'])}
+      <a class="btn ghost" href="{su}">Start 14 days free</a></div>
+  </div>
+  <p class="small muted center-note">Prices in US dollars. Payments are handled by Lemon Squeezy, our merchant of record, which adds sales tax where it applies. See our <a href="/refunds/">refund policy</a>.</p>
 </div></section>
 
-<section id="data" aria-labelledby="data-h"><div class="wrap narrow">
-  <h2 id="data-h">How we get our data</h2>
-  <p class="small muted">Photo at the top of this page: Birch Bayh Federal Building and US Courthouse, Indianapolis, by Alejandro, released into the public domain (CC0) via Wikimedia Commons.</p>
-  <p><strong>Bids</strong> come from {ext('https://sam.gov/', 'SAM.gov')}, where federal agencies are required to publish contract opportunities. <strong>Past winners and amounts</strong> come from {ext('https://www.usaspending.gov/', 'USAspending.gov')}, the official public database of federal awards. Both are free, public sources run by the US government.</p>
-  <p>What BidBell adds is the sorting: the real work site, who may bid, plain-English next steps, the likely current contractor and what the job is worth. Notices can change or be withdrawn after we send them, so always read the official notice before you bid. See our <a href="/disclaimer/">disclaimer</a>.</p>
+<section id="about" class="tint" aria-labelledby="about-h"><div class="wrap two">
+  <figure class="flush">
+    <div class="photo"><img srcset="/img/capitol-960.webp 960w, /img/capitol-1250.webp 1250w" sizes="(min-width: 60rem) 36rem, 100vw" src="/img/capitol-1250.webp" width="1250" height="900" loading="lazy" decoding="async" alt="The US Capitol dome at sunrise, with birds flying past"></div>
+    <figcaption class="photo-cap">US Capitol at sunrise. Photo: Duane Lempke, public domain (CC0), via Wikimedia Commons.</figcaption>
+  </figure>
+  <div>
+    <p class="eyebrow">About BidBell</p>
+    <h2 id="about-h">Built for the companies that keep federal buildings clean.</h2>
+    <p>Every week, federal agencies post cleaning contracts for Army reserve centers, VA cemeteries, airport control towers and national-forest cabins. Many are set aside for small businesses, yet they are hard to find: spread across SAM.gov, written in government shorthand and filed under the contracting office instead of where the work is.</p>
+    <p>BidBell does that search every morning, so cleaning companies can spend their time bidding instead of searching.</p>
+    <p>Bids come from {ext('https://sam.gov/', 'SAM.gov')} and past contracts from {ext('https://www.usaspending.gov/', 'USAspending.gov')}, both free public US government sources. Always read the official notice before you bid; see our <a href="/disclaimer/">disclaimer</a>.</p>
+    <p class="small muted">BidBell is run by {E(C['owner_name'])}. Mailing address: {E(C['mailing_address'])}. Email <a href="mailto:{C['email']}">{C['email']}</a>. We answer every email.</p>
+  </div>
 </div></section>
 
-<section id="about" aria-labelledby="about-h"><div class="wrap narrow">
-  <h2 id="about-h">Who runs BidBell</h2>
-  <p>BidBell is run by {E(C['owner_name'])}. Mailing address: {E(C['mailing_address'])}. Email: <a href="mailto:{C['email']}">{C['email']}</a>. We answer every email.</p>
+<section id="faq" aria-labelledby="faq-h"><div class="wrap faq">
+  <div>
+    <p class="eyebrow">FAQ</p>
+    <h2 id="faq-h">Questions, answered.</h2>
+    <p class="muted">Something else? Email <a href="mailto:{C['email']}">{C['email']}</a>. We reply within one business day.</p>
+  </div>
+  <div>{faq_html}</div>
 </div></section>
 
-<section id="faq" aria-labelledby="faq-h"><div class="wrap narrow">
-  <h2 id="faq-h">Questions</h2>
-  {faq_html}
-</div></section>
-
-<section aria-labelledby="final-h"><div class="wrap narrow">
-  <h2 id="final-h">See your first alert tomorrow morning</h2>
-  <p class="muted">Tell us your trade and states in 2 minutes. Your free 2 weeks start the next morning.</p>
-  <div class="cta-row"><a class="btn" href="{E(start_url())}">Start 2 weeks free</a></div>
+<section class="final" aria-label="Start your free trial"><div class="wrap">
+  <div class="cta-band">
+    <h2>See your first alert tomorrow morning.</h2>
+    <p>Tell us your trade, states and eligibility in 2 minutes. Your free 14 days start with the next morning&rsquo;s email.</p>
+    <div class="cta-row"><a class="btn light" href="{su}">Start 14 days free {ICON['arrow']}</a></div>
+    {checks(['No card required', f'${fp}/month after, locked in', 'Cancel anytime'])}
+  </div>
 </div></section>'''
     org = {'@context': 'https://schema.org', '@type': 'Organization', 'name': 'BidBell', 'url': BASE + '/',
            'logo': BASE + '/og.png', 'email': C['email'],
@@ -324,45 +492,111 @@ def home():
                'offers': [offer('Founding (monthly)', fp, 'P1M'), offer('Standard (monthly)', sp, 'P1M'), offer('Standard (yearly)', ap, 'P1Y')]}
     faqld = {'@context': 'https://schema.org', '@type': 'FAQPage',
              'mainEntity': [{'@type': 'Question', 'name': q, 'acceptedAnswer': {'@type': 'Answer', 'text': a}} for q, a in FAQ]}
-    write('', layout('', 'BidBell | Government cleaning bids you can actually bid on',
+    write('', layout('', 'BidBell | Federal cleaning bids you can actually win',
                      'Every morning, BidBell emails US cleaning companies only the federal janitorial, carpet and window-cleaning bids in their states that they are allowed to bid on, with who holds each job now and what they were paid.',
                      body, [org, product, faqld]))
 
 
 # ------------------------------------------------------------------ start (sign-up)
+TRADE_CHOICES = ['Janitorial / custodial', 'Carpet & upholstery cleaning', 'Window & exterior cleaning']
+CERT_CHOICES = ['Small business (by SBA size standards)', 'HUBZone certified', 'Service-disabled veteran-owned (SDVOSB)',
+                '8(a) program', 'Women-owned (WOSB or EDWOSB)', 'None of these / not sure']
+SAM_CHOICES = ['Yes, active', 'In progress', 'Not yet']
+NATIONWIDE = 'Nationwide (all states)'
+AGREE = 'I agree to the BidBell Terms (getbidbell.com/terms) and Privacy Policy (getbidbell.com/privacy).'
+
+
+def signup_form():
+    f = C.get('form_entries') or {}
+    post = C.get('form_post', '')
+    if not (post and f):
+        return None
+    opt = lambda kind, name, v, cls='option': (f'<label class="{cls}"><input type="{kind}" name="{name}" value="{E(v)}"><span>{E(v)}</span></label>')
+    state_names = sorted(STATES.values())
+    states = (f'<label class="all"><input type="checkbox" name="{f["states"]}" value="{NATIONWIDE}"> Nationwide (all states)</label>'
+              + ''.join(f'<label><input type="checkbox" name="{f["states"]}" value="{E(s)}"> {E(s)}</label>' for s in state_names))
+    return f'''<form class="signup" action="{E(post)}" method="post" accept-charset="utf-8">
+  <fieldset>
+    <legend>About you</legend>
+    <div class="fields">
+      <div class="field"><label for="f-first">First name</label><input id="f-first" type="text" name="{f['first']}" required autocomplete="given-name"></div>
+      <div class="field"><label for="f-email">Business email</label><input id="f-email" type="email" name="{f['email']}" required autocomplete="email" placeholder="you@company.com"></div>
+      <div class="field"><label for="f-biz">Business name</label><input id="f-biz" type="text" name="{f['business']}" required autocomplete="organization"></div>
+      <div class="field"><label for="f-web">Business website <span class="opt">(optional)</span></label><input id="f-web" type="text" inputmode="url" name="{f['website']}" autocomplete="url" placeholder="yourcompany.com"></div>
+    </div>
+  </fieldset>
+  <fieldset>
+    <legend>What cleaning work do you do?</legend>
+    <p class="hint">Choose all that apply.</p>
+    <div class="options">{''.join(opt('checkbox', f['trades'], v) for v in TRADE_CHOICES)}</div>
+  </fieldset>
+  <fieldset>
+    <legend>Which states do you work in?</legend>
+    <p class="hint">Choose up to 10 states, or Nationwide. Bids are matched to where the work is.</p>
+    <div class="state-box">{states}</div>
+  </fieldset>
+  <fieldset>
+    <legend>Is your business any of these?</legend>
+    <p class="hint">This decides which set-aside bids you see. Choose all that apply.</p>
+    <div class="options cols-2">{''.join(opt('checkbox', f['certs'], v) for v in CERT_CHOICES)}</div>
+  </fieldset>
+  <fieldset>
+    <legend>Are you registered in SAM.gov?</legend>
+    <p class="hint">You can start your trial either way.</p>
+    <div class="options cols-3">{''.join(opt('radio', f['sam'], v) for v in SAM_CHOICES)}</div>
+  </fieldset>
+  <div class="form-foot">
+    <label class="agree"><input type="checkbox" name="{f['agree']}" value="{E(AGREE)}" required><span>I agree to the BidBell <a href="/terms/">Terms</a> and <a href="/privacy/">Privacy Policy</a>.</span></label>
+    <button class="btn" type="submit">Start my free 14 days {ICON['arrow']}</button>
+    <p class="small muted">No card needed. Your answers are sent securely to BidBell&rsquo;s private Google Forms account.</p>
+  </div>
+</form>'''
+
+
 def start():
-    if C['form_url']:
-        action = f'<div class="cta-row"><a class="btn" href="{E(C["form_url"])}" rel="noopener noreferrer">Open the 2-minute sign-up form</a></div><p class="small muted">The form is hosted by Tally (tally.so), which stores responses in the EU and does not sell them. It uses a spam check (reCAPTCHA).</p>'
+    form = signup_form()
+    if form:
+        action = f'<div class="card form-card">{form}</div>'
     else:
-        body_txt = ('First name:%0D%0ABusiness name:%0D%0ABusiness website:%0D%0ATrades (janitorial / carpet / window-exterior):%0D%0A'
-                    'States (up to 10, or all):%0D%0AEligibility (small business / HUBZone / SDVOSB / 8(a) / WOSB / none):%0D%0A'
-                    'Registered in SAM.gov (yes / in progress / no):')
-        action = f'<div class="cta-row"><a class="btn" href="mailto:{C["email"]}?subject=Free%202-week%20trial&amp;body={body_txt}">Email us to start your trial</a></div><p class="small muted">This opens an email with the questions filled in. Just answer and send.</p>'
-    body = f'''<div class="wrap narrow legal">
-<h1>Start your free 2 weeks</h1>
-<p class="lead">Answer 6 short questions. Your first alert arrives the next morning. No card needed.</p>
-{action}
-<h2>What we ask</h2>
-<ol>
-  <li>Your first name and business email</li>
-  <li>Your business name and website</li>
-  <li>Your trades: janitorial, carpet cleaning, window or exterior cleaning</li>
-  <li>Your states: up to 10, or nationwide</li>
-  <li>Your eligibility: small business, HUBZone, service-disabled veteran-owned (SDVOSB), 8(a), women-owned (WOSB), or none</li>
-  <li>Whether you are registered in SAM.gov: yes, in progress, or no</li>
-</ol>
-<p>We never ask for passwords, card numbers, tax IDs or any government ID numbers.</p>
-<h2>What happens next</h2>
-<ol>
-  <li>We confirm your details by email within 1 business day.</li>
-  <li>Your alerts start the next morning, around 6am Eastern, on days with matching bids.</li>
-  <li>On day 12 we email you a summary of the bids you received and a secure checkout link (Lemon Squeezy). ${C['founding_price']}/month for our first {C['founding_spots']} customers.</li>
-  <li>If you do not subscribe, your alerts simply stop after 14 days. Nothing is charged.</li>
-</ol>
-<p class="small muted">How we handle your details: <a href="/privacy/">privacy policy</a>.</p>
+        if C['form_url']:
+            btn = f'<a class="btn" href="{E(C["form_url"])}" rel="noopener noreferrer">Open the 2-minute sign-up form {ICON["arrow"]}</a>'
+            note = 'The form is hosted by Google Forms. Your answers go to BidBell&rsquo;s private account.'
+        else:
+            body_txt = ('First name:%0D%0ABusiness name:%0D%0ABusiness website:%0D%0ATrades (janitorial / carpet / window-exterior):%0D%0A'
+                        'States (up to 10, or all):%0D%0AEligibility (small business / HUBZone / SDVOSB / 8(a) / WOSB / none):%0D%0A'
+                        'Registered in SAM.gov (yes / in progress / no):')
+            btn = f'<a class="btn" href="mailto:{C["email"]}?subject=Free%202-week%20trial&amp;body={body_txt}">Email us to start your trial {ICON["arrow"]}</a>'
+            note = 'This opens an email with the questions filled in. Just answer and send.'
+        action = f'''<div class="card form-card">
+  <h2 class="h-sm">Six short questions</h2>
+  <ol class="plain-list"><li>Your first name and business email</li><li>Your business name and website</li><li>Your trades: janitorial, carpet, window or exterior cleaning</li><li>Your states: up to 10, or nationwide</li><li>Your eligibility: small business, HUBZone, SDVOSB, 8(a), WOSB, or none</li><li>Whether you are registered in SAM.gov</li></ol>
+  <div class="cta-row">{btn}</div><p class="small muted">{note}</p>
 </div>'''
-    write('start/', layout('start/', 'Start your free 2 weeks | BidBell',
-                           'Start a free 2-week BidBell trial: daily federal cleaning bids for your trade, states and eligibility. No card needed.', body))
+    body = f'''<div class="page-head"><div class="wrap">
+  <p class="crumbs"><a href="/">Home</a> / Start free trial</p>
+  <h1>Start your free 14 days</h1>
+  <p class="lead">Tell us about your business once. Your first alert arrives the next morning, around 6 AM Eastern. No card needed.</p>
+</div></div>
+<div class="wrap page"><div class="signup-grid">
+  {action}
+  <aside class="aside">
+    <div class="card">
+      <h3>What happens next</h3>
+      <ol class="next-steps">
+        <li><div><b>We confirm your details</b><span>By email, within 1 business day.</span></div></li>
+        <li><div><b>Your alerts start</b><span>The next morning, around 6 AM Eastern, on days with matching bids.</span></div></li>
+        <li><div><b>Day 12: your summary</b><span>The bids you received, and a secure checkout link. ${C['founding_price']}/month for our first {C['founding_spots']} companies.</span></div></li>
+        <li><div><b>Or do nothing</b><span>Your alerts stop after 14 days. Nothing is charged.</span></div></li>
+      </ol>
+    </div>
+    <div class="card">
+      <h3>We never ask for</h3>
+      <p>Passwords, card numbers, tax IDs or any government ID numbers. See how we handle your details in our <a href="/privacy/">privacy policy</a>.</p>
+    </div>
+  </aside>
+</div></div>'''
+    write('start/', layout('start/', 'Start your free 14 days | BidBell',
+                           'Start a free 14-day BidBell trial: daily federal cleaning bids for your trade, states and eligibility. No card needed.', body))
 
 
 # ------------------------------------------------------------------ public bid pages (gamechanger 1)
@@ -386,11 +620,13 @@ def bid_pages():
             lst = bid_table(sb, f'{len(sb)} open federal cleaning notice{"s" if len(sb) != 1 else ""} in {name}')
         else:
             lst = f'<div class="note"><p>No open federal cleaning notices were listed for {name} in this week\'s data. New notices appear most weeks; subscribers hear about them the morning they are posted.</p></div>'
-        body = f'''<div class="wrap page">
-<p class="eyebrow"><a href="/cleaning-bids/">Cleaning bids</a> / {E(name)}</p>
+        body = f'''<div class="page-head"><div class="wrap">
+<p class="crumbs"><a href="/">Home</a> / <a href="/cleaning-bids/">Cleaning bids</a> / {E(name)}</p>
 <h1>Open federal cleaning bids in {E(name)}</h1>
 <p class="lead">Janitorial, custodial, carpet and window-cleaning contract opportunities from federal agencies with work in {E(name)}.</p>
 {teaser}
+</div></div>
+<div class="wrap page">
 {lst}
 <div class="mt">{cta_box(f"Get {E(name)} cleaning bids every morning")}</div>
 <h2 class="mt">Other states with open cleaning notices</h2>
@@ -406,10 +642,12 @@ def bid_pages():
         tb = [b for b in bids if b['trade'] == trade]
         lst = bid_table(tb, f'{len(tb)} open federal {words} notices') if tb else \
             f'<div class="note"><p>No open federal {words} notices were listed in this week\'s data.</p></div>'
-        body = f'''<div class="wrap page">
-<p class="eyebrow"><a href="/cleaning-bids/">Cleaning bids</a> / {label}</p>
+        body = f'''<div class="page-head"><div class="wrap">
+<p class="crumbs"><a href="/">Home</a> / <a href="/cleaning-bids/">Cleaning bids</a> / {label}</p>
 <h1>Open federal {words} bids</h1>
 {teaser}
+</div></div>
+<div class="wrap page">
 {lst}
 <div class="mt">{cta_box()}</div>
 </div>'''
@@ -419,10 +657,13 @@ def bid_pages():
                            body, updated=upd), lastmod=upd)
 
     total = len(bids)
-    body = f'''<div class="wrap page">
+    body = f'''<div class="page-head"><div class="wrap">
+<p class="crumbs"><a href="/">Home</a> / Cleaning bids</p>
 <h1>Open federal cleaning bids by state</h1>
 <p class="lead">Every open federal janitorial, carpet and window-cleaning contract notice, grouped by where the work is. Free, updated weekly.</p>
 {teaser}
+</div></div>
+<div class="wrap page">
 <p><strong>{total}</strong> open notices this week. Also see <a href="/cleaning-bids/carpet/">carpet cleaning</a> and <a href="/cleaning-bids/window/">window and exterior cleaning</a>.</p>
 <h2>States with open notices</h2>
 {other_states()}
@@ -438,7 +679,9 @@ def bid_pages():
 # ------------------------------------------------------------------ legal
 def legal_page(path, title, desc, inner):
     upd = date.fromisoformat(C['legal_updated'])
-    body = f'<div class="wrap narrow legal"><h1>{title}</h1><p class="updated">Last updated {long_date(upd)}</p>{inner}</div>'
+    body = (f'<div class="page-head"><div class="wrap"><p class="crumbs"><a href="/">Home</a> / {title}</p><h1>{title}</h1>'
+            f'<p class="muted flush">Last updated {long_date(upd)}</p></div></div>'
+            f'<div class="wrap narrow legal page">{inner}</div>')
     write(path, layout(path, f'{title} | BidBell', desc, body, updated=upd), lastmod=upd)
 
 
@@ -497,10 +740,9 @@ def legal():
 <h2>3. Who processes it for us</h2>
 {lawyer('Processors and transfers', 'Privacy 3: list of processors, international transfers, and data processing agreements with each.')}
 <ul>
-<li><strong>Google Workspace</strong> (Google LLC): our email.</li>
+<li><strong>Google Workspace</strong> (Google LLC): our email, and our sign-up form (Google Forms). Sign-up answers are stored in BidBell&rsquo;s private Google account.</li>
 <li><strong>GitHub</strong> (GitHub, Inc.): runs the program that sends alerts and hosts this website. GitHub may log visitor IP addresses for security; see GitHub's privacy statement.</li>
 <li><strong>Lemon Squeezy</strong>: payments, as merchant of record.</li>
-<li><strong>Tally</strong> (Tally BV, Belgium): our sign-up form, when used. Tally stores responses in the EU.</li>
 </ul>
 <p>These providers process data on our instructions and under their own security and privacy commitments. Data may be processed in the United States, the European Union and other countries where they operate.</p>
 <h2>4. How long we keep it</h2>
@@ -582,8 +824,8 @@ def legal():
 # ------------------------------------------------------------------ extras
 def extras():
     write('404.html', layout('404.html', 'Page not found | BidBell', 'This page does not exist.',
-          '<div class="wrap narrow legal"><h1>Page not found</h1><p>This page does not exist or has moved.</p>'
-          '<div class="cta-row"><a class="btn" href="/">Go to the home page</a><a class="btn ghost" href="/cleaning-bids/">Cleaning bids by state</a></div></div>',
+          '<div class="page-head"><div class="wrap"><p class="crumbs">Error 404</p><h1>Page not found</h1><p class="lead">This page does not exist or has moved.</p>'
+          '<div class="cta-row"><a class="btn" href="/">Go to the home page</a><a class="btn ghost" href="/cleaning-bids/">Cleaning bids by state</a></div></div></div>',
           noindex=True), sitemap=False)
     exp = date(TODAY.year + 1, TODAY.month, 1) if TODAY.month > 1 else date(TODAY.year, 12, 1)
     os.makedirs(os.path.join(ROOT, '.well-known'), exist_ok=True)
