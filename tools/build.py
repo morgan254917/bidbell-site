@@ -46,9 +46,9 @@ def lawyer(tag, text):
     return f'<!-- LAWYER-REVIEW {len(LAWYER)}: {E(tag)} -->'
 
 
-BELL = ('<svg viewBox="0 0 32 32" aria-hidden="true" focusable="false"><path fill="currentColor" '
-        'd="M16 3a2 2 0 0 1 2 2v.7a8.5 8.5 0 0 1 6.5 8.3v5.2l2.3 3.3a1 1 0 0 1-.8 1.5H6a1 1 0 0 1-.8-1.5l2.3-3.3V14'
-        'a8.5 8.5 0 0 1 6.5-8.3V5a2 2 0 0 1 2-2Zm-3.2 22h6.4a3.2 3.2 0 0 1-6.4 0Z"/></svg>')
+BELL = ('<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2.2" '
+        'stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>'
+        '<path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>')
 
 
 def start_url():
@@ -65,7 +65,7 @@ def layout(path, title, desc, body, jsonld=None, updated=None, noindex=False, og
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self'; style-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self'; style-src 'self'; font-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <title>{E(title)}</title>
 <meta name="description" content="{E(desc)}">
@@ -78,9 +78,11 @@ def layout(path, title, desc, body, jsonld=None, updated=None, noindex=False, og
 <meta property="og:url" content="{url}">
 <meta property="og:image" content="{BASE}/og.png">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="theme-color" content="#F8F6F1" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#12151B" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0B1220" media="(prefers-color-scheme: dark)">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="/fonts/instrument-serif-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/geist-variable.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/style.css">{ld}
 </head>
 <body>
@@ -88,8 +90,8 @@ def layout(path, title, desc, body, jsonld=None, updated=None, noindex=False, og
 <header class="site-head"><div class="wrap">
   <a class="logo" href="/">{BELL}BidBell</a>
   <nav class="nav" aria-label="Main">
-    <a href="/#what-you-get">What you get</a><a href="/#pricing">Pricing</a><a href="/cleaning-bids/">Cleaning bids</a><a href="/#faq">FAQ</a>
-    <a class="btn small" href="{E(start_url())}">Start 2 weeks free</a>
+    <a href="/#how">How it works</a><a href="/cleaning-bids/">Bid pages</a><a href="/#pricing">Pricing</a><a href="/#faq">FAQ</a>
+    <a class="btn small" href="{E(start_url())}">Start free</a>
   </nav>
 </div></header>
 <main id="main">
@@ -177,12 +179,33 @@ def home():
     faq_html = ''.join(f'<details><summary>{E(q)}</summary><p>{E(a)}</p></details>' for q, a in FAQ)
     body = f'''
 <div class="wrap hero">
-  <p class="eyebrow">For US cleaning companies</p>
-  <h1>Government cleaning contracts you can actually bid on. Every morning.</h1>
-  <p class="lead">BidBell checks every new federal contract notice and emails you only the janitorial, carpet and window-cleaning bids in your states that your business is allowed to bid on, with who holds each job now and what they were paid.</p>
-  <div class="cta-row"><a class="btn" href="{E(start_url())}">Start 2 weeks free</a><a class="btn ghost" href="#sample">See a real alert</a></div>
+  <p class="live"><span class="live-dot" aria-hidden="true"></span>New federal cleaning bids, checked every morning</p>
+  <h1>The federal cleaning bids worth your time. <em>Nothing else.</em></h1>
+  <div class="hero-row">
+    <p class="lead">BidBell emails your company the janitorial, carpet and window contracts in your states that you&rsquo;re eligible to bid on, in plain English, with the deadline first.</p>
+    <div class="cta-row"><a class="btn" href="{E(start_url())}">Try 14 days free</a><a class="btn ghost" href="#sample">See a real alert</a></div>
+  </div>
   <p class="small muted">No card needed &middot; Cancel anytime &middot; Not affiliated with SAM.gov or the US government</p>
+  <figure class="hero-photo">
+    <img srcset="/img/courthouse-900.webp 900w, /img/courthouse-1600.webp 1600w" sizes="(min-width: 81rem) 72rem, 100vw" src="/img/courthouse-1600.webp" width="1600" height="1069" fetchpriority="high" decoding="async" alt="Columns and a lamp post outside a US federal courthouse under a blue sky">
+    <div class="scan" aria-hidden="true"></div>
+    <ul class="chips">
+      <li class="chip"><span>Every morning</span><strong>Every new notice, read for you</strong></li>
+      <li class="chip"><span>Filtered</span><strong>Your trade &middot; your states &middot; your set-asides</strong></li>
+      <li class="chip dark"><span>In your inbox</span><strong>Around 6 AM Eastern</strong></li>
+    </ul>
+  </figure>
 </div>
+
+<section id="why" aria-labelledby="why-h"><div class="wrap">
+  <h2 id="why-h" class="sr-only">Why BidBell</h2>
+  <div class="vs">
+    <div class="before"><p class="eyebrow">Searching SAM.gov yourself</p><h3>An evening lost to filters and PDFs.</h3>
+      <ul><li>Dozens of search boxes and code numbers</li><li>Notices written in government shorthand</li><li>Deadlines buried in long documents</li><li>Jobs reserved for businesses you&rsquo;re not</li></ul></div>
+    <div class="after"><p class="eyebrow">With BidBell</p><h3>Two minutes over coffee.</h3>
+      <ul><li>One short email, only on days with matches</li><li>Plain English: what, where, when</li><li>Deadline and who can bid, at the top</li><li>Only jobs your company qualifies for</li></ul></div>
+  </div>
+</div></section>
 
 <section id="how" aria-labelledby="how-h"><div class="wrap">
   <h2 id="how-h">How it works</h2>
@@ -213,7 +236,7 @@ def home():
       </ul>
     </details>
   </div>
-  <picture><source srcset="/sample-alert.webp" type="image/webp"><img class="shot" src="/sample-alert.jpg" width="720" height="1051" loading="lazy" decoding="async" alt="A BidBell alert email listing four open federal janitorial bids in Kansas, Illinois and Massachusetts, each showing the work site, who can bid, the deadline and a link to the official notice."></picture>
+  <picture><source srcset="/sample-alert.webp" type="image/webp"><img class="shot" src="/sample-alert.jpg" width="720" height="1759" loading="lazy" decoding="async" alt="A BidBell alert email listing four open federal janitorial bids in Kansas, Illinois and Massachusetts, each showing the work site, who can bid, the deadline and a link to the official notice."></picture>
 </div></section>
 
 <section id="what-you-get" aria-labelledby="get-h"><div class="wrap">
@@ -266,6 +289,7 @@ def home():
 
 <section id="data" aria-labelledby="data-h"><div class="wrap narrow">
   <h2 id="data-h">How we get our data</h2>
+  <p class="small muted">Photo at the top of this page: Birch Bayh Federal Building and US Courthouse, Indianapolis, by Alejandro, released into the public domain (CC0) via Wikimedia Commons.</p>
   <p><strong>Bids</strong> come from {ext('https://sam.gov/', 'SAM.gov')}, where federal agencies are required to publish contract opportunities. <strong>Past winners and amounts</strong> come from {ext('https://www.usaspending.gov/', 'USAspending.gov')}, the official public database of federal awards. Both are free, public sources run by the US government.</p>
   <p>What BidBell adds is the sorting: the real work site, who may bid, plain-English next steps, the likely current contractor and what the job is worth. Notices can change or be withdrawn after we send them, so always read the official notice before you bid. See our <a href="/disclaimer/">disclaimer</a>.</p>
 </div></section>
@@ -574,7 +598,7 @@ def extras():
     open(os.path.join(ROOT, '.nojekyll'), 'w').write('')
     shutil.copy(os.path.join(T, 'style.css'), os.path.join(ROOT, 'style.css'))
     open(os.path.join(ROOT, 'favicon.svg'), 'w').write(
-        BELL.replace('aria-hidden="true" focusable="false"', 'xmlns="http://www.w3.org/2000/svg"').replace('currentColor', '#9A3F12'))
+        BELL.replace('aria-hidden="true" focusable="false"', 'xmlns="http://www.w3.org/2000/svg"').replace('currentColor', '#C8102E'))
 
 
 def main():
