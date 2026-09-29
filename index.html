@@ -3,82 +3,154 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>BidBell | Government bids for cleaning, grounds and roofing companies</title>
-<meta name="description" content="Every morning, BidBell emails US cleaning, grounds and roofing companies only the government bids in their states that they are allowed to bid on.">
-<link rel="stylesheet" href="style.css">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self'; style-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>BidBell | Government cleaning bids you can actually bid on</title>
+<meta name="description" content="Every morning, BidBell emails US cleaning companies only the federal janitorial, carpet and window-cleaning bids in their states that they are allowed to bid on, with who holds each job now and what they were paid.">
+<link rel="canonical" href="https://getbidbell.com/">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="BidBell">
+<meta property="og:title" content="BidBell | Government cleaning bids you can actually bid on">
+<meta property="og:description" content="Every morning, BidBell emails US cleaning companies only the federal janitorial, carpet and window-cleaning bids in their states that they are allowed to bid on, with who holds each job now and what they were paid.">
+<meta property="og:url" content="https://getbidbell.com/">
+<meta property="og:image" content="https://getbidbell.com/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#F8F6F1" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#12151B" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/style.css">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"BidBell","url":"https://getbidbell.com/","logo":"https://getbidbell.com/og.png","email":"hello@getbidbell.com","address":{"@type":"PostalAddress","streetAddress":"628 W Broadway St, Ste 203","addressLocality":"North Little Rock","addressRegion":"AR","postalCode":"72114","addressCountry":"US"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Product","name":"BidBell daily government bid alerts","description":"A daily email of US federal cleaning contract bids filtered by trade, state and eligibility, with the likely current contractor and contract amount.","brand":{"@type":"Brand","name":"BidBell"},"offers":[{"@type":"Offer","name":"Founding (monthly)","price":"29.00","priceCurrency":"USD","availability":"https://schema.org/InStock","url":"https://getbidbell.com/#pricing","priceSpecification":{"@type":"UnitPriceSpecification","price":"29.00","priceCurrency":"USD","billingDuration":"P1M"}},{"@type":"Offer","name":"Standard (monthly)","price":"39.00","priceCurrency":"USD","availability":"https://schema.org/InStock","url":"https://getbidbell.com/#pricing","priceSpecification":{"@type":"UnitPriceSpecification","price":"39.00","priceCurrency":"USD","billingDuration":"P1M"}},{"@type":"Offer","name":"Standard (yearly)","price":"390.00","priceCurrency":"USD","availability":"https://schema.org/InStock","url":"https://getbidbell.com/#pricing","priceSpecification":{"@type":"UnitPriceSpecification","price":"390.00","priceCurrency":"USD","billingDuration":"P1Y"}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Where do the bids come from?","acceptedAnswer":{"@type":"Answer","text":"From SAM.gov, the official US government website where federal agencies publish contract opportunities. Past contract winners and amounts come from USAspending.gov, the official public database of federal spending. Every bid in your email links to its official notice so you can check it."}},{"@type":"Question","name":"Are you part of the government?","acceptedAnswer":{"@type":"Answer","text":"No. BidBell is a private alert service. It is not affiliated with SAM.gov, the General Services Administration or any government agency. Registering in SAM.gov is free; we never charge for it."}},{"@type":"Question","name":"Do I need to be registered in SAM.gov?","acceptedAnswer":{"@type":"Answer","text":"To win a federal contract, yes: a free registration at sam.gov. You can get BidBell alerts while your registration is in progress."}},{"@type":"Question","name":"How many bids will I get?","acceptedAnswer":{"@type":"Answer","text":"It depends on your trade and states. Some days there are none, and then we send nothing. We never pad the email with bids you cannot use."}},{"@type":"Question","name":"What does \"likely current contract\" mean?","acceptedAnswer":{"@type":"Answer","text":"We find the previous contract for a site by matching the location and description in public award records. Most matches are exact; some are close, and some bids have no match. We label them honestly and link to the official record so you can check."}},{"@type":"Question","name":"How do I pay, and how do I cancel?","acceptedAnswer":{"@type":"Answer","text":"After your free 2 weeks we email you a secure checkout link from Lemon Squeezy, our payment provider. You can cancel anytime from the link in your receipt or by replying to any BidBell email; you keep access until the end of the period you paid for."}},{"@type":"Question","name":"Is my information safe?","acceptedAnswer":{"@type":"Answer","text":"We collect only what we need to send your alerts: your name, business details, trades, states and eligibility. We never see your card, we do not sell data, and this website has no tracking or advertising cookies."}}]}</script>
 </head>
 <body>
-<header><div class="wrap">
-  <a class="logo" href="/">BidBell</a>
-  <nav><a href="#how">How it works</a><a href="#pricing">Pricing</a><a href="#faq">FAQ</a><a href="mailto:hello@getbidbell.com">Contact</a></nav>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-head"><div class="wrap">
+  <a class="logo" href="/"><svg viewBox="0 0 32 32" aria-hidden="true" focusable="false"><path fill="currentColor" d="M16 3a2 2 0 0 1 2 2v.7a8.5 8.5 0 0 1 6.5 8.3v5.2l2.3 3.3a1 1 0 0 1-.8 1.5H6a1 1 0 0 1-.8-1.5l2.3-3.3V14a8.5 8.5 0 0 1 6.5-8.3V5a2 2 0 0 1 2-2Zm-3.2 22h6.4a3.2 3.2 0 0 1-6.4 0Z"/></svg>BidBell</a>
+  <nav class="nav" aria-label="Main">
+    <a href="/#what-you-get">What you get</a><a href="/#pricing">Pricing</a><a href="/cleaning-bids/">Cleaning bids</a><a href="/#faq">FAQ</a>
+    <a class="btn small" href="/start/">Start 2 weeks free</a>
+  </nav>
 </div></header>
+<main id="main">
 
-<main>
 <div class="wrap hero">
-  <h1>The right government bids. Every morning. Nothing else.</h1>
-  <p>BidBell reads every new federal contract notice for cleaning, grounds, snow removal and roofing work, and emails you only the ones in your states that your business is allowed to bid on.</p>
-  <a class="btn" href="mailto:hello@getbidbell.com?subject=Free%202-week%20trial&amp;body=Business%20name%3A%0AStates%20I%20cover%3A%0ATrade%3A%0ASmall%20business%20%2F%20veteran-owned%20%2F%20HUBZone%20%2F%208(a)%20%2F%20women-owned%3A">Start 2 weeks free</a>
-  <a class="btn alt" href="#sample">See a real alert</a>
+  <p class="eyebrow">For US cleaning companies</p>
+  <h1>Government cleaning contracts you can actually bid on. Every morning.</h1>
+  <p class="lead">BidBell checks every new federal contract notice and emails you only the janitorial, carpet and window-cleaning bids in your states that your business is allowed to bid on, with who holds each job now and what they were paid.</p>
+  <div class="cta-row"><a class="btn" href="/start/">Start 2 weeks free</a><a class="btn ghost" href="#sample">See a real alert</a></div>
+  <p class="small muted">No card needed &middot; Cancel anytime &middot; Not affiliated with SAM.gov or the US government</p>
 </div>
 
-<section id="how"><div class="wrap">
-  <h2>How it works</h2>
+<section id="how" aria-labelledby="how-h"><div class="wrap">
+  <h2 id="how-h">How it works</h2>
   <div class="grid">
-    <div class="card"><div class="num">1</div><h3>Tell us once</h3><p>Your trade, the states you work in, and whether you are small business, veteran-owned, HUBZone, 8(a) or women-owned.</p></div>
-    <div class="card"><div class="num">2</div><h3>We check every notice</h3><p>Each morning we read the new contract notices published on SAM.gov and match them to your business.</p></div>
-    <div class="card"><div class="num">3</div><h3>One short email</h3><p>At about 6am Eastern you get only the bids you can use: where the work is, who may bid, the deadline and a link to the official notice.</p></div>
+    <div class="card"><div class="step" aria-hidden="true">1</div><h3>Tell us once</h3><p>Your trade, the states you work in, and whether you are a small business, HUBZone, service-disabled veteran-owned, 8(a) or women-owned.</p></div>
+    <div class="card"><div class="step" aria-hidden="true">2</div><h3>We check every notice</h3><p>Each morning we read the new federal contract notices on SAM.gov, find where the work really is and who may bid, and match them to your business.</p></div>
+    <div class="card"><div class="step" aria-hidden="true">3</div><h3>One short email</h3><p>Around 6am Eastern you get only the bids you can use, each with the deadline, a plain-English next step and a link to the official notice.</p></div>
   </div>
 </div></section>
 
-<section id="sample"><div class="wrap sample">
+<section id="sample" aria-labelledby="sample-h"><div class="wrap two">
   <div>
-    <h2>A real alert</h2>
-    <p>This email was built from live SAM.gov notices for a roofing company working in six Northeast states. Every bid, deadline and set-aside in it is real.</p>
-    <ul>
-      <li><b>Real work site</b>: the place of performance, not the contracting office in another state.</li>
-      <li><b>Who can bid</b>: bids reserved for groups you are not in are left out.</li>
-      <li><b>No noise</b>: award notices, duplicates and bids closing in under 2 days are removed.</li>
-      <li><b>Nothing on quiet days</b>: no matches, no email.</li>
+    <h2 id="sample-h">A real alert</h2>
+    <p>This email was built from live SAM.gov notices on September 29, 2026, for a small cleaning company working in Massachusetts, Illinois and Kansas. Every bid, deadline and reference number in it is real.</p>
+    <ul class="ticks">
+      <li><strong>Real work site</strong>, not the contracting office in another state.</li>
+      <li><strong>Who can bid</strong>: bids reserved for groups you are not in are left out.</li>
+      <li><strong>No noise</strong>: award notices, duplicates and bids closing in under 2 days are removed.</li>
+      <li><strong>Nothing on quiet days</strong>: no matches, no email.</li>
     </ul>
+    <details><summary>Text version of this alert</summary>
+      <p>4 janitorial and cleaning bids, all open for small businesses:</p>
+      <ul>
+        <li>Kansas FY27 Mass Solicitation, Custodial Services (Army), Lawrence, Kansas. Respond by Oct 2, 2026. Ref W912DQ27QA001.</li>
+        <li>Housekeeping Services, Fermilab (Department of Energy), Illinois. Respond by Oct 9, 2026. Ref DH-377725.</li>
+        <li>Janitorial Services at the FMH SSC (FAA), Falmouth, Massachusetts. Respond by Oct 20, 2026. Ref 697DCK-27-R-00004.</li>
+        <li>Janitorial Services at the MVY ATCT (FAA), Massachusetts. Respond by Oct 22, 2026. Ref 697DCK-27-R-00001.</li>
+      </ul>
+    </details>
   </div>
-  <img src="sample-alert.jpg" alt="Sample BidBell alert email listing three open roofing bids in Ohio and Maryland with deadlines and set-asides" width="680" height="1046">
+  <picture><source srcset="/sample-alert.webp" type="image/webp"><img class="shot" src="/sample-alert.jpg" width="720" height="1051" loading="lazy" decoding="async" alt="A BidBell alert email listing four open federal janitorial bids in Kansas, Illinois and Massachusetts, each showing the work site, who can bid, the deadline and a link to the official notice."></picture>
 </div></section>
 
-<section id="pricing"><div class="wrap">
-  <h2>Pricing</h2>
+<section id="what-you-get" aria-labelledby="get-h"><div class="wrap">
+  <p class="eyebrow">What your $29 buys</p>
+  <h2 id="get-h">Know what a job is worth before you bid</h2>
   <div class="grid">
-    <div class="card price">
-      <h3>Founding member</h3>
-      <div class="big">$29<span style="font-size:18px">/month</span></div>
-      <ul><li>Price locked for as long as you stay</li><li>For our first 20 customers</li><li>Daily alerts for your trade and up to 10 states</li><li>Cancel anytime</li></ul>
-    </div>
-    <div class="card">
-      <h3>Standard</h3>
-      <div class="big" style="font:800 40px Georgia,serif">$39<span style="font-size:18px">/month</span></div>
-      <ul><li>Same service after the founding spots are gone</li><li>Or $390 a year</li><li>Cancel anytime</li></ul>
-    </div>
-    <div class="card">
-      <h3>Try it first</h3>
-      <p>Every plan starts with <b>2 weeks free, no card needed</b>. You only pay if the alerts are useful to you.</p>
-      <p style="margin-top:14px"><a class="btn" href="mailto:hello@getbidbell.com?subject=Free%202-week%20trial">Start free</a></p>
-    </div>
+    <div class="card"><h3>Only bids you can win</h3><p>Filtered by your trade, your states and your eligibility: small business, HUBZone, SDVOSB, 8(a), WOSB.</p></div>
+    <div class="card"><h3>Who has the job now, and what they were paid</h3><p>From USAspending.gov, next to each bid: the likely current contractor, the contract total and roughly what it is worth per year.</p></div>
+    <div class="card"><h3>Contracts ending soon</h3><p>Contracts in your states that end in the next 3 to 6 months, so you can prepare before the new bid is even posted.</p></div>
+    <div class="card"><h3>Reminders</h3><p>A reminder 3 days before each deadline and site visit for the bids in your alerts.</p></div>
   </div>
-  <p style="color:var(--quiet);font-size:15px;margin-top:14px">Payments are handled securely by Lemon Squeezy, our payment provider. Prices in US dollars; sales tax is added where it applies.</p>
+  <h3 class="mt">Two real examples from bids open on September 29, 2026</h3>
+  <div class="table-wrap"><table class="stack">
+    <caption>Likely current contract for two open janitorial bids</caption>
+    <thead><tr><th scope="col">Open bid</th><th scope="col">Likely current contractor</th><th scope="col">Contract total</th><th scope="col">Period</th><th scope="col">About per year</th></tr></thead>
+    <tbody>
+      <tr><td data-label="Open bid">Chattanooga National Cemetery janitorial (VA), respond by Oct 5, 2026</td><td data-label="Likely current contractor">KB Federal Maintenance Inc</td><td data-label="Contract total">$302,108</td><td data-label="Period">May 2021 &ndash; Apr 2026</td><td data-label="About per year">~$60,000</td></tr>
+      <tr><td data-label="Open bid">FAA janitorial, Falmouth, Massachusetts, respond by Oct 20, 2026</td><td data-label="Likely current contractor">Eco-Friendly Cleaning Specialist LLC</td><td data-label="Contract total">$85,441</td><td data-label="Period">Apr 2023 &ndash; Dec 2026</td><td data-label="About per year">~$23,000</td></tr>
+    </tbody></table></div>
+  <p class="small muted">Source: <a href="https://www.usaspending.gov/search" rel="noopener noreferrer">USAspending.gov</a> award records, checked September 29, 2026. &ldquo;Contract total&rdquo; is the amount the government committed (obligated) to the contract; companies are paid in instalments as they invoice for work done. Matches are labelled &ldquo;likely current contract&rdquo; and link to the official record.</p>
 </div></section>
 
-<section id="faq"><div class="wrap">
-  <h2>Questions</h2>
-  <details><summary>Where do the bids come from?</summary><p>From SAM.gov, the official US government website where federal agencies publish contract opportunities. Every bid in your email links to its official notice so you can check it yourself.</p></details>
-  <details><summary>Are you part of the government?</summary><p>No. BidBell is a private alert service and is not affiliated with SAM.gov, GSA or any government agency. SAM.gov registration is free; we never charge for it.</p></details>
-  <details><summary>Do I need to be registered in SAM.gov?</summary><p>To bid on federal contracts, yes: a free registration at sam.gov. You can receive BidBell alerts while your registration is in progress.</p></details>
-  <details><summary>How many bids will I get?</summary><p>It depends on your trade and states. Some days there are none, and then we send nothing. We do not pad the email with bids you cannot use.</p></details>
-  <details><summary>How do I cancel?</summary><p>Anytime, from the link in your payment receipt or by replying to any BidBell email. You keep access until the end of the month you paid for.</p></details>
+<section id="compare" aria-labelledby="compare-h"><div class="wrap">
+  <h2 id="compare-h">Free pages or the daily alert</h2>
+  <p class="muted">Our <a href="/cleaning-bids/">free cleaning-bid pages</a> list every open federal cleaning notice by state, once a week. The paid alert does the work for you.</p>
+  <div class="table-wrap"><table class="stack">
+    <caption>What each option includes</caption>
+    <thead><tr><th scope="col">Feature</th><th scope="col">Free state pages</th><th scope="col">$29 daily alert</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">Open bids</th><td data-label="Free state pages">Title, work site, deadline; updated weekly</td><td data-label="$29 daily alert" class="yes">Every morning, around 6am Eastern</td></tr>
+      <tr><th scope="row">Filtered for your business</th><td data-label="Free state pages">No, everything in the state</td><td data-label="$29 daily alert" class="yes">Your trade, states and eligibility</td></tr>
+      <tr><th scope="row">Who has the job now and what they were paid</th><td data-label="Free state pages">No</td><td data-label="$29 daily alert" class="yes">Yes, where a match is found</td></tr>
+      <tr><th scope="row">Contracts ending in the next 3&ndash;6 months</th><td data-label="Free state pages">No</td><td data-label="$29 daily alert" class="yes">Yes</td></tr>
+      <tr><th scope="row">Deadline and site-visit reminders</th><td data-label="Free state pages">No</td><td data-label="$29 daily alert" class="yes">Yes</td></tr>
+    </tbody></table></div>
+</div></section>
+
+<section id="pricing" aria-labelledby="pricing-h"><div class="wrap">
+  <h2 id="pricing-h">Simple pricing</h2>
+  <div class="grid">
+    <div class="card featured"><p class="badge">First 20 customers</p><h3>Founding</h3><p class="price">$29<span>/month</span></p>
+      <ul class="ticks"><li>Price locked for as long as you stay subscribed</li><li>One trade group, up to 10 states or nationwide</li><li>Everything in the daily alert</li><li>Cancel anytime</li></ul></div>
+    <div class="card"><h3>Standard</h3><p class="price">$39<span>/month</span></p>
+      <ul class="ticks"><li>Or $390 a year (2 months free)</li><li>Same service once founding places are taken</li><li>Cancel anytime</li></ul></div>
+    <div class="card"><h3>Try it first</h3><p>Every plan starts with <strong>2 weeks free, no card needed</strong>. You pay only if the alerts are useful to you.</p>
+      <div class="cta-row"><a class="btn" href="/start/">Start free</a></div></div>
+  </div>
+  <p class="small muted">Prices in US dollars. Payments are handled by Lemon Squeezy, our merchant of record, which adds sales tax where it applies. See our <a href="/refunds/">refund policy</a>.</p>
+</div></section>
+
+<section id="data" aria-labelledby="data-h"><div class="wrap narrow">
+  <h2 id="data-h">How we get our data</h2>
+  <p><strong>Bids</strong> come from <a href="https://sam.gov/" rel="noopener noreferrer">SAM.gov</a>, where federal agencies are required to publish contract opportunities. <strong>Past winners and amounts</strong> come from <a href="https://www.usaspending.gov/" rel="noopener noreferrer">USAspending.gov</a>, the official public database of federal awards. Both are free, public sources run by the US government.</p>
+  <p>What BidBell adds is the sorting: the real work site, who may bid, plain-English next steps, the likely current contractor and what the job is worth. Notices can change or be withdrawn after we send them, so always read the official notice before you bid. See our <a href="/disclaimer/">disclaimer</a>.</p>
+</div></section>
+
+<section id="about" aria-labelledby="about-h"><div class="wrap narrow">
+  <h2 id="about-h">Who runs BidBell</h2>
+  <p>BidBell is run by [YOUR FULL LEGAL NAME]. Mailing address: 628 W Broadway St, Ste 203, North Little Rock, AR 72114, United States. Email: <a href="mailto:hello@getbidbell.com">hello@getbidbell.com</a>. We answer every email.</p>
+</div></section>
+
+<section id="faq" aria-labelledby="faq-h"><div class="wrap narrow">
+  <h2 id="faq-h">Questions</h2>
+  <details><summary>Where do the bids come from?</summary><p>From SAM.gov, the official US government website where federal agencies publish contract opportunities. Past contract winners and amounts come from USAspending.gov, the official public database of federal spending. Every bid in your email links to its official notice so you can check it.</p></details><details><summary>Are you part of the government?</summary><p>No. BidBell is a private alert service. It is not affiliated with SAM.gov, the General Services Administration or any government agency. Registering in SAM.gov is free; we never charge for it.</p></details><details><summary>Do I need to be registered in SAM.gov?</summary><p>To win a federal contract, yes: a free registration at sam.gov. You can get BidBell alerts while your registration is in progress.</p></details><details><summary>How many bids will I get?</summary><p>It depends on your trade and states. Some days there are none, and then we send nothing. We never pad the email with bids you cannot use.</p></details><details><summary>What does &quot;likely current contract&quot; mean?</summary><p>We find the previous contract for a site by matching the location and description in public award records. Most matches are exact; some are close, and some bids have no match. We label them honestly and link to the official record so you can check.</p></details><details><summary>How do I pay, and how do I cancel?</summary><p>After your free 2 weeks we email you a secure checkout link from Lemon Squeezy, our payment provider. You can cancel anytime from the link in your receipt or by replying to any BidBell email; you keep access until the end of the period you paid for.</p></details><details><summary>Is my information safe?</summary><p>We collect only what we need to send your alerts: your name, business details, trades, states and eligibility. We never see your card, we do not sell data, and this website has no tracking or advertising cookies.</p></details>
+</div></section>
+
+<section aria-labelledby="final-h"><div class="wrap narrow">
+  <h2 id="final-h">See your first alert tomorrow morning</h2>
+  <p class="muted">Tell us your trade and states in 2 minutes. Your free 2 weeks start the next morning.</p>
+  <div class="cta-row"><a class="btn" href="/start/">Start 2 weeks free</a></div>
 </div></section>
 </main>
-
-<footer><div class="wrap">
-  <p><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="refunds.html">Refunds</a><a href="mailto:hello@getbidbell.com">hello@getbidbell.com</a></p>
-  <p>BidBell is operated from Nairobi, Kenya. Not affiliated with SAM.gov or the US government. &copy; 2026 BidBell.</p>
+<footer class="site-foot"><div class="wrap">
+  <nav aria-label="Footer">
+    <a href="/terms/">Terms</a><a href="/privacy/">Privacy</a><a href="/refunds/">Refunds</a><a href="/acceptable-use/">Acceptable use</a><a href="/disclaimer/">Disclaimer</a><a href="/email-policy/">Email policy</a><a href="/cleaning-bids/">Cleaning bids by state</a><a href="mailto:hello@getbidbell.com">hello@getbidbell.com</a>
+  </nav>
+  <p>BidBell is run by [YOUR FULL LEGAL NAME]. Mailing address: 628 W Broadway St, Ste 203, North Little Rock, AR 72114, United States.</p>
+  <p>Not affiliated with SAM.gov, GSA or any government agency. Page updated September 29, 2026. &copy; 2026 BidBell.</p>
 </div></footer>
 </body>
 </html>

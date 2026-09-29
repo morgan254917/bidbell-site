@@ -1,0 +1,15 @@
+{
+  "owner_name": "[YOUR FULL LEGAL NAME]",
+  "mailing_address": "628 W Broadway St, Ste 203, North Little Rock, AR 72114, United States",
+  "address_parts": {"street": "628 W Broadway St, Ste 203", "city": "North Little Rock", "region": "AR", "postal": "72114", "country": "US"},
+  "email": "hello@getbidbell.com",
+  "domain": "getbidbell.com",
+  "form_url": "",
+  "founding_price": 29,
+  "standard_price": 39,
+  "annual_price": 390,
+  "founding_spots": 20,
+  "legal_updated": "2026-09-30",
+  "governing_law": "the State of Arkansas, United States",
+  "venue": "the state or federal courts located in Pulaski County, Arkansas"
+}

@@ -1,0 +1,28 @@
+# Every Monday 07:00 UTC: refresh the free cleaning-bid pages from SAM.gov public data, rebuild the site, publish.
+# Public data only. This project must never contain secrets, customer data or email lists.
+name: Weekly cleaning bids
+on:
+  schedule:
+    - cron: '0 7 * * 1'
+  workflow_dispatch: {}
+permissions:
+  contents: write
+concurrency: site-build
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - name: Download open cleaning bids from SAM.gov
+        run: python3 tools/update_bids.py
+      - name: Rebuild every page and the sitemap
+        run: python3 tools/build.py
+      - name: Publish
+        run: |
+          git config user.name "bidbell-bot"; git config user.email "bot@users.noreply.github.com"
+          git add -A
+          git commit -m "Weekly cleaning bids $(date -u +%F)" || { echo "no changes"; exit 0; }
+          git push
