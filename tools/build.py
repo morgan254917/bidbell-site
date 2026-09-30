@@ -819,7 +819,7 @@ def legal():
 <p>New customers get a free 2-week trial. We do not ask for a card to start it. If you do not subscribe, your alerts stop at the end of the trial and nothing is charged.</p>
 <h2>3. Plans, payment and taxes</h2>
 {lawyer('Merchant of record / payments', 'Terms 3: Paddle as reseller and merchant of record (Paddle-required wording), seller identity as a sole proprietor, billing in advance, automatic renewal, and price-change notice.')}
-<p>BidBell is operated by {E(C["owner_name"])}, a sole proprietor (not a registered company) trading as BidBell, at {E(C["mailing_address"])}.</p>
+<p>BidBell is operated from Kenya by {E(C["owner_name"])}, a sole proprietor (not a registered company) trading as BidBell. Our US mailing address is {E(C["mailing_address"])}.</p>
 <p>Our order process is conducted by our online reseller Paddle.com. Paddle.com is the Merchant of Record for all our orders. Paddle provides all customer service inquiries and handles returns.</p>
 <p>Paid plans are ${sp}/month or ${ap}/year, in US dollars, billed in advance. Paddle charges your payment method, sends your receipt and collects any sales tax, which is shown at checkout. Paddle's own terms apply to the purchase. We never see or store your card details.</p>
 <p>Your subscription renews automatically at the end of each month or year, and the plan price is charged for the next period, until you cancel. We may change our prices; we will email you at least 30 days before a change affects your next renewal, and you can cancel before it does.</p>
@@ -891,7 +891,7 @@ def legal():
 <h2>9. Changes</h2>
 <p>We will post changes here and email subscribers about material changes before they take effect.</p>
 <h2>10. Contact</h2>
-<p>For privacy questions or requests, email {mail} or write to {E(C["owner_name"])}, BidBell, {E(C["mailing_address"])}.{phone}</p>''')
+<p>For privacy questions or requests, email {mail} or write to {E(C["owner_name"])}, BidBell, at our US mailing address: {E(C["mailing_address"])}. BidBell is operated from Kenya.{phone}</p>''')
 
     legal_page('refunds/', 'Refund policy', 'BidBell refund policy: a 30-day money-back guarantee on every payment, and how to cancel.', f'''
 {lawyer('Refunds and automatic renewal', 'Refund policy and Terms 3-4: 30-day money-back guarantee, automatic-renewal disclosures and cancellation by email, under state automatic-renewal laws (for example California).')}
