@@ -1,10 +1,12 @@
-# Every Monday 07:00 UTC: refresh the free cleaning-bid pages from SAM.gov public data, rebuild the site, publish.
+# Every Monday 07:07 UTC: refresh the free cleaning-bid pages from SAM.gov public data, rebuild the site, publish.
+# Every day 07:37 UTC: rebuild only, so notices whose deadline has passed drop off the "open bids" pages.
 # Public data only. This project must never contain secrets, customer data or email lists.
 name: Weekly cleaning bids
 on:
   schedule:
-    - cron: '0 7 * * 1'
-  workflow_dispatch: {}
+    - cron: '7 7 * * 1'     # Mondays: new bid data + rebuild (off the hour: top-of-hour runs are often dropped)
+    - cron: '37 7 * * *'    # daily: rebuild only
+  workflow_dispatch: {}     # "Run workflow" button: new bid data + rebuild
 permissions:
   contents: write
 concurrency: site-build
@@ -17,6 +19,7 @@ jobs:
       - uses: actions/setup-python@v5
         with: { python-version: '3.12' }
       - name: Download open cleaning bids from SAM.gov
+        if: github.event_name == 'workflow_dispatch' || github.event.schedule == '7 7 * * 1'
         run: python3 tools/update_bids.py
       - name: Rebuild every page and the sitemap
         run: python3 tools/build.py
@@ -24,5 +27,6 @@ jobs:
         run: |
           git config user.name "bidbell-bot"; git config user.email "bot@users.noreply.github.com"
           git add -A
-          git commit -m "Weekly cleaning bids $(date -u +%F)" || { echo "no changes"; exit 0; }
-          git push
+          git commit -m "Cleaning bids $(date -u +%F)" || { echo "no changes"; exit 0; }
+          for i in 1 2 3 4 5; do git pull -q --rebase && git push -q && exit 0; sleep $((i * 10)); done
+          echo "::error::could not publish"; exit 1
