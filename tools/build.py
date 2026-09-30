@@ -401,7 +401,7 @@ def home():
     </details>
   </div>
   <div>
-    <div class="shot-frame"><picture><source srcset="/sample-alert.webp" type="image/webp"><img src="/sample-alert.jpg" width="720" height="1759" loading="lazy" decoding="async" alt="A BidBell alert email listing four open federal janitorial bids in Kansas, Illinois and Massachusetts, each showing the deadline, who can bid, and a button to the official notice."></picture></div>
+    <div class="shot-frame"><picture><source srcset="/sample-alert.webp" type="image/webp"><img src="/sample-alert.jpg" width="720" height="1873" loading="lazy" decoding="async" alt="A BidBell alert email listing three open federal janitorial bids in Illinois and Massachusetts, each showing the deadline, who can bid and a button to the official notice; two also show the site visit quoted from the notice and the likely current contract from USAspending.gov."></picture></div>
     <p class="photo-cap"><a href="/sample-alert.jpg">Open the full-size alert</a></p>
   </div>
 </div></section>
