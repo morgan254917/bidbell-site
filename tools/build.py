@@ -199,10 +199,12 @@ FAQ = [
     ('Do I need to be registered in SAM.gov?',
      'To win a federal contract, yes: a free registration at sam.gov. You can get BidBell alerts while your registration is in progress.'),
     ('How many bids will I get?',
-     'It depends on your trade and states. Some days there are none, and then we send nothing. We never pad the email with bids you cannot use.'),
+     'It depends on your trade and states. Some days there are none. Then we only write if a reminder for a bid we sent you is due, or on Mondays with contracts ending soon in your states. We never pad the email with bids you cannot use.'),
     ('What does "likely current contract" mean?',
-     'We find the previous contract for a site by matching the location and description in public award records. '
-     'Most matches are exact; some are close, and some bids have no match. We label them honestly and link to the official record so you can check.'),
+     'We look in USAspending.gov, the official record of federal spending, for the contract covering the same work: the same agency, '
+     'the same kind of work and the same work site. If the notice itself names the previous contract number, we use that. '
+     'We show a contract only when one clearly fits, label it "likely" unless the notice names it, and link to the official record so you can check. '
+     'When no contract clearly fits, we show nothing rather than guess.'),
     ('How do I pay, and how do I cancel?',
      'After your free 2 weeks we email you a secure checkout link from Lemon Squeezy, our payment provider. '
      'You can cancel anytime from the link in your receipt or by replying to any BidBell email; you keep access until the end of the period you paid for.'),
@@ -286,9 +288,9 @@ def home():
         ('filter', 'Only bids you can win', 'Filtered by your trade, your states and your eligibility: small business, HUBZone, SDVOSB, 8(a) or women-owned.'),
         ('pin', 'Where the work really is', 'We list the actual work site, not the contracting office three states away.'),
         ('doc', 'Plain English', 'What the job is, where it is and what to do next. No government shorthand, no digging through PDFs.'),
-        ('dollar', 'What the job is worth', 'The likely current contractor and what the government paid them, from public USAspending.gov records.'),
-        ('calendar', 'Contracts ending soon', 'Contracts in your states that end in the next 3 to 6 months, so you can prepare before the new bid is posted.'),
-        ('clock', 'Deadline reminders', 'A reminder 3 days before each deadline and site visit for the bids in your alerts.'),
+        ('dollar', 'What the job is worth', 'Where public records clearly show it: who holds the job now and what the government has paid, from USAspending.gov.'),
+        ('calendar', 'Contracts ending soon', 'Every Monday: contracts in your states that end in 3 to 6 months with no option years left, so you can prepare before the new bid is posted.'),
+        ('clock', 'Deadline reminders', 'A reminder 3 days before each deadline, and before each site visit stated in the notice, for the bids in your alerts.'),
     ]
     feat_html = ''.join(f'<div class="feature"><div class="icon">{ICON[i]}</div><h3>{t}</h3><p>{d}</p></div>' for i, t, d in feats)
     plan_items = lambda items: '<ul>' + ''.join(f'<li>{ICON["check"]}<span>{x}</span></li>' for x in items) + '</ul>'
@@ -326,7 +328,7 @@ def home():
     <ul class="ticks">
       <li>{ICON['check']}<span>Small business, HUBZone, SDVOSB, 8(a) and WOSB set-asides handled for you</span></li>
       <li>{ICON['check']}<span>Award notices, duplicates and bids closing in under 2 days removed</span></li>
-      <li>{ICON['check']}<span>No matches today? No email. We never pad it.</span></li>
+      <li>{ICON['check']}<span>No matching bids today? We never pad the email with bids you can&rsquo;t use.</span></li>
     </ul>
   </div>
   <div class="panel">
@@ -345,10 +347,10 @@ def home():
   <div>
     <p class="eyebrow">Contract history</p>
     <h2 id="value-h">Know what a job is worth before you bid.</h2>
-    <p class="lead">Next to each bid, BidBell shows the company that most likely holds the job now and what the government paid, from public USAspending.gov records. Price your bid with real numbers.</p>
+    <p class="lead">Next to each bid, where public records clearly show it, BidBell shows the company that holds the job now (or held it last) and what the government has paid, from USAspending.gov. Price your bid with real numbers.</p>
     <ul class="ticks">
-      <li>{ICON['check']}<span>Likely current contractor, contract total and period</span></li>
-      <li>{ICON['check']}<span>Contracts in your states ending in the next 3 to 6 months</span></li>
+      <li>{ICON['check']}<span>Current or previous contractor, contract total and period</span></li>
+      <li>{ICON['check']}<span>Every Monday: contracts in your states ending in 3 to 6 months</span></li>
       <li>{ICON['check']}<span>A link to the official record, so you can check it yourself</span></li>
     </ul>
   </div>
@@ -356,7 +358,8 @@ def home():
     <p class="panel-title">Open bid &middot; responses due Oct 5, 2026</p>
     <div class="bid-name panel-bid">Janitorial Services, Chattanooga National Cemetery</div>
     <p class="bid-meta panel-meta">Department of Veterans Affairs &middot; Chattanooga, TN</p>
-    <div class="kv"><span>Likely current contractor</span><b>KB Federal Maintenance Inc</b></div>
+    <p class="panel-title">Likely previous contract, ended Apr 2026</p>
+    <div class="kv"><span>Contractor</span><b>KB Federal Maintenance Inc</b></div>
     <div class="kv"><span>Contract total</span><b>$302,108</b></div>
     <div class="kv"><span>Period</span><b>May 2021 &ndash; Apr 2026</b></div>
     <div class="kv"><span>About per year</span><b class="big-number">~$60,000</b></div>
@@ -482,7 +485,7 @@ def home():
                                       'priceSpecification': {'@type': 'UnitPriceSpecification', 'price': f'{price}.00',
                                                              'priceCurrency': 'USD', 'billingDuration': dur}}
     product = {'@context': 'https://schema.org', '@type': 'Product', 'name': 'BidBell daily government bid alerts',
-               'description': 'A daily email of US federal cleaning contract bids filtered by trade, state and eligibility, with the likely current contractor and contract amount.',
+               'description': 'A daily email of US federal cleaning contract bids filtered by trade, state and eligibility, with contract history, contracts ending soon and deadline reminders.',
                'brand': {'@type': 'Brand', 'name': 'BidBell'},
                'offers': [offer('Monthly', sp, 'P1M'), offer('Yearly', ap, 'P1Y')]}
     faqld = {'@context': 'https://schema.org', '@type': 'FAQPage',
@@ -801,7 +804,7 @@ def legal():
 <h2>Data can change</h2>
 <p>We use public government data. Notices can be incomplete, published late, amended or withdrawn after we send them, and deadlines are set in each notice's own time zone. Always read the full official notice and its attachments on SAM.gov before relying on anything we send.</p>
 <h2>Matches are estimates</h2>
-<p>Work sites, eligibility, and especially the &ldquo;likely current contract&rdquo; and amounts are our best match from public records. They can be wrong or missing. Contract totals are the amounts the government committed (obligated) and can include option years or later changes.</p>
+<p>Work sites, eligibility, site-visit dates read from notice text, and especially the &ldquo;likely current contract&rdquo;, the contracts shown as ending soon and their amounts are our best reading of public records. They can be wrong or missing, and an agency can extend a contract or change its plans. Contract totals are the amounts the government committed (obligated) and can include option years or later changes. Reminders use the notice as it stands when we check it; the official notice and its attachments are always the authority.</p>
 <h2>No advice, no guarantee</h2>
 <p>Nothing from BidBell is legal, financial, tax or bidding advice. We do not guarantee that you will find, bid on or win any contract.</p>''')
 
