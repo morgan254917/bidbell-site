@@ -174,7 +174,7 @@ def bid_table(bids, caption):
 def cta_box(heading='Get the right bids every morning instead'):
     return f'''<div class="cta-band">
   <h2>{heading}</h2>
-  <p>This page is a free weekly snapshot. BidBell subscribers get, every morning around 6 AM Eastern, only the bids in their states that their business is allowed to bid on.</p>
+  <p>This page is a free weekly snapshot. BidBell subscribers get, every morning around 6 AM their time, only the bids in their states that their business is allowed to bid on.</p>
   <div class="cta-row"><a class="btn light" href="{E(start_url())}">Start 14 days free {ICON['arrow']}</a></div>
   {checks(['No card required', f"${C['standard_price']}/month after, or ${C['annual_price']}/year", 'Cancel anytime'])}
 </div>'''
@@ -372,12 +372,12 @@ def home():
   <div class="steps">
     <div class="step-card"><span class="time">2 minutes</span><div class="step-num">1</div><h3>Tell us about your business</h3><p>Your trade, the states you work in, and whether you are a small business, HUBZone, veteran-owned, 8(a) or women-owned.</p></div>
     <div class="step-card"><span class="time">Every morning</span><div class="step-num">2</div><h3>We read every new notice</h3><p>We check the new federal contract notices on SAM.gov, find where the work really is and who may bid, and match them to you.</p></div>
-    <div class="step-card"><span class="time">~6 AM Eastern</span><div class="step-num">3</div><h3>One short email</h3><p>Only the bids you can use, each with the deadline, who can bid, a plain-English next step and the official link.</p></div>
+    <div class="step-card"><span class="time">~6 AM your time</span><div class="step-num">3</div><h3>One short email</h3><p>Only the bids you can use, each with the deadline, who can bid, a plain-English next step and the official link.</p></div>
   </div>
   <div class="stats mt">
     <div><strong>50 + DC</strong><span>Every state and Washington, D.C. covered</span></div>
     <div><strong>3 trades</strong><span>Janitorial, carpet, and window &amp; exterior cleaning</span></div>
-    <div><strong>6 AM</strong><span>Eastern, every morning with new matches</span></div>
+    <div><strong>6 AM</strong><span>your time, every morning with new matches</span></div>
     <div><strong>$0</strong><span>For your first 14 days. No card needed.</span></div>
   </div>
 </div></section>
@@ -413,7 +413,7 @@ def home():
     <caption class="sr-only">What each option includes</caption>
     <thead><tr><th scope="col">Feature</th><th scope="col">Free state pages</th><th scope="col">BidBell daily alert</th></tr></thead>
     <tbody>
-      <tr><th scope="row">Open bids</th><td data-label="Free state pages">Title, work site, deadline; updated weekly</td><td data-label="BidBell daily alert" class="yes">Every morning, around 6 AM Eastern</td></tr>
+      <tr><th scope="row">Open bids</th><td data-label="Free state pages">Title, work site, deadline; updated weekly</td><td data-label="BidBell daily alert" class="yes">Every morning, around 6 AM your time</td></tr>
       <tr><th scope="row">Filtered for your business</th><td data-label="Free state pages">No, everything in the state</td><td data-label="BidBell daily alert" class="yes">Your trade, states and eligibility</td></tr>
       <tr><th scope="row">Who has the job now and what they were paid</th><td data-label="Free state pages">No</td><td data-label="BidBell daily alert" class="yes">Yes, where a match is found</td></tr>
       <tr><th scope="row">Contracts ending in the next 3&ndash;6 months</th><td data-label="Free state pages">No</td><td data-label="BidBell daily alert" class="yes">Yes</td></tr>
@@ -572,7 +572,7 @@ def start():
     body = f'''<div class="page-head"><div class="wrap">
   <p class="crumbs"><a href="/">Home</a> / Start free trial</p>
   <h1>Start your free 14 days</h1>
-  <p class="lead">Tell us about your business once. Your first alert arrives the next morning, around 6 AM Eastern. No card needed.</p>
+  <p class="lead">Tell us about your business once. Your first alert arrives the next morning, around 6 AM your time. No card needed.</p>
 </div></div>
 <div class="wrap page"><div class="signup-grid">
   {action}
@@ -581,7 +581,7 @@ def start():
       <h3>What happens next</h3>
       <ol class="next-steps">
         <li><div><b>We confirm your details</b><span>By email, within 1 business day.</span></div></li>
-        <li><div><b>Your alerts start</b><span>The next morning, around 6 AM Eastern, on days with matching bids.</span></div></li>
+        <li><div><b>Your alerts start</b><span>The next morning, around 6 AM your time, on days with matching bids.</span></div></li>
         <li><div><b>Day 12: your summary</b><span>The bids you received, and a secure checkout link: ${C['standard_price']}/month or ${C['annual_price']}/year.</span></div></li>
         <li><div><b>Or do nothing</b><span>Your alerts stop after 14 days. Nothing is charged.</span></div></li>
       </ol>
@@ -595,7 +595,7 @@ def start():
     thanks = f'''<div class="page-head"><div class="wrap">
   <p class="crumbs"><a href="/">Home</a> / <a href="/start/">Start free trial</a> / Done</p>
   <h1>You&rsquo;re in.</h1>
-  <p class="lead">Thanks for signing up for BidBell. We&rsquo;ll confirm your details by email within 1 business day, and your free 14 days of alerts start the next morning, around 6 AM Eastern.</p>
+  <p class="lead">Thanks for signing up for BidBell. We&rsquo;ll confirm your details by email within 1 business day, and your free 14 days of alerts start the next morning, around 6 AM your time.</p>
   <div class="cta-row"><a class="btn" href="/#sample">See what an alert looks like</a><a class="btn ghost" href="/cleaning-bids/">Browse this week&rsquo;s bids</a></div>
   <p class="small muted">Something wrong, or want to change your states? Email <a href="mailto:{C['email']}">{C['email']}</a>.</p>
 </div></div>'''
