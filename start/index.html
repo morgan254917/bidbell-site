@@ -9,29 +9,34 @@
 <title>Start your free 14 days | BidBell</title>
 <meta name="description" content="Start a free 14-day BidBell trial: daily federal cleaning bids for your trade, states and eligibility. No card needed.">
 <link rel="canonical" href="https://getbidbell.com/start/">
-
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="BidBell">
 <meta property="og:title" content="Start your free 14 days | BidBell">
 <meta property="og:description" content="Start a free 14-day BidBell trial: daily federal cleaning bids for your trade, states and eligibility. No card needed.">
 <meta property="og:url" content="https://getbidbell.com/start/">
 <meta property="og:image" content="https://getbidbell.com/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="BidBell: federal cleaning bids you can win, in your inbox around 6 AM. An example alert email lists open bids with their deadlines and who can bid.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#FFFFFF">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preload" href="/fonts/source-serif-4.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/public-sans.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/style.css">
+<script src="/nav.js" defer></script>
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
-<div class="topbar"><b>14 days free</b>, no card needed. Then $39/month, cancel anytime. <a href="/start/">Start your free trial &rarr;</a></div>
 <header class="site-head"><div class="wrap">
   <a class="logo" href="/"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>BidBell</a>
-  <nav class="nav" aria-label="Main">
-    <a href="/#features">Features</a><a href="/#how">How it works</a><a href="/cleaning-bids/">Free bid pages</a><a href="/#pricing">Pricing</a><a href="/#faq">FAQ</a>
-    <a class="btn small" href="/start/">Start free trial</a>
-  </nav>
+  <nav class="nav" aria-label="Main"><a href="/#features">Features</a><a href="/#how">How it works</a><a href="/cleaning-bids/">Free bid pages</a><a href="/#pricing">Pricing</a><a href="/#faq">FAQ</a></nav>
+  <details class="menu">
+    <summary aria-label="Menu"><svg class="i-open" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg><svg class="i-close" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></summary>
+    <nav class="menu-panel" aria-label="Menu"><a href="/#features">Features</a><a href="/#how">How it works</a><a href="/cleaning-bids/">Free bid pages</a><a href="/#pricing">Pricing</a><a href="/#faq">FAQ</a></nav>
+  </details>
 </div></header>
 <main id="main">
 <div class="page-head"><div class="wrap">
@@ -44,26 +49,31 @@
   <div class="form-error" id="form-error" role="alert" hidden></div>
   <fieldset>
     <legend>About you</legend>
+    <p class="hint">Every question is required unless it says optional.</p>
     <div class="fields">
       <div class="field"><label for="f-first">First name</label><input id="f-first" type="text" name="entry.1776956707" required autocomplete="given-name"></div>
-      <div class="field"><label for="f-email">Business email</label><input id="f-email" type="email" name="entry.1786475895" required autocomplete="email" placeholder="you@company.com"></div>
+      <div class="field"><label for="f-email">Business email</label><input id="f-email" type="email" name="entry.1786475895" required autocomplete="email" autocapitalize="off" spellcheck="false" placeholder="you@company.com"></div>
       <div class="field"><label for="f-biz">Business name</label><input id="f-biz" type="text" name="entry.1795417945" required autocomplete="organization"></div>
-      <div class="field"><label for="f-web">Business website <span class="opt">(optional)</span></label><input id="f-web" type="text" inputmode="url" name="entry.1395736645" autocomplete="url" placeholder="yourcompany.com"></div>
+      <div class="field"><label for="f-web">Business website <span class="opt">(optional)</span></label><input id="f-web" type="text" inputmode="url" name="entry.1395736645" autocomplete="url" autocapitalize="off" spellcheck="false" placeholder="yourcompany.com"></div>
     </div>
   </fieldset>
-  <fieldset data-need="1" data-label="the cleaning work you do">
+  <fieldset data-need="1" data-label="the cleaning work you do" aria-describedby="h-trades">
     <legend>What cleaning work do you do?</legend>
-    <p class="hint">Choose all that apply.</p>
+    <p class="hint" id="h-trades">Choose all that apply.</p>
+    <p class="field-error" id="e-trades" role="alert" hidden></p>
     <div class="options"><label class="option"><input type="checkbox" name="entry.49510283" value="Janitorial / custodial"><span>Janitorial / custodial</span></label><label class="option"><input type="checkbox" name="entry.49510283" value="Carpet &amp; upholstery cleaning"><span>Carpet &amp; upholstery cleaning</span></label><label class="option"><input type="checkbox" name="entry.49510283" value="Window &amp; exterior cleaning"><span>Window &amp; exterior cleaning</span></label></div>
   </fieldset>
-  <fieldset data-need="1" data-max="10" data-label="your states">
+  <fieldset data-need="1" data-max="10" data-label="your states" aria-describedby="h-states">
     <legend>Which states do you work in?</legend>
-    <p class="hint">Choose up to 10 states, or Nationwide. Bids are matched to where the work is.</p>
+    <p class="hint" id="h-states">Choose up to 10 states, or Nationwide. Bids are matched to where the work is.</p>
+    <p class="field-error" id="e-states" role="alert" hidden></p>
     <div class="state-box"><label class="all"><input type="checkbox" name="entry.1322471200" value="Nationwide (all states)"> Nationwide (all states)</label><label><input type="checkbox" name="entry.1322471200" value="Alabama"> Alabama</label><label><input type="checkbox" name="entry.1322471200" value="Alaska"> Alaska</label><label><input type="checkbox" name="entry.1322471200" value="Arizona"> Arizona</label><label><input type="checkbox" name="entry.1322471200" value="Arkansas"> Arkansas</label><label><input type="checkbox" name="entry.1322471200" value="California"> California</label><label><input type="checkbox" name="entry.1322471200" value="Colorado"> Colorado</label><label><input type="checkbox" name="entry.1322471200" value="Connecticut"> Connecticut</label><label><input type="checkbox" name="entry.1322471200" value="Delaware"> Delaware</label><label><input type="checkbox" name="entry.1322471200" value="District of Columbia"> District of Columbia</label><label><input type="checkbox" name="entry.1322471200" value="Florida"> Florida</label><label><input type="checkbox" name="entry.1322471200" value="Georgia"> Georgia</label><label><input type="checkbox" name="entry.1322471200" value="Hawaii"> Hawaii</label><label><input type="checkbox" name="entry.1322471200" value="Idaho"> Idaho</label><label><input type="checkbox" name="entry.1322471200" value="Illinois"> Illinois</label><label><input type="checkbox" name="entry.1322471200" value="Indiana"> Indiana</label><label><input type="checkbox" name="entry.1322471200" value="Iowa"> Iowa</label><label><input type="checkbox" name="entry.1322471200" value="Kansas"> Kansas</label><label><input type="checkbox" name="entry.1322471200" value="Kentucky"> Kentucky</label><label><input type="checkbox" name="entry.1322471200" value="Louisiana"> Louisiana</label><label><input type="checkbox" name="entry.1322471200" value="Maine"> Maine</label><label><input type="checkbox" name="entry.1322471200" value="Maryland"> Maryland</label><label><input type="checkbox" name="entry.1322471200" value="Massachusetts"> Massachusetts</label><label><input type="checkbox" name="entry.1322471200" value="Michigan"> Michigan</label><label><input type="checkbox" name="entry.1322471200" value="Minnesota"> Minnesota</label><label><input type="checkbox" name="entry.1322471200" value="Mississippi"> Mississippi</label><label><input type="checkbox" name="entry.1322471200" value="Missouri"> Missouri</label><label><input type="checkbox" name="entry.1322471200" value="Montana"> Montana</label><label><input type="checkbox" name="entry.1322471200" value="Nebraska"> Nebraska</label><label><input type="checkbox" name="entry.1322471200" value="Nevada"> Nevada</label><label><input type="checkbox" name="entry.1322471200" value="New Hampshire"> New Hampshire</label><label><input type="checkbox" name="entry.1322471200" value="New Jersey"> New Jersey</label><label><input type="checkbox" name="entry.1322471200" value="New Mexico"> New Mexico</label><label><input type="checkbox" name="entry.1322471200" value="New York"> New York</label><label><input type="checkbox" name="entry.1322471200" value="North Carolina"> North Carolina</label><label><input type="checkbox" name="entry.1322471200" value="North Dakota"> North Dakota</label><label><input type="checkbox" name="entry.1322471200" value="Ohio"> Ohio</label><label><input type="checkbox" name="entry.1322471200" value="Oklahoma"> Oklahoma</label><label><input type="checkbox" name="entry.1322471200" value="Oregon"> Oregon</label><label><input type="checkbox" name="entry.1322471200" value="Pennsylvania"> Pennsylvania</label><label><input type="checkbox" name="entry.1322471200" value="Rhode Island"> Rhode Island</label><label><input type="checkbox" name="entry.1322471200" value="South Carolina"> South Carolina</label><label><input type="checkbox" name="entry.1322471200" value="South Dakota"> South Dakota</label><label><input type="checkbox" name="entry.1322471200" value="Tennessee"> Tennessee</label><label><input type="checkbox" name="entry.1322471200" value="Texas"> Texas</label><label><input type="checkbox" name="entry.1322471200" value="Utah"> Utah</label><label><input type="checkbox" name="entry.1322471200" value="Vermont"> Vermont</label><label><input type="checkbox" name="entry.1322471200" value="Virginia"> Virginia</label><label><input type="checkbox" name="entry.1322471200" value="Washington"> Washington</label><label><input type="checkbox" name="entry.1322471200" value="West Virginia"> West Virginia</label><label><input type="checkbox" name="entry.1322471200" value="Wisconsin"> Wisconsin</label><label><input type="checkbox" name="entry.1322471200" value="Wyoming"> Wyoming</label></div>
+    <p class="state-count" id="state-count" aria-live="polite"></p>
   </fieldset>
-  <fieldset data-need="1" data-label="whether your business is any of these">
+  <fieldset data-need="1" data-label="at least one answer to &ldquo;Is your business any of these?&rdquo; (or &ldquo;None of these / not sure&rdquo;)" aria-describedby="h-certs">
     <legend>Is your business any of these?</legend>
-    <p class="hint">This decides which set-aside bids you see. Choose all that apply.</p>
+    <p class="hint" id="h-certs">This decides which set-aside bids you see. Choose all that apply.</p>
+    <p class="field-error" id="e-certs" role="alert" hidden></p>
     <div class="options cols-2"><label class="option"><input type="checkbox" name="entry.807221673" value="Small business (by SBA size standards)"><span>Small business (by SBA size standards)</span></label><label class="option"><input type="checkbox" name="entry.807221673" value="HUBZone certified"><span>HUBZone certified</span></label><label class="option"><input type="checkbox" name="entry.807221673" value="Service-disabled veteran-owned (SDVOSB)"><span>Service-disabled veteran-owned (SDVOSB)</span></label><label class="option"><input type="checkbox" name="entry.807221673" value="8(a) program"><span>8(a) program</span></label><label class="option"><input type="checkbox" name="entry.807221673" value="Women-owned (WOSB or EDWOSB)"><span>Women-owned (WOSB or EDWOSB)</span></label><label class="option"><input type="checkbox" name="entry.807221673" value="None of these / not sure"><span>None of these / not sure</span></label></div>
   </fieldset>
   <fieldset>
@@ -82,9 +92,9 @@
     <div class="card">
       <h2>What happens next</h2>
       <ol class="next-steps">
-        <li><div><b>We confirm your details</b><span>By email, within 1 business day.</span></div></li>
+        <li><div><b>A welcome email</b><span>Confirming your details, usually within a few minutes.</span></div></li>
         <li><div><b>Your alerts start</b><span>The next morning, around 6 AM your time, on days with matching bids.</span></div></li>
-        <li><div><b>Day 12: your summary</b><span>The bids you received, and a secure checkout link: $39/month or $390/year.</span></div></li>
+        <li><div><b>Day 12: your summary</b><span>How many bids we sent you, and links to keep your alerts: $39/month or $390/year.</span></div></li>
         <li><div><b>Or do nothing</b><span>Your alerts stop after 14 days. Nothing is charged.</span></div></li>
       </ol>
     </div>

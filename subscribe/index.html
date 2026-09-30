@@ -16,34 +16,41 @@
 <meta property="og:description" content="Choose a BidBell plan: $39/month or $390/year, renews until you cancel, 30-day money-back guarantee.">
 <meta property="og:url" content="https://getbidbell.com/subscribe/">
 <meta property="og:image" content="https://getbidbell.com/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="BidBell: federal cleaning bids you can win, in your inbox around 6 AM. An example alert email lists open bids with their deadlines and who can bid.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#FFFFFF">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preload" href="/fonts/source-serif-4.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/public-sans.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/style.css">
+<script src="/nav.js" defer></script>
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
-<div class="topbar"><b>14 days free</b>, no card needed. Then $39/month, cancel anytime. <a href="/start/">Start your free trial &rarr;</a></div>
 <header class="site-head"><div class="wrap">
   <a class="logo" href="/"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>BidBell</a>
-  <nav class="nav" aria-label="Main">
-    <a href="/#features">Features</a><a href="/#how">How it works</a><a href="/cleaning-bids/">Free bid pages</a><a href="/#pricing">Pricing</a><a href="/#faq">FAQ</a>
-    <a class="btn small" href="/start/">Start free trial</a>
-  </nav>
+  <nav class="nav" aria-label="Main"><a href="/#features">Features</a><a href="/#how">How it works</a><a href="/cleaning-bids/">Free bid pages</a><a href="/#pricing">Pricing</a><a href="/#faq">FAQ</a></nav>
+  <details class="menu">
+    <summary aria-label="Menu"><svg class="i-open" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg><svg class="i-close" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></summary>
+    <nav class="menu-panel" aria-label="Menu"><a href="/#features">Features</a><a href="/#how">How it works</a><a href="/cleaning-bids/">Free bid pages</a><a href="/#pricing">Pricing</a><a href="/#faq">FAQ</a></nav>
+  </details>
 </div></header>
 <main id="main">
 <div class="page-head"><div class="wrap">
   <p class="crumbs"><a href="/">Home</a> / Choose your plan</p>
   <h1>Choose your plan</h1>
-  <p class="lead">Keep your BidBell alerts coming after your free trial. Pick monthly or yearly.</p>
+  <p class="lead">Keep your BidBell alerts coming. Pick monthly or yearly.</p>
 </div></div>
 <div class="wrap page">
   <h2 class="sr-only">Plans</h2>
-  <div class="plans"><div class="plan best" data-plan="monthly"><h3>Monthly</h3><p class="price">$39<span> /month</span></p><p class="desc">Renews every month until you cancel.</p><ul><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span>30-day money-back guarantee</span></li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span>Cancel anytime</span></li></ul><p class="small muted terms-line">By continuing you agree to the <a href="/terms/">Terms</a> and the <a href="/refunds/">Refund policy</a>.</p><button class="btn" type="button" data-checkout="monthly">Subscribe for $39/month</button></div><div class="plan" data-plan="yearly"><span class="badge">2 months free</span><h3>Yearly</h3><p class="price">$390<span> /year</span></p><p class="desc">Renews every year until you cancel.</p><ul><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span>$78 less than paying monthly</span></li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span>30-day money-back guarantee</span></li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span>Cancel anytime</span></li></ul><p class="small muted terms-line">By continuing you agree to the <a href="/terms/">Terms</a> and the <a href="/refunds/">Refund policy</a>.</p><button class="btn ghost" type="button" data-checkout="yearly">Subscribe for $390/year</button></div></div>
+  <div class="form-error checkout-error" id="checkout-error" role="alert" hidden>The secure checkout could not load. Please refresh the page and try again, or email <a href="mailto:hello@getbidbell.com">hello@getbidbell.com</a>.</div>
+  <div class="plans"><div class="plan best" data-plan="monthly"><h3>Monthly</h3><p class="price">$39<span> /month</span></p><p class="desc">Renews every month until you cancel.</p><ul><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span>30-day money-back guarantee</span></li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span>Cancel anytime</span></li></ul><p class="small muted terms-line">By continuing you agree to the <a href="/terms/">Terms</a> and the <a href="/refunds/">Refund Policy</a>.</p><button class="btn" type="button" data-checkout="monthly">Subscribe for $39/month</button></div><div class="plan" data-plan="yearly"><span class="badge">2 months free</span><h3>Yearly</h3><p class="price">$390<span> /year</span></p><p class="desc">Renews every year until you cancel.</p><ul><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span>$78 less than paying monthly</span></li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span>30-day money-back guarantee</span></li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span>Cancel anytime</span></li></ul><p class="small muted terms-line">By continuing you agree to the <a href="/terms/">Terms</a> and the <a href="/refunds/">Refund Policy</a>.</p><button class="btn ghost" type="button" data-checkout="yearly">Subscribe for $390/year</button></div></div>
   <div class="subscribe-foot">
-    <div class="form-error" id="checkout-error" role="alert" hidden>The secure checkout could not load. Please refresh the page and try again, or email hello@getbidbell.com.</div><p class="small muted">Prices in US dollars. Checkout is handled by Paddle.com, our merchant of record. Any sales tax is shown before you pay. Your receipt comes from Paddle.</p>
+    <p class="small muted">Prices in US dollars. Checkout is handled by Paddle.com, our merchant of record. Any sales tax is shown before you pay. Your receipt comes from Paddle. You can cancel anytime with the &ldquo;Manage subscription&rdquo; link in that receipt, or by replying to any BidBell email.</p>
     <p class="small muted">Questions? Email <a href="mailto:hello@getbidbell.com">hello@getbidbell.com</a>.</p>
   </div>
 </div>

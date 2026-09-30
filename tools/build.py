@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
-Builds the whole BidBell website as static files (no server, no database). The only scripts are form.js on /start/
-and, on /subscribe/ only, checkout.js plus Paddle.js (loaded only once tools/paddle.json is filled in).
+Builds the whole BidBell website as static files (no server, no database). The only scripts are nav.js (closes the
+phone menu), form.js on /start/ and, on /subscribe/ only, checkout.js plus Paddle.js (loaded only once
+tools/paddle.json is filled in). favicon.ico, apple-touch-icon.png, icon-512.png and og.png are fixed image files.
 
   python3 tools/build.py            -> writes every page into the project root
 Inputs:  tools/site.json (business facts), tools/paddle.json (Paddle checkout settings), tools/style.css,
@@ -114,13 +115,30 @@ def checks(items):
     return '<ul class="checks">' + ''.join(f'<li>{ICON["check"]}{x}</li>' for x in items) + '</ul>'
 
 
-def layout(path, title, desc, body, jsonld=None, updated=None, noindex=False, og_type='website', csp=CSP):
+NAV_LINKS = [('/#features', 'Features'), ('/#how', 'How it works'), ('/cleaning-bids/', 'Free bid pages'),
+             ('/#pricing', 'Pricing'), ('/#faq', 'FAQ')]
+MENU_ICON = ('<svg class="i-open" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" '
+             'stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>'
+             '<svg class="i-close" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" '
+             'stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>')
+
+
+def layout(path, title, desc, body, jsonld=None, updated=None, noindex=False, og_type='website', csp=CSP, promo=True):
+    """promo=False (sign-up, thank-you and plan pages): no "14 days free" bar and no "Start free trial" button in the
+    header, so people who are signing up, just signed up, or are paying are not sent back to the trial offer."""
     url = BASE + '/' + path
     ld = ''.join(f'\n<script type="application/ld+json">{json.dumps(j, separators=(",", ":"))}</script>'
                  for j in (jsonld or []))
     upd = updated or TODAY
     popular = ['Texas', 'California', 'Virginia', 'Florida', 'Illinois', 'Massachusetts']
     state_links = ''.join(f'<li><a href="/cleaning-bids/{slug(s)}/">{s}</a></li>' for s in popular)
+    is_404 = path == '404.html'
+    canonical = '' if is_404 else f'<link rel="canonical" href="{url}">\n'
+    og_url = '' if is_404 else f'<meta property="og:url" content="{url}">\n'
+    links = ''.join(f'<a href="{h}">{t}</a>' for h, t in NAV_LINKS)
+    topbar = (f'<aside class="topbar" aria-label="Free trial offer"><b>14 days free</b>, no card needed. Then ${C["standard_price"]}/month, '
+              f'cancel anytime. <a href="{E(start_url())}">Start your free trial &rarr;</a></aside>\n') if promo else ''
+    head_cta = f'\n  <a class="btn small head-cta" href="{E(start_url())}">Start free trial</a>' if promo else ''
     return f'''<!doctype html>
 <html lang="en">
 <head>
@@ -131,30 +149,33 @@ def layout(path, title, desc, body, jsonld=None, updated=None, noindex=False, og
 <meta name="color-scheme" content="light">
 <title>{E(title)}</title>
 <meta name="description" content="{E(desc)}">
-<link rel="canonical" href="{url}">
-{'<meta name="robots" content="noindex">' if noindex else ''}
-<meta property="og:type" content="{og_type}">
+{canonical}{'<meta name="robots" content="noindex">' + chr(10) if noindex else ''}<meta property="og:type" content="{og_type}">
 <meta property="og:site_name" content="BidBell">
 <meta property="og:title" content="{E(title)}">
 <meta property="og:description" content="{E(desc)}">
-<meta property="og:url" content="{url}">
-<meta property="og:image" content="{BASE}/og.png">
+{og_url}<meta property="og:image" content="{BASE}/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="BidBell: federal cleaning bids you can win, in your inbox around 6 AM. An example alert email lists open bids with their deadlines and who can bid.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#FFFFFF">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preload" href="/fonts/source-serif-4.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/public-sans.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/style.css">{ld}
+<link rel="stylesheet" href="/style.css">
+<script src="/nav.js" defer></script>{ld}
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
-<div class="topbar"><b>14 days free</b>, no card needed. Then ${C['standard_price']}/month, cancel anytime. <a href="{E(start_url())}">Start your free trial &rarr;</a></div>
-<header class="site-head"><div class="wrap">
+{topbar}<header class="site-head"><div class="wrap">
   <a class="logo" href="/">{BELL}BidBell</a>
-  <nav class="nav" aria-label="Main">
-    <a href="/#features">Features</a><a href="/#how">How it works</a><a href="/cleaning-bids/">Free bid pages</a><a href="/#pricing">Pricing</a><a href="/#faq">FAQ</a>
-    <a class="btn small" href="{E(start_url())}">Start free trial</a>
-  </nav>
+  <nav class="nav" aria-label="Main">{links}</nav>{head_cta}
+  <details class="menu">
+    <summary aria-label="Menu">{MENU_ICON}</summary>
+    <nav class="menu-panel" aria-label="Menu">{links}{f'<a href="{E(start_url())}">Start free trial</a>' if promo else ''}</nav>
+  </details>
 </div></header>
 <main id="main">
 {body}
@@ -204,32 +225,51 @@ def bid_table(bids, caption):
     rows = []
     for b in bids:
         where = ', '.join(x for x in (b['city'], STATES.get(b['state'], b['state'])) if x)
-        rows.append(f'<tr><td data-label="Notice">{ext(b["link"], E(clean_title(b["title"])))}<br><span class="small muted">{E(agency_name(b["agency"]))}'
-                    f'{" &middot; Ref " + E(b["sol"]) if b["sol"] else ""}</span></td>'
-                    f'<td data-label="Work site">{E(where)}</td><td data-label="Respond by">{nice(b["due"])}</td>'
+        rows.append(f'<tr><td class="c-notice" data-label="Notice">{ext(b["link"], E(clean_title(b["title"])))}<br><span class="small muted">{E(agency_name(b["agency"]))}'
+                    f'{" &middot; <span class=nowrap>Ref " + E(b["sol"]) + "</span>" if b["sol"] else ""}</span></td>'
+                    f'<td data-label="Work site">{E(where)}</td><td class="nowrap" data-label="Respond by">{nice(b["due"])}</td>'
                     f'<td data-label="Stage">{E(TYPE_WORDS.get(b["type"], b["type"]))}</td>'
-                    f'<td data-label="Who can bid">{E(b["set_aside"] or "No set-aside listed")}</td></tr>')
-    return (f'<div class="table-wrap"><table class="stack"><caption>{caption}</caption><thead><tr><th scope="col">Notice</th>'
-            f'<th scope="col">Work site</th><th scope="col">Respond by</th><th scope="col">Stage</th>'
+                    f'<td class="c-who" data-label="Who can bid">{E(who_can_bid(b["set_aside"]))}</td></tr>')
+    return (f'<div class="table-wrap"><table class="stack bids"><caption>{caption}</caption><thead><tr><th scope="col">Notice</th>'
+            f'<th scope="col">Work site</th><th class="nowrap" scope="col">Respond by</th><th scope="col">Stage</th>'
             f'<th scope="col">Who can bid</th></tr></thead><tbody>{"".join(rows)}</tbody></table></div>')
 
 
 def cta_box(heading='Get the right bids every morning instead'):
     return f'''<div class="cta-band">
   <h2>{heading}</h2>
-  <p>This page is a free weekly snapshot. BidBell subscribers get, every morning around 6 AM their time, only the bids in their states that their business is allowed to bid on.</p>
+  <p>This page is a free weekly snapshot. BidBell subscribers get only the bids in their states that their business is allowed to bid on, by email around 6 AM their time on days with new matches.</p>
   <div class="cta-row"><a class="btn light" href="{E(start_url())}">Start 14 days free {ICON['arrow']}</a></div>
   {checks(['No card required', f"${C['standard_price']}/month after, or ${C['annual_price']}/year", 'Cancel anytime'])}
 </div>'''
 
 
 # ------------------------------------------------------------------ home
-WHO = {'Total Small Business Set-Aside': 'Small businesses', 'HUBZone Set-Aside': 'HUBZone businesses',
-       'Service-Disabled Veteran-Owned Small Business Set-Aside': 'Service-disabled veteran-owned',
-       'Service-Disabled Veteran-Owned Small Business Sole Source': 'One named veteran-owned firm',
-       '8(a) Set-Aside': '8(a) businesses', 'Women-Owned Small Business (WOSB) Program Set-Aside': 'Women-owned businesses'}
+def who_can_bid(sa):
+    """SAM.gov's set-aside wording -> the plain words the alert email uses ('Small businesses only' ...). SAM uses two
+    spellings for the same set-aside: the API's ("Total Small Business Set-Aside") and the public CSV's ("Small Business
+    Set Aside - Total", with "(FAR 19.13)" style suffixes), so this matches on key words. Unknown wording is shown as
+    it is."""
+    s = (sa or '').lower()
+    if not s or 'no set aside' in s or s == 'none':
+        return 'Open to all businesses'
+    if 'sole source' in s:
+        return 'One named veteran-owned firm only' if 'veteran' in s else 'One named firm only'
+    for key, words in (('hubzone', 'HUBZone small businesses only'),
+                       ('service-disabled', 'Service-disabled veteran-owned only'),
+                       ('economically disadvantaged', 'Economically disadvantaged women-owned only'),
+                       ('edwosb', 'Economically disadvantaged women-owned only'),
+                       ('women-owned', 'Women-owned small businesses only'), ('wosb', 'Women-owned small businesses only'),
+                       ('8(a)', '8(a) program firms only'), ('veteran-owned', 'Veteran-owned small businesses only'),
+                       ('indian', 'Indian-owned businesses only'), ('local area', 'Local businesses only'),
+                       ('partial', 'Small businesses only (partial)'), ('small business', 'Small businesses only')):
+        if key in s:
+            return words
+    return sa
+
+
 STAGE = {'Solicitation': 'BID OPEN', 'Combined Synopsis/Solicitation': 'BID OPEN',
-         'Presolicitation': 'COMING SOON', 'Sources Sought': 'MARKET RESEARCH'}
+         'Presolicitation': 'COMING SOON', 'Sources Sought': 'GET NOTICED'}
 
 FAQ = [   # (question, answer); answers are HTML (links allowed); the FAQ structured data gets them as plain text
     ('Where do the bids come from?',
@@ -242,18 +282,22 @@ FAQ = [   # (question, answer); answers are HTML (links allowed); the FAQ struct
     ('Do I need to be registered in SAM.gov?',
      'To win a federal contract, yes: a free registration at sam.gov. You can get BidBell alerts while your registration is in progress.'),
     ('How many bids will I get?',
-     'It depends on your trade and states. Some days there are none. Then we only write if a reminder for a bid we sent you is due, or on Mondays with contracts ending soon in your states. We never pad the email with bids you cannot use.'),
-    ('What does "likely current contract" mean?',
+     'It depends on your trade and states. Some days there are none. Then we only write if a reminder or an update for a bid we sent you is due, or on a Monday: contracts ending soon in your states, or a short note if nothing new matched all week. We never pad the email with bids you cannot use.'),
+    ('What time does the email arrive?',
+     'Around 6 AM your time, on days when there is something new for you (and on a Monday after a quiet week, one short note). We use the time zone of the states you choose '
+     '(the one most of them share); for nationwide alerts we use US Eastern time.'),
+    ('What does “likely current contract” mean?',
      'We look in USAspending.gov, the official record of federal spending, for the contract covering the same work: the same agency, '
      'the same kind of work and the same work site. If the notice itself names the previous contract number, we use that. '
-     'We show a contract only when one clearly fits, label it "likely" unless the notice names it, and link to the official record so you can check. '
+     'We show a contract only when one clearly fits, label it “likely” unless the notice names it, and link to the official record so you can check. '
      'When no contract clearly fits, we show nothing rather than guess.'),
     ('How do I pay, and how do I cancel?',
-     'On day 12 of your free 14 days we email you a secure checkout link. Payments are handled by Paddle, our merchant of record. '
-     'Your plan renews automatically until you cancel. You can cancel anytime by replying to any BidBell email; your alerts continue '
-     'until the end of the period you paid for. Every payment has a 30-day money-back guarantee; see our <a href="/refunds/">refund policy</a>.'),
+     'On day 12 of your free 14 days we email you links to choose a plan. Payments are handled by Paddle, our merchant of record. '
+     'Your plan renews automatically until you cancel. You can cancel anytime by replying to any BidBell email, or with the '
+     '“Manage subscription” link in your receipt from Paddle; your alerts continue until the end of the period you paid for. '
+     'Every payment has a 30-day money-back guarantee; see our <a href="/refunds/">refund policy</a>.'),
     ('Is my information safe?',
-     'We collect only what we need to send your alerts: your name, business details, trades, states and eligibility. '
+     'We collect only what we need to send your alerts: your name, email, business details, trades, states and eligibility. '
      'We never see your card, we do not sell data, and this website has no tracking or advertising cookies.'),
 ]
 
@@ -280,13 +324,13 @@ def mock_bid(b, show_left=True):
         <div class="bid-top"><div><span class="tag">{STAGE.get(b["type"], "BID OPEN")}</span>{' <span class="tag soon">CLOSES SOON</span>' if soon else ''}</div><div class="due{' red' if soon else ''}">{due}{sub}</div></div>
         <div class="bid-name">{E(clean_title(b["title"]))}</div>
         <div class="bid-meta">{E(agency_name(b["agency"]))} &middot; {E(where)}</div>
-        <span class="who">Who can bid: {E(WHO.get(b["set_aside"], b["set_aside"] or "Any business"))}</span>
+        <span class="who">Who can bid: {E(who_can_bid(b["set_aside"]))}</span>
       </div>'''
 
 
 def hero_mock():
     pool = open_bids(2)
-    small = [b for b in pool if b['set_aside'] == 'Total Small Business Set-Aside' and b['type'] != 'Sources Sought']
+    small = [b for b in pool if who_can_bid(b['set_aside']) == 'Small businesses only' and b['type'] != 'Sources Sought']
     pick, seen = [], set()
     for b in small + [b for b in pool if b not in small]:
         if b['state'] not in seen:
@@ -325,14 +369,14 @@ def home():
     sp, ap = C['standard_price'], C['annual_price']
     n_open = len(open_bids(0))
     faq_html = ''.join(f'<details><summary>{E(q)}</summary><p>{a}</p></details>' for q, a in FAQ)
-    pill = (f'<span class="live-dot" aria-hidden="true"></span><b>Live</b> {n_open} federal cleaning bids open this week'
+    pill = (f'<span class="live-dot" aria-hidden="true"></span><b>Live</b> {n_open} federal cleaning notice{"s" if n_open != 1 else ""} open this week'
             if n_open else '<span class="live-dot" aria-hidden="true"></span><b>Live</b> New federal cleaning bids, checked every morning')
     su = E(start_url())
     feats = [
-        ('filter', 'Only bids you can win', 'Filtered by your trade, your states and your eligibility: small business, HUBZone, SDVOSB, 8(a) or women-owned.'),
-        ('pin', 'Where the work really is', 'We list the actual work site, not the contracting office three states away.'),
-        ('doc', 'Plain English', 'What the job is, where it is and what to do next. No government shorthand, no digging through PDFs.'),
-        ('dollar', 'What the job is worth', 'Where public records clearly show it: who holds the job now and what the government has paid, from USAspending.gov.'),
+        ('filter', 'Only bids you can win', 'Filtered by your trade, your states and your eligibility: small business, HUBZone, service-disabled veteran-owned, 8(a) or women-owned.'),
+        ('pin', 'Where the work really is', 'We use the work site given in the notice, not the contracting office three states away.'),
+        ('doc', 'Plain English', 'What the job is, where it is, who can bid, when it is due and what to do next. No code numbers, no search filters.'),
+        ('dollar', 'What the job is worth', 'Where public records clearly show it: who holds the job now and what the contract is worth, from USAspending.gov.'),
         ('calendar', 'Contracts ending soon', 'Every Monday and in your first alert: up to 10 contracts in your states that end in 3 to 6 months, have no option years left and were competed last time, so you can prepare before the new bid is posted.'),
         ('clock', 'Deadline reminders', 'A reminder 3 days before each deadline and each site visit stated in the notice, and an update if the deadline or site visit moves.'),
     ]
@@ -359,7 +403,7 @@ def home():
   <div class="section-head center">
     <p class="eyebrow">Why cleaning companies use BidBell</p>
     <h2 id="features-h">SAM.gov lists thousands of contracts. BidBell finds the few that fit you.</h2>
-    <p>Searching SAM.gov yourself means dozens of filters, code numbers and long PDFs. BidBell does it for you every morning and sends only what matters.</p>
+    <p>Searching SAM.gov yourself means dozens of filters, code numbers and long notices. BidBell does the searching for you every morning and sends only what matters.</p>
   </div>
   <div class="features">{feat_html}</div>
 </div></section>
@@ -370,8 +414,8 @@ def home():
     <h2 id="filter-h">Only the bids you&rsquo;re allowed to bid on.</h2>
     <p class="lead">Many federal cleaning contracts are reserved for HUBZone, veteran-owned, 8(a) or women-owned businesses. Tell us what your company qualifies for once, and BidBell leaves out everything else.</p>
     <ul class="ticks">
-      <li>{ICON['check']}<span>Small business, HUBZone, SDVOSB, 8(a) and WOSB set-asides handled for you</span></li>
-      <li>{ICON['check']}<span>Award notices, duplicates and bids closing in under 2 days removed</span></li>
+      <li>{ICON['check']}<span>Small business, HUBZone, service-disabled veteran-owned, 8(a) and women-owned set-asides handled for you</span></li>
+      <li>{ICON['check']}<span>Award notices, sole-source notices, duplicates and bids closing in under 2 days removed</span></li>
       <li>{ICON['check']}<span>No matching bids today? We never pad the email with bids you can&rsquo;t use.</span></li>
     </ul>
   </div>
@@ -391,7 +435,7 @@ def home():
   <div>
     <p class="eyebrow">Contract history</p>
     <h2 id="value-h">Know what a job is worth before you bid.</h2>
-    <p class="lead">Next to each bid, where public records clearly show it, BidBell shows the company that holds the job now (or held it last) and what the government has paid, from USAspending.gov. Price your bid with real numbers.</p>
+    <p class="lead">Next to each bid, where public records clearly show it, BidBell shows the company that holds the job now (or held it last), the contract total and its period, from USAspending.gov. Price your bid with real numbers.</p>
     <ul class="ticks">
       <li>{ICON['check']}<span>Current or previous contractor, contract total and period</span></li>
       <li>{ICON['check']}<span>Every Monday and in your first alert: up to 10 contracts in your states ending in 3 to 6 months</span></li>
@@ -417,7 +461,7 @@ def home():
     <h2 id="how-h">Set it up once. Then just check your email.</h2>
   </div>
   <div class="steps">
-    <div class="step-card"><span class="time">2 minutes</span><div class="step-num">1</div><h3>Tell us about your business</h3><p>Your trade, the states you work in, and whether you are a small business, HUBZone, veteran-owned, 8(a) or women-owned.</p></div>
+    <div class="step-card"><span class="time">2 minutes</span><div class="step-num">1</div><h3>Tell us about your business</h3><p>Your trade, the states you work in, and whether you are a small business, HUBZone, service-disabled veteran-owned, 8(a) or women-owned.</p></div>
     <div class="step-card"><span class="time">Every morning</span><div class="step-num">2</div><h3>We read every new notice</h3><p>We check the new federal contract notices on SAM.gov, find where the work really is and who may bid, and match them to you.</p></div>
     <div class="step-card"><span class="time">~6 AM your time</span><div class="step-num">3</div><h3>One short email</h3><p>Only the bids you can use, each with the deadline, who can bid, a plain-English next step and the official link.</p></div>
   </div>
@@ -432,22 +476,22 @@ def home():
 <section id="sample" aria-labelledby="sample-h"><div class="wrap two">
   <div>
     <p class="eyebrow">A real alert</p>
-    <h2 id="sample-h">This is the actual email.</h2>
+    <h2 id="sample-h">This is a real BidBell alert.</h2>
     <p class="lead">Built from live SAM.gov notices on September 29, 2026, for a small cleaning company working in Massachusetts, Illinois and Kansas. Every bid, deadline and reference number in it is real.</p>
     <ul class="ticks">
       <li>{ICON['check']}<span><strong>Deadline first</strong>, with the days left and a warning when it closes soon</span></li>
       <li>{ICON['check']}<span><strong>Who can bid</strong>, so you never open a bid you can&rsquo;t win</span></li>
       <li>{ICON['check']}<span><strong>What to do next</strong>, in one plain sentence</span></li>
       <li>{ICON['check']}<span><strong>Site visit</strong>, quoted from the notice when it states one</span></li>
-      <li>{ICON['check']}<span><strong>Likely current contract</strong> and what it pays, where public records clearly show it</span></li>
+      <li>{ICON['check']}<span><strong>Likely current contract</strong> and what it is worth, where public records clearly show it</span></li>
       <li>{ICON['check']}<span><strong>One button</strong> to the official notice on SAM.gov</span></li>
     </ul>
     <details><summary>Text version of this alert</summary>
-      <p>3 janitorial and cleaning bids, all open to small businesses. Housekeeping Services, Fermilab (Department of Energy), Illinois, respond by Oct 9, 2026, ref DH-377725. Janitorial Services at the FMH SSC (FAA), Falmouth, Massachusetts, respond by Oct 20, 2026, ref 697DCK-27-R-00004; site visit Sep 29, 8:30 ET (RSVP required); likely current contract: Eco-Friendly Cleaning Specialist, LLC, $85,441 total, Apr 2023 to Dec 2026, about $28,000 a year. Janitorial Services at the MVY ATCT (FAA), Massachusetts, respond by Oct 22, 2026, ref 697DCK-27-R-00001; site visit Oct 6, 8:30 ET (RSVP required); likely current contract: Kevin Gundersen, $82,766 total, Dec 2021 to Dec 2026, about $17,000 a year.</p>
+      <p>3 janitorial and cleaning bids, all open to small businesses. Housekeeping Services, Fermilab (Department of Energy), Illinois, respond by Oct 9, 2026, 5 PM Central, ref DH-377725. Janitorial Services at the FMH SSC (FAA), Falmouth, Massachusetts, respond by Oct 20, 2026, 2 PM Central, ref 697DCK-27-R-00004; site visit Sep 29, 8:30 ET (RSVP required); likely current contract: Eco-Friendly Cleaning Specialist, LLC, $85,441 so far, Apr 2023 to Dec 2026, about $23,000 a year. Janitorial Services at the MVY ATCT (FAA), Massachusetts, respond by Oct 22, 2026, 2 PM Central, ref 697DCK-27-R-00001; site visit Oct 6, 8:30 ET (RSVP required); likely current contract: Kevin Gundersen, $82,766 so far, Dec 2021 to Dec 2026, about $16,000 a year.</p>
     </details>
   </div>
   <div>
-    <div class="shot-frame"><picture><source srcset="/sample-alert.webp" type="image/webp"><img src="/sample-alert.jpg" width="720" height="1873" loading="lazy" decoding="async" alt="A BidBell alert email listing three open federal janitorial bids in Illinois and Massachusetts, each showing the deadline, who can bid and a button to the official notice; two also show the site visit quoted from the notice and the likely current contract from USAspending.gov."></picture></div>
+    <div class="shot-frame"><picture><source srcset="/sample-alert.webp" type="image/webp"><img src="/sample-alert.jpg" width="720" height="2000" loading="lazy" decoding="async" alt="A BidBell alert email listing three open federal janitorial bids in Illinois and Massachusetts, each showing the deadline, who can bid and a button to the official notice; two also show the site visit quoted from the notice and the likely current contract from USAspending.gov."></picture></div>
     <p class="photo-cap"><a href="/sample-alert.jpg">Open the full-size alert</a></p>
   </div>
 </div></section>
@@ -464,7 +508,7 @@ def home():
     <tbody>
       <tr><th scope="row">Open bids</th><td data-label="Free state pages">Title, work site, deadline; updated weekly</td><td data-label="BidBell daily alert" class="yes">Every morning, around 6 AM your time</td></tr>
       <tr><th scope="row">Filtered for your business</th><td data-label="Free state pages">No, everything in the state</td><td data-label="BidBell daily alert" class="yes">Your trade, states and eligibility</td></tr>
-      <tr><th scope="row">Who has the job now and what they were paid</th><td data-label="Free state pages">No</td><td data-label="BidBell daily alert" class="yes">Yes, where a match is found</td></tr>
+      <tr><th scope="row">Who has the job now and what the contract is worth</th><td data-label="Free state pages">No</td><td data-label="BidBell daily alert" class="yes">Yes, where a match is found</td></tr>
       <tr><th scope="row">Contracts ending in the next 3&ndash;6 months</th><td data-label="Free state pages">No</td><td data-label="BidBell daily alert" class="yes">Yes</td></tr>
       <tr><th scope="row">Deadline and site-visit reminders</th><td data-label="Free state pages">No</td><td data-label="BidBell daily alert" class="yes">Yes</td></tr>
     </tbody></table></div>
@@ -473,13 +517,13 @@ def home():
 <section id="pricing" aria-labelledby="pricing-h"><div class="wrap">
   <div class="section-head center">
     <p class="eyebrow">Pricing</p>
-    <h2 id="pricing-h">One simple plan. Free for 14 days.</h2>
+    <h2 id="pricing-h">One plan, monthly or yearly. Free for 14 days.</h2>
     <p>No card to start. If the alerts aren&rsquo;t useful, do nothing and they stop.</p>
   </div>
   <div class="plans">
     <div class="plan best"><h3>Monthly</h3>
       <p class="price">${sp}<span> /month</span></p><p class="desc">Billed every month until you cancel. Cancel anytime.</p>
-      {plan_items(['Daily alert filtered to your business', 'One trade group, up to 10 states or nationwide', 'Contract history and contracts ending soon', 'Deadline and site-visit reminders', '30-day money-back guarantee'])}
+      {plan_items(['Daily alert filtered to your business', 'Your cleaning trades, up to 10 states or nationwide', 'Contract history and contracts ending soon', 'Deadline and site-visit reminders', '30-day money-back guarantee'])}
       <a class="btn" href="{su}">Start 14 days free</a></div>
     <div class="plan"><span class="badge">2 months free</span><h3>Yearly</h3>
       <p class="price">${ap}<span> /year</span></p><p class="desc">Billed every year until you cancel, ${sp * 12 - ap} less than paying monthly.</p>
@@ -516,13 +560,13 @@ def home():
 <section class="final" aria-label="Start your free trial"><div class="wrap">
   <div class="cta-band">
     <h2>See your first alert tomorrow morning.</h2>
-    <p>Tell us your trade, states and eligibility in 2 minutes. Your free 14 days start with the next morning&rsquo;s email.</p>
+    <p>Tell us your trade, states and eligibility in 2 minutes. Your free 14 days start the next morning.</p>
     <div class="cta-row"><a class="btn light" href="{su}">Start 14 days free {ICON['arrow']}</a></div>
     {checks(['No card required', f'${sp}/month after, or ${ap}/year', 'Cancel anytime'])}
   </div>
 </div></section>'''
     org = {'@context': 'https://schema.org', '@type': 'Organization', 'name': 'BidBell', 'url': BASE + '/',
-           'logo': BASE + '/og.png', 'email': C['email'],
+           'logo': BASE + '/icon-512.png', 'email': C['email'],
            'address': {'@type': 'PostalAddress', 'streetAddress': C['address_parts']['street'],
                        'addressLocality': C['address_parts']['city'], 'addressRegion': C['address_parts']['region'],
                        'postalCode': C['address_parts']['postal'], 'addressCountry': C['address_parts']['country']}}
@@ -538,7 +582,7 @@ def home():
              'mainEntity': [{'@type': 'Question', 'name': q, 'acceptedAnswer': {'@type': 'Answer', 'text': html.unescape(re.sub(r'<[^>]+>', '', a))}}
                             for q, a in FAQ]}
     write('', layout('', 'BidBell | Federal cleaning bids you can actually win',
-                     'Every morning, BidBell emails US cleaning companies only the federal janitorial, carpet and window-cleaning bids in their states that they are allowed to bid on, with who holds each job now and what they were paid.',
+                     'Every morning, BidBell emails US cleaning companies only the federal janitorial, carpet and window-cleaning bids in their states that they are allowed to bid on and, where public records show it, who holds the job now and what the contract is worth.',
                      body, [org, product, faqld]))
 
 
@@ -564,26 +608,31 @@ def signup_form():
   <div class="form-error" id="form-error" role="alert" hidden></div>
   <fieldset>
     <legend>About you</legend>
+    <p class="hint">Every question is required unless it says optional.</p>
     <div class="fields">
       <div class="field"><label for="f-first">First name</label><input id="f-first" type="text" name="{f['first']}" required autocomplete="given-name"></div>
-      <div class="field"><label for="f-email">Business email</label><input id="f-email" type="email" name="{f['email']}" required autocomplete="email" placeholder="you@company.com"></div>
+      <div class="field"><label for="f-email">Business email</label><input id="f-email" type="email" name="{f['email']}" required autocomplete="email" autocapitalize="off" spellcheck="false" placeholder="you@company.com"></div>
       <div class="field"><label for="f-biz">Business name</label><input id="f-biz" type="text" name="{f['business']}" required autocomplete="organization"></div>
-      <div class="field"><label for="f-web">Business website <span class="opt">(optional)</span></label><input id="f-web" type="text" inputmode="url" name="{f['website']}" autocomplete="url" placeholder="yourcompany.com"></div>
+      <div class="field"><label for="f-web">Business website <span class="opt">(optional)</span></label><input id="f-web" type="text" inputmode="url" name="{f['website']}" autocomplete="url" autocapitalize="off" spellcheck="false" placeholder="yourcompany.com"></div>
     </div>
   </fieldset>
-  <fieldset data-need="1" data-label="the cleaning work you do">
+  <fieldset data-need="1" data-label="the cleaning work you do" aria-describedby="h-trades">
     <legend>What cleaning work do you do?</legend>
-    <p class="hint">Choose all that apply.</p>
+    <p class="hint" id="h-trades">Choose all that apply.</p>
+    <p class="field-error" id="e-trades" role="alert" hidden></p>
     <div class="options">{''.join(opt('checkbox', f['trades'], v) for v in TRADE_CHOICES)}</div>
   </fieldset>
-  <fieldset data-need="1" data-max="10" data-label="your states">
+  <fieldset data-need="1" data-max="10" data-label="your states" aria-describedby="h-states">
     <legend>Which states do you work in?</legend>
-    <p class="hint">Choose up to 10 states, or Nationwide. Bids are matched to where the work is.</p>
+    <p class="hint" id="h-states">Choose up to 10 states, or Nationwide. Bids are matched to where the work is.</p>
+    <p class="field-error" id="e-states" role="alert" hidden></p>
     <div class="state-box">{states}</div>
+    <p class="state-count" id="state-count" aria-live="polite"></p>
   </fieldset>
-  <fieldset data-need="1" data-label="whether your business is any of these">
+  <fieldset data-need="1" data-label="at least one answer to &ldquo;Is your business any of these?&rdquo; (or &ldquo;None of these / not sure&rdquo;)" aria-describedby="h-certs">
     <legend>Is your business any of these?</legend>
-    <p class="hint">This decides which set-aside bids you see. Choose all that apply.</p>
+    <p class="hint" id="h-certs">This decides which set-aside bids you see. Choose all that apply.</p>
+    <p class="field-error" id="e-certs" role="alert" hidden></p>
     <div class="options cols-2">{''.join(opt('checkbox', f['certs'], v) for v in CERT_CHOICES)}</div>
   </fieldset>
   <fieldset>
@@ -630,9 +679,9 @@ def start():
     <div class="card">
       <h2>What happens next</h2>
       <ol class="next-steps">
-        <li><div><b>We confirm your details</b><span>By email, within 1 business day.</span></div></li>
+        <li><div><b>A welcome email</b><span>Confirming your details, usually within a few minutes.</span></div></li>
         <li><div><b>Your alerts start</b><span>The next morning, around 6 AM your time, on days with matching bids.</span></div></li>
-        <li><div><b>Day 12: your summary</b><span>The bids you received, and a secure checkout link: ${C['standard_price']}/month or ${C['annual_price']}/year.</span></div></li>
+        <li><div><b>Day 12: your summary</b><span>How many bids we sent you, and links to keep your alerts: ${C['standard_price']}/month or ${C['annual_price']}/year.</span></div></li>
         <li><div><b>Or do nothing</b><span>Your alerts stop after 14 days. Nothing is charged.</span></div></li>
       </ol>
     </div>
@@ -645,13 +694,14 @@ def start():
     thanks = f'''<div class="page-head"><div class="wrap">
   <p class="crumbs"><a href="/">Home</a> / <a href="/start/">Start free trial</a> / Done</p>
   <h1>You&rsquo;re in.</h1>
-  <p class="lead">Thanks for signing up for BidBell. We&rsquo;ll confirm your details by email within 1 business day, and your free 14 days of alerts start the next morning, around 6 AM your time.</p>
+  <p class="lead">Thanks for signing up for BidBell. A welcome email confirming your details is on its way (it usually arrives within a few minutes), and your free 14 days of alerts start the next morning, around 6 AM your time.</p>
   <div class="cta-row"><a class="btn" href="/#sample">See what an alert looks like</a><a class="btn ghost" href="/cleaning-bids/">Browse this week&rsquo;s bids</a></div>
-  <p class="small muted">No email from us within 1 business day? Check your spam folder, then write to <a href="mailto:{C['email']}">{C['email']}</a> so we can make sure your sign-up reached us. Something wrong, or want to change your states? Email us at the same address.</p>
+  <p class="small muted">No welcome email within an hour? Check your spam folder, then write to <a href="mailto:{C['email']}">{C['email']}</a> so we can make sure your sign-up reached us. Something wrong, or want to change your states? Email us at the same address.</p>
 </div></div>'''
-    write('start/thanks/', layout('start/thanks/', 'You\u2019re in | BidBell', 'Your free BidBell trial has started.', thanks, noindex=True), sitemap=False)
+    write('start/thanks/', layout('start/thanks/', 'You\u2019re in | BidBell', 'Your free BidBell trial has started.', thanks, noindex=True, promo=False), sitemap=False)
     write('start/', layout('start/', 'Start your free 14 days | BidBell',
-                           'Start a free 14-day BidBell trial: daily federal cleaning bids for your trade, states and eligibility. No card needed.', body))
+                           'Start a free 14-day BidBell trial: daily federal cleaning bids for your trade, states and eligibility. No card needed.', body,
+                           promo=False))
 
 
 # ------------------------------------------------------------------ subscribe (trial customers choose a plan)
@@ -660,7 +710,7 @@ def subscribe():
     checkout.js highlights the plan from ?plan= and opens Paddle's overlay checkout; tools/paddle.json holds the settings."""
     sp, ap = C['standard_price'], C['annual_price']
     mail = f'<a href="mailto:{C["email"]}">{C["email"]}</a>'
-    agree = 'By continuing you agree to the <a href="/terms/">Terms</a> and the <a href="/refunds/">Refund policy</a>.'
+    agree = 'By continuing you agree to the <a href="/terms/">Terms</a> and the <a href="/refunds/">Refund Policy</a>.'
 
     def card(key, name, price, per, renews, items, badge=''):
         button = (f'<p class="small muted terms-line">{agree}</p>'
@@ -680,25 +730,27 @@ def subscribe():
                'prices': {'monthly': PADDLE['price_monthly'].strip(), 'yearly': PADDLE['price_yearly'].strip()},
                'success_url': BASE + '/subscribe/thanks/'}
         cfg_json = json.dumps(cfg, separators=(',', ':')).replace('<', '\\u003c').replace('>', '\\u003e').replace('&', '\\u0026')
-        foot = (f'<div class="form-error" id="checkout-error" role="alert" hidden>The secure checkout could not load. '
-                f'Please refresh the page and try again, or email {C["email"]}.</div>'
-                f'<p class="small muted">Prices in US dollars. Checkout is handled by Paddle.com, our merchant of record. '
-                f'Any sales tax is shown before you pay. Your receipt comes from Paddle.</p>')
+        alert = (f'<div class="form-error checkout-error" id="checkout-error" role="alert" hidden>The secure checkout could not load. '
+                 f'Please refresh the page and try again, or email {mail}.</div>')
+        foot = (f'<p class="small muted">Prices in US dollars. Checkout is handled by Paddle.com, our merchant of record. '
+                f'Any sales tax is shown before you pay. Your receipt comes from Paddle. You can cancel anytime with the '
+                f'&ldquo;Manage subscription&rdquo; link in that receipt, or by replying to any BidBell email.</p>')
         scripts = (f'\n<script type="application/json" id="paddle-config">{cfg_json}</script>'
                    '\n<script src="https://cdn.paddle.com/paddle/v2/paddle.js" defer></script>'
                    '\n<script src="/checkout.js" defer></script>')
     else:
-        foot = (f'<div class="note"><p>Payments open soon. We\'ll email you as soon as you can subscribe; your alerts keep going until then.</p></div>'
-                f'<p class="small muted">Prices in US dollars. {agree}</p>')
+        alert = (f'<div class="note soon-note"><p>Payments open soon. We\'ll email you as soon as you can subscribe; your alerts keep going until then.</p></div>')
+        foot = f'<p class="small muted">Prices in US dollars. {agree}</p>'
         scripts = '\n<script src="/checkout.js" defer></script>'
     phone = f' or call {phone_link()}' if PHONE.strip() else ''
     body = f'''<div class="page-head"><div class="wrap">
   <p class="crumbs"><a href="/">Home</a> / Choose your plan</p>
   <h1>Choose your plan</h1>
-  <p class="lead">Keep your BidBell alerts coming after your free trial. Pick monthly or yearly.</p>
+  <p class="lead">Keep your BidBell alerts coming. Pick monthly or yearly.</p>
 </div></div>
 <div class="wrap page">
   <h2 class="sr-only">Plans</h2>
+  {alert}
   <div class="plans">{plans}</div>
   <div class="subscribe-foot">
     {foot}
@@ -707,16 +759,16 @@ def subscribe():
 </div>{scripts}'''
     thanks = f'''<div class="page-head"><div class="wrap">
   <p class="crumbs"><a href="/">Home</a> / Subscription</p>
-  <h1>Thank you &mdash; your subscription is active.</h1>
-  <p class="lead">Your alerts continue as usual; your receipt comes from Paddle.</p>
+  <h1>Thank you. Your payment went through.</h1>
+  <p class="lead">Your BidBell plan is active. Your alerts carry on, or start, with your next morning email, around 6 AM your time, on days with matching bids. Paddle, which processes our orders, emails you the receipt, and we send you a short confirmation.</p>
   <div class="cta-row"><a class="btn" href="/">Back to BidBell</a><a class="btn ghost" href="/refunds/">Refund policy</a></div>
-  <p class="small muted">Questions about your plan? Email {mail}{phone}.</p>
+  <p class="small muted">Questions about your plan, or want to cancel? Email {mail}{phone}, or reply to any BidBell email.</p>
 </div></div>'''
     write('subscribe/thanks/', layout('subscribe/thanks/', 'Subscription active | BidBell',
-                                      'Your BidBell subscription is active.', thanks, noindex=True), sitemap=False)
+                                      'Your BidBell subscription is active.', thanks, noindex=True, promo=False), sitemap=False)
     write('subscribe/', layout('subscribe/', 'Choose your plan | BidBell',
                                f'Choose a BidBell plan: ${sp}/month or ${ap}/year, renews until you cancel, 30-day money-back guarantee.',
-                               body, noindex=True, csp=CSP_PADDLE if PADDLE_READY else CSP), sitemap=False)
+                               body, noindex=True, csp=CSP_PADDLE if PADDLE_READY else CSP, promo=False), sitemap=False)
 
 
 # ------------------------------------------------------------------ public bid pages (gamechanger 1)
@@ -739,7 +791,7 @@ def bid_pages():
         if sb:
             lst = bid_table(sb, f'{len(sb)} open federal cleaning notice{"s" if len(sb) != 1 else ""} in {name}')
         else:
-            lst = f'<div class="note"><p>No open federal cleaning notices were listed for {name} in this week\'s data. When one is posted, BidBell subscribers who work in {name} get it in their next morning&rsquo;s email.</p></div>'
+            lst = f'<div class="note"><p>No open federal cleaning notices were listed for {name} in this week&rsquo;s data. When one is posted, BidBell subscribers who work in {name} and can bid on it get it in their next morning&rsquo;s email.</p></div>'
         body = f'''<div class="page-head"><div class="wrap">
 <p class="crumbs"><a href="/">Home</a> / <a href="/cleaning-bids/">Cleaning bids</a> / {E(name)}</p>
 <h1>Open federal cleaning bids in {E(name)}</h1>
@@ -761,7 +813,7 @@ def bid_pages():
                                 ('window', 'Window and exterior cleaning', 'window and exterior building cleaning')):
         tb = [b for b in bids if b['trade'] == trade]
         lst = bid_table(tb, f'{len(tb)} open federal {words} notices') if tb else \
-            f'<div class="note"><p>No open federal {words} notices were listed in this week\'s data.</p></div>'
+            f'<div class="note"><p>No open federal {words} notices were listed in this week&rsquo;s data.</p></div>'
         body = f'''<div class="page-head"><div class="wrap">
 <p class="crumbs"><a href="/">Home</a> / <a href="/cleaning-bids/">Cleaning bids</a> / {label}</p>
 <h1>Open federal {words} bids</h1>
@@ -806,33 +858,34 @@ def legal_page(path, title, desc, inner):
 
 
 def legal():
-    who = f'{E(C["owner_name"])}, trading as BidBell (&ldquo;BidBell&rdquo;, &ldquo;we&rdquo;, &ldquo;us&rdquo;). Mailing address: {E(C["mailing_address"])}. Email: <a href="mailto:{C["email"]}">{C["email"]}</a>'
+    seller = f'{E(C["owner_name"])}, trading as BidBell (&ldquo;BidBell&rdquo;, &ldquo;we&rdquo;, &ldquo;us&rdquo;)'
+    contact = f'Mailing address: {E(C["mailing_address"])}. Email: <a href="mailto:{C["email"]}">{C["email"]}</a>'
     phone = f' Phone: {phone_link()}.' if PHONE.strip() else ''
     mail = f'<a href="mailto:{C["email"]}">{C["email"]}</a>'
     sp, ap = C['standard_price'], C['annual_price']
 
     legal_page('terms/', 'Terms of Service', 'The terms that apply when you use BidBell.', f'''
-<p>These terms are an agreement between you (the business using BidBell, and the person accepting for it) and {who}. By starting a trial or subscription you accept them. Nothing in these terms takes away rights you have under a law that cannot be excluded by contract.</p>
+<p>These terms are an agreement between you (the business using BidBell, and the person accepting for it) and {seller}. {contact}. By starting a trial or subscription you accept them. Nothing in these terms takes away rights you have under a law that cannot be excluded by contract.</p>
 <h2>1. What BidBell is</h2>
-<p>BidBell is an email service. Each morning we read new US federal contract notices published on SAM.gov, select the ones that match the trades, states and eligibility you give us, and email them to you. Where we can, we add information from USAspending.gov about the likely current or previous contract for the same work. We also publish free public pages listing open federal cleaning notices by state. We are not a government service, a bidding agent, a law firm or a consultant.</p>
+<p>BidBell is an email service. Each morning we read new US federal contract notices published on SAM.gov, select the ones that match the trades, states and eligibility you give us, and email them to you. Where we can, we add information from USAspending.gov about the likely current or previous contract for the same work. Your alerts also carry reminders and updates for bids we sent you and, on Mondays, federal contracts in your states that end in 3 to 6 months. We email you only on days when there is something new for you, and on a Monday after a week with nothing new, one short note saying so. We also publish free public pages listing open federal cleaning notices by state. We are not a government service, a bidding agent, a law firm or a consultant.</p>
 <h2>2. Free trial</h2>
-<p>New customers get a free 2-week trial. We do not ask for a card to start it. If you do not subscribe, your alerts stop at the end of the trial and nothing is charged.</p>
+<p>New customers get a free 14-day trial. We do not ask for a card to start it. If you do not subscribe, your alerts stop at the end of the trial and nothing is charged.</p>
 <h2>3. Plans, payment and taxes</h2>
-{lawyer('Merchant of record / payments', 'Terms 3: Paddle as reseller and merchant of record (Paddle-required wording), seller identity as a sole proprietor, billing in advance, automatic renewal, and price-change notice.')}
+{lawyer('Merchant of record / payments', 'Terms 3: Paddle as reseller and merchant of record (Paddle-required wording, which says Paddle "provides all customer service inquiries and handles returns" while Terms 4 and the Refund Policy ask customers to email BidBell: check the two read together); seller identity (a sole proprietor, not a registered company, operated from Kenya, with a US mailing address in Arkansas: if that address is a virtual mailbox or commercial mail-receiving agency, is it acceptable as the postal address in the Terms and, under CAN-SPAM, in sales emails?); billing in advance; automatic renewal; 30-day price-change notice.')}
 <p>BidBell is operated from Kenya by {E(C["owner_name"])}, a sole proprietor (not a registered company) trading as BidBell. Our US mailing address is {E(C["mailing_address"])}.</p>
 <p>Our order process is conducted by our online reseller Paddle.com. Paddle.com is the Merchant of Record for all our orders. Paddle provides all customer service inquiries and handles returns.</p>
-<p>Paid plans are ${sp}/month or ${ap}/year, in US dollars, billed in advance. Paddle charges your payment method, sends your receipt and collects any sales tax, which is shown at checkout. Paddle's own terms apply to the purchase. We never see or store your card details.</p>
+<p>Paid plans are ${sp}/month or ${ap}/year, in US dollars, billed in advance. Paddle charges your payment method, sends your receipt and collects any sales tax, which is shown at checkout. Paddle&rsquo;s own terms apply to the purchase. We never see or store your card details.</p>
 <p>Your subscription renews automatically at the end of each month or year, and the plan price is charged for the next period, until you cancel. We may change our prices; we will email you at least 30 days before a change affects your next renewal, and you can cancel before it does.</p>
 <h2>4. Cancelling and refunds</h2>
-<p>You can cancel anytime by emailing <a href="mailto:{C["email"]}">{C["email"]}</a> or replying to any BidBell email. Your alerts continue until the end of the period you have paid for, and you are not charged again. Every payment has a 30-day money-back guarantee; see our <a href="/refunds/">Refund policy</a>.</p>
+<p>You can cancel anytime by emailing <a href="mailto:{C["email"]}">{C["email"]}</a>, by replying to any BidBell email, or with the &ldquo;Manage subscription&rdquo; link in your receipt from Paddle. Your alerts continue until the end of the period you have paid for, and you are not charged again. Every payment has a 30-day money-back guarantee; see our <a href="/refunds/">Refund Policy</a>.</p>
 <h2>5. Your responsibilities</h2>
 <p>You are responsible for giving us accurate details, for reading the full official notice and its attachments before relying on any bid, for checking deadlines, eligibility and requirements yourself, for your registration in SAM.gov, and for every decision to bid or not bid. You must follow our <a href="/acceptable-use/">acceptable use policy</a>.</p>
 <h2>6. Accuracy of information</h2>
 {lawyer('Warranty disclaimer', 'Terms 6: "as is" disclaimer of warranties (enforceability varies by state and country).')}
 <p>BidBell is provided &ldquo;as is&rdquo; and &ldquo;as available&rdquo;. We work carefully, but the information comes from public government sources that can be incomplete, late, amended or withdrawn, and our matching (for example of work sites, eligibility and likely current contracts) can be wrong. To the fullest extent the law allows, we make no warranties, express or implied, including that every relevant notice will be found, that any information is accurate or complete, that the service will be uninterrupted, or that you will win any contract. See our <a href="/disclaimer/">disclaimer</a>.</p>
 <h2>7. Limitation of liability</h2>
-{lawyer('Liability cap and exclusions', 'Terms 7: liability capped at fees paid in the previous 3 months; exclusion of indirect loss and of liability for missed, changed or withdrawn notices and bid outcomes.')}
-<p>To the fullest extent the law allows: (a) we are not liable for any indirect, incidental, special or consequential loss, or for lost profits, revenue, contracts or business opportunities; (b) we are not liable for any notice that we did not send, sent late, or that was changed or withdrawn, or for the outcome of any bid; and (c) our total liability for all claims relating to BidBell is limited to the fees you paid us in the 3 months before the event giving rise to the claim. These limits do not apply to liability that cannot be limited by law, such as for fraud.</p>
+{lawyer('Liability cap and exclusions', 'Terms 7: liability capped at the fees paid for BidBell in the previous 3 months (so $0 during the free trial, and the fees are paid to Paddle as reseller, not to BidBell); exclusion of indirect loss and of liability for missed, changed or withdrawn notices and bid outcomes.')}
+<p>To the fullest extent the law allows: (a) we are not liable for any indirect, incidental, special or consequential loss, or for lost profits, revenue, contracts or business opportunities; (b) we are not liable for any notice that we did not send, sent late, or that was changed or withdrawn, or for the outcome of any bid; and (c) our total liability for all claims relating to BidBell is limited to the fees you paid for BidBell in the 3 months before the event giving rise to the claim. These limits do not apply to liability that cannot be limited by law, such as for fraud.</p>
 <h2>8. Indemnity</h2>
 {lawyer('Indemnity', 'Terms 8: customer indemnity for misuse, resale or breach.')}
 <p>You agree to compensate us for reasonable losses and costs (including reasonable legal fees) arising from your breach of these terms, your misuse of BidBell, or your resale or republishing of our alerts.</p>
@@ -841,44 +894,45 @@ def legal():
 <h2>10. Changes to these terms</h2>
 <p>We may update these terms. For changes that materially affect you, we will email subscribers at least 30 days before they take effect. If you do not agree, you can cancel before then. The date at the top shows the latest version.</p>
 <h2>11. Governing law and disputes</h2>
-{lawyer('Governing law and venue', f"Terms 11: governing law ({C['governing_law']}) and venue ({C['venue']}); consumer and small-business protections; whether to add arbitration.")}
-<p>If you have a problem, please email us first; most issues are solved quickly, and we will respond within 5 business days. If a dispute is not solved within 30 days of your first message, it will be governed by the laws of {E(C["governing_law"])}, without regard to conflict-of-law rules, and resolved in {E(C["venue"])}, unless the law where you are located requires otherwise.</p>
+{lawyer('Governing law and venue', f"Terms 11: governing law ({C['governing_law']}) and venue ({C['venue']}) for a seller operated from Kenya; consumer and small-business protections; whether to add arbitration; the promised first response within 1 business day (the same figure as on the home page).")}
+<p>If you have a problem, please email us first; most issues are solved quickly, and we will respond within 1 business day. If a dispute is not solved within 30 days of your first message, it will be governed by the laws of {E(C["governing_law"])}, without regard to conflict-of-law rules, and resolved in {E(C["venue"])}, unless the law where you are located requires otherwise.</p>
 <h2>12. General</h2>
 <p>If any part of these terms is found unenforceable, the rest stays in effect. If we do not enforce a right, we have not waived it. You may not transfer your subscription without our written consent. These terms, with the policies linked here, are the whole agreement between you and us about BidBell.</p>
 <h2>13. Contact</h2>
-<p>{who}.{phone}</p>''')
+<p>{E(C["owner_name"])}, trading as BidBell. {contact}.{phone}</p>''')
 
     legal_page('privacy/', 'Privacy Policy', 'What BidBell collects, why, who processes it, how long we keep it and your rights.', f'''
-<p>This policy explains how {who} handles personal information. We collect as little as we can, we do not sell it, and this website uses no tracking or advertising cookies.</p>
+<p>This policy explains how {seller}, handles personal information. Our contact details are at the end of this policy. We collect as little as we can, we do not sell it, and this website uses no tracking or advertising cookies.</p>
 <h2>1. What we collect</h2>
 <ul>
 <li><strong>Trial and subscriber details</strong> you give us: first name, business email, business name and website, trades, states, eligibility (small business, HUBZone, SDVOSB, 8(a), WOSB) and whether you are registered in SAM.gov.</li>
+<li><strong>Service records</strong>: the alerts and bids we have sent you and when, so we can send reminders and updates and your day-12 summary.</li>
 <li><strong>Payment information</strong> from Paddle: your name, email, country, plan, amounts and subscription status. We never receive your card details.</li>
 <li><strong>Emails</strong> you send us, and replies to our emails.</li>
-<li><strong>Business contact details</strong> of companies we may email about BidBell: company name, business location, and a business email address published on the company's own website or in public government contract records. See our <a href="/email-policy/">email policy</a>.</li>
+<li><strong>Business contact details</strong> of companies we may email about BidBell: company name, website and location, the federal contracts it has won (public records), a business email address the company publishes itself (on its website or its own business pages) or that appears in a public government business directory, and a contact&rsquo;s first name when it is published next to that address. See our <a href="/email-policy/">email policy</a>.</li>
 </ul>
 <p>We do not ask for passwords, card numbers, tax IDs or government ID numbers.</p>
 <h2>2. Why we use it</h2>
 {lawyer('Legal bases', 'Privacy 2: legal bases for EU/UK visitors (contract, legitimate interests) and the legitimate-interest basis for business outreach.')}
 <p>To provide the service you asked for (sending your alerts, managing your trial and subscription, answering you); to keep records required for tax and accounting; and, for business contacts, to offer BidBell to companies that may need it (our legitimate interest), with an easy opt-out.</p>
 <h2>3. Who processes it for us</h2>
-{lawyer('Processors and transfers', 'Privacy 3: list of processors, international transfers, and data processing agreements with each.')}
+{lawyer('Processors and transfers', 'Privacy 3: list of processors (Google Workspace; GitHub, which stores the customer and business-contact records in a private repository; Paddle, which as merchant of record may be an independent controller rather than a processor; Anthropic, whose Claude drafts replies, researches published business emails and runs the private dashboard that holds customer names, emails and inbox messages); a data processing agreement or equivalent terms with each; international transfers, including access to the data from Kenya where BidBell is operated; whether the Kenya Data Protection Act 2019 applies and whether registration with the Office of the Data Protection Commissioner (Kenya) is needed.')}
 <ul>
-<li><strong>Google Workspace</strong> (Google LLC): our email, and our sign-up form (Google Forms). Sign-up answers are stored in BidBell&rsquo;s private Google account.</li>
-<li><strong>GitHub</strong> (GitHub, Inc.): runs the program that sends alerts and hosts this website. GitHub may log visitor IP addresses for security; see GitHub's privacy statement.</li>
+<li><strong>Google Workspace</strong> (Google LLC): our email (including the alerts we send you), and our sign-up form (Google Forms). Sign-up answers are stored in BidBell&rsquo;s private Google account.</li>
+<li><strong>GitHub</strong> (GitHub, Inc.): stores our customer and business-contact records in a private repository, runs the programs that prepare and send our emails, and hosts this website. GitHub may log visitor IP addresses for security; see GitHub&rsquo;s privacy statement.</li>
 <li><strong>Paddle</strong> (Paddle.com Market Ltd and its affiliates): our merchant of record. Paddle processes your payment details, billing address and email to handle purchases and tax.</li>
-<li><strong>Anthropic</strong> (Anthropic, PBC): Claude, an AI assistant, helps us draft replies to the emails you send us.</li>
+<li><strong>Anthropic</strong> (Anthropic, PBC): Claude, an AI assistant, helps us run BidBell. It drafts replies to the emails we receive, which we check before they are sent, looks up the published business email addresses of companies we may contact, and runs our private dashboard, so it processes the emails you send us and our customer and contact records.</li>
 </ul>
-<p>These providers process data on our instructions and under their own security and privacy commitments. Data may be processed in the United States, the European Union and other countries where they operate.</p>
+<p>We only download public data from SAM.gov and USAspending.gov; we do not send them your details. These providers process data on our instructions and under their own security and privacy commitments. Data may be processed in the United States, the European Union and other countries where they operate.</p>
 <h2>4. How long we keep it</h2>
-{lawyer('Retention periods', 'Privacy 4: retention periods (trial 12 months, customers +2 years, suppression list kept indefinitely).')}
+{lawyer('Retention periods', 'Privacy 4: retention periods (trial 12 months, customers +2 years, suppression list kept indefinitely). Nothing deletes records automatically today, every record is kept in the git history of the private repository, and no period is stated for business contacts who never opted out: confirm the periods and how deletion requests are honoured.')}
 <ul>
 <li>Trial details, if you do not subscribe: up to 12 months after the trial ends.</li>
 <li>Customer details: while you are subscribed, then up to 2 years for records, or longer where tax law requires.</li>
 <li>Business contacts who opt out: we keep only the email address on a do-not-contact list, so we never email it again.</li>
 </ul>
 <h2>5. Your rights</h2>
-{lawyer('Rights for US states and EU/UK', 'Privacy 5: rights wording for California and other US states, EU/UK GDPR, response times, and supervisory-authority complaint.')}
+{lawyer('Rights for US states and EU/UK', 'Privacy 5: rights wording for California and other US states (check whether these state laws apply to a business as small as BidBell at all, and whether offering the rights voluntarily is worded safely), EU/UK GDPR, the 30-day response time, and supervisory-authority complaint.')}
 <p>Wherever you are, you can ask us to tell you what we hold about you, correct it, delete it, or stop contacting you. Email <a href="mailto:{C["email"]}">{C["email"]}</a>; we reply within 30 days and do not charge.</p>
 <p><strong>California and other US states:</strong> you have the right to know, access, correct and delete your personal information, and not to be discriminated against for using these rights. We do not sell or share personal information for cross-context behavioral advertising, and we do not use it for profiling.</p>
 <p><strong>European Union and United Kingdom:</strong> you also have the rights to object, to restrict processing and to data portability, and you may complain to your local data protection authority.</p>
@@ -893,17 +947,17 @@ def legal():
 <h2>10. Contact</h2>
 <p>For privacy questions or requests, email {mail} or write to {E(C["owner_name"])}, BidBell, at our US mailing address: {E(C["mailing_address"])}. BidBell is operated from Kenya.{phone}</p>''')
 
-    legal_page('refunds/', 'Refund policy', 'BidBell refund policy: a 30-day money-back guarantee on every payment, and how to cancel.', f'''
-{lawyer('Refunds and automatic renewal', 'Refund policy and Terms 3-4: 30-day money-back guarantee, automatic-renewal disclosures and cancellation by email, under state automatic-renewal laws (for example California).')}
-<p>Every plan starts with a free 14-day trial, with no card needed, so you can judge the alerts before you pay.</p>
+    legal_page('refunds/', 'Refund Policy', 'BidBell refund policy: a 30-day money-back guarantee on every payment, and how to cancel.', f'''
+{lawyer('Refunds and automatic renewal', 'Refund Policy and Terms 3-4: 30-day money-back guarantee (Paddle gives some buyers statutory withdrawal rights of its own; check the two fit together), whether a refund also ends the subscription (not stated), automatic-renewal disclosures on /subscribe/ and cancellation by email, reply or the Paddle "Manage subscription" link, under state automatic-renewal laws (for example California, including its online-cancellation rules).')}
+<p>New customers can try BidBell free for 14 days, with no card needed, so you can judge the alerts before you pay.</p>
 <h2>30-day money-back guarantee</h2>
 <p>If you are not happy with BidBell, we will refund any payment in full, on the monthly or the yearly plan, if you ask within 30 days of that payment.</p>
 <h2>How to ask for a refund</h2>
-<p>Email {mail}, or reply to any BidBell email, within 30 days of the payment.{f" You can also call us at {phone_link()}." if PHONE.strip() else ""}</p>
+<p>Email {mail}, or reply to any BidBell email, within 30 days of the payment.{f" You can also call us at {phone_link()}." if PHONE.strip() else ""} You can also ask Paddle directly, through the help link in your receipt or at {ext('https://paddle.net/', 'paddle.net')}.</p>
 <h2>How refunds are paid</h2>
 <p>Our payments are handled by Paddle.com, our merchant of record, so Paddle issues your refund to your original payment method. How long it takes to show depends on your bank or card provider.</p>
 <h2>Cancelling</h2>
-<p>Your subscription renews automatically until you cancel, and you can cancel anytime: email {mail} or reply to any BidBell email. After you cancel, you are not charged again, and your alerts continue to the end of the period you have paid for.</p>
+<p>Your subscription renews automatically until you cancel, and you can cancel anytime: email {mail}, reply to any BidBell email, or use the &ldquo;Manage subscription&rdquo; link in your receipt from Paddle. After you cancel, you are not charged again, and your alerts continue to the end of the period you have paid for.</p>
 <p>See also our <a href="/terms/">Terms of Service</a>.</p>''')
 
     legal_page('acceptable-use/', 'Acceptable Use Policy', 'How BidBell alerts and pages may be used.', f'''
@@ -923,25 +977,26 @@ def legal():
 <h2>Not a government service</h2>
 <p>BidBell is a private service. It is not affiliated with, endorsed by or connected to SAM.gov, the General Services Administration, USAspending.gov or any government agency.</p>
 <h2>Data can change</h2>
-<p>We use public government data. Notices can be incomplete, published late, amended or withdrawn after we send them, and deadlines are set in each notice's own time zone. Always read the full official notice and its attachments on SAM.gov before relying on anything we send.</p>
+<p>We use public government data. Notices can be incomplete, published late, amended or withdrawn after we send them, and deadlines are set in each notice&rsquo;s own time zone. Always read the full official notice and its attachments on SAM.gov before relying on anything we send.</p>
 <h2>Matches are estimates</h2>
 <p>Work sites, eligibility, site-visit dates read from notice text, and especially the &ldquo;likely current contract&rdquo;, the contracts shown as ending soon and their amounts are our best reading of public records. They can be wrong or missing, and an agency can extend a contract or change its plans. Contract totals are the amounts the government committed (obligated) and can include option years or later changes. Reminders use the notice as it stands when we check it; the official notice and its attachments are always the authority.</p>
 <h2>No advice, no guarantee</h2>
 <p>Nothing from BidBell is legal, financial, tax or bidding advice. We do not guarantee that you will find, bid on or win any contract.</p>''')
 
     legal_page('email-policy/', 'Email Policy', 'How BidBell contacts businesses and how to opt out.', f'''
-{lawyer('CAN-SPAM and outreach', 'Email policy: outreach practices, CAN-SPAM compliance, and whether any recipient states or countries need extra rules.')}
+{lawyer('CAN-SPAM and outreach', 'Email policy: outreach practices (one plain-text email per company and no follow-ups, to addresses published on the company’s own website, its own business pages or in public US government records), CAN-SPAM compliance (sender identification, postal address, "reply no" opt-out, the sales-email statement in the footer), and whether any recipient states or countries need extra rules.')}
 <h2>Who we email</h2>
-<p>We send a small number of emails to businesses that may need BidBell: companies in cleaning and facility services whose business email address is published on their own website or in public US government contract records. We never buy lists of personal email addresses.</p>
+<p>We send a small number of emails to businesses that may need BidBell: companies in cleaning and facility services that have won federal contracts, at a business email address published on their own website, their own business pages (such as Facebook or Google) or in public US government records. We never buy email lists or use data brokers, and we never guess addresses.</p>
 <h2>What every email contains</h2>
 <ul>
 <li>Our real name and business name, and an honest subject line.</li>
+<li>A plain statement that it is a sales email about a paid service, with the price.</li>
 <li>Our mailing address: {E(C["mailing_address"])}.</li>
 <li>A clear way to stop: reply &ldquo;no&rdquo; and we will not email you again.</li>
 </ul>
-<p>We send at most one first email and two short follow-ups, and we stop as soon as you reply.</p>
+<p>We send each company one email, never a follow-up.</p>
 <h2>Opting out</h2>
-<p>Reply &ldquo;no&rdquo; or &ldquo;unsubscribe&rdquo;, or email <a href="mailto:{C["email"]}">{C["email"]}</a>. We act on it straight away and always within 10 business days, as the US CAN-SPAM Act requires. Your address goes on our do-not-contact list so it is never emailed again.</p>
+<p>Reply &ldquo;no&rdquo; or &ldquo;unsubscribe&rdquo;, or email <a href="mailto:{C["email"]}">{C["email"]}</a>. We act on it promptly, and always within 10 business days, as the US CAN-SPAM Act requires. Your address goes on our do-not-contact list so it is never emailed again, and we do not email anyone else at your company either.</p>
 <h2>No tracking</h2>
 <p>Our emails contain no tracking pixels or hidden images.</p>
 <h2>Subscriber alerts</h2>
@@ -970,14 +1025,32 @@ def extras():
     shutil.copy(os.path.join(T, 'style.css'), os.path.join(ROOT, 'style.css'))
     shutil.copy(os.path.join(T, 'form.js'), os.path.join(ROOT, 'form.js'))
     shutil.copy(os.path.join(T, 'checkout.js'), os.path.join(ROOT, 'checkout.js'))
+    shutil.copy(os.path.join(T, 'nav.js'), os.path.join(ROOT, 'nav.js'))
     open(os.path.join(ROOT, 'favicon.svg'), 'w').write(
         BELL.replace('aria-hidden="true" focusable="false"', 'xmlns="http://www.w3.org/2000/svg"').replace('currentColor', '#C8102E'))
 
 
 def main():
     home(); start(); subscribe(); bid_pages(); legal(); extras()
+    LAWYER.extend([
+        'Home page and sample alert image: they name a real individual (a sole-proprietor contractor '
+        'found in USAspending.gov public records) as an example of a likely current contract. Is using a private person\'s name '
+        'in marketing examples acceptable (right of publicity, for example Arkansas law), or should the example use a '
+        'company-held contract?',
+        'Terms 9: suspension or ending of access without prior notice (only a refund of any unused prepaid period when '
+        'BidBell ends the service).',
+        'Sign-up (/start/): consent is one checkbox for the Terms and the Privacy Policy together, and the Google Form '
+        'stores the agreement text; is that enough record of acceptance, and should /subscribe/ also link the Privacy '
+        'Policy next to "By continuing you agree to the Terms and the Refund Policy"?',
+    ])
     open(os.path.join(T, 'LAWYER_REVIEW.md'), 'w').write(
-        '# Clauses for a lawyer to review\n\n' + ''.join(f'{i}. {t}\n' for i, t in enumerate(LAWYER, 1)))
+        '# Clauses for a lawyer to review\n\n'
+        f'Current as of {long_date(TODAY)}. Generated by tools/build.py from the pages as built (not in the public HTML).\n'
+        'Facts a lawyer needs: BidBell is run by Morgan Karichu, a sole proprietor operated from Kenya, with a US mailing '
+        f'address in Arkansas ({C["mailing_address"]}); customers are US cleaning businesses; prices ${C["standard_price"]}/month '
+        f'or ${C["annual_price"]}/year after a free 14-day trial with no card; Paddle.com is the merchant of record '
+        '(Paddle Billing, live); 30-day money-back guarantee on every payment.\n\n'
+        + ''.join(f'{i}. {t}\n' for i, t in enumerate(LAWYER, 1)))
     print(f'built {len(PAGES)} pages + 404, sitemap, robots, security.txt; {len(LAWYER)} lawyer-review items; '
           f'/subscribe/ checkout {"ON (" + PADDLE["env"] + ")" if PADDLE_READY else "off (tools/paddle.json not filled in)"}; '
           f'phone {"shown" if PHONE.strip() else "not set"}')

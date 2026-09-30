@@ -1,31 +1,43 @@
 # Every Monday 07:07 UTC: refresh the free cleaning-bid pages from SAM.gov public data, rebuild the site, publish.
 # Every day 07:37 UTC: rebuild only, so notices whose deadline has passed drop off the "open bids" pages.
+# If GitHub's own timer skips a time, the backup clock (Apps Script githubClock in the private BidBell project)
+# starts this workflow about 20 minutes later, with refresh = true on Mondays and false on other days.
 # Public data only. This project must never contain secrets, customer data or email lists.
 name: Weekly cleaning bids
 on:
   schedule:
     - cron: '7 7 * * 1'     # Mondays: new bid data + rebuild (off the hour: top-of-hour runs are often dropped)
     - cron: '37 7 * * *'    # daily: rebuild only
-  workflow_dispatch: {}     # "Run workflow" button: new bid data + rebuild
+  workflow_dispatch:        # "Run workflow" button: new bid data + rebuild
+    inputs:
+      refresh:
+        description: 'Download new bid data from SAM.gov first (untick to only rebuild the pages)'
+        type: boolean
+        default: true
 permissions:
   contents: write
 concurrency: site-build
 jobs:
   refresh:
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with: { python-version: '3.12' }
       - name: Download open cleaning bids from SAM.gov
-        if: github.event_name == 'workflow_dispatch' || github.event.schedule == '7 7 * * 1'
-        run: python3 tools/update_bids.py
+        if: (github.event_name == 'workflow_dispatch' && inputs.refresh) || github.event.schedule == '7 7 * * 1'
+        run: |   # SAM.gov's file download sometimes fails for a minute: one more try before giving up
+          python3 tools/update_bids.py || { echo "SAM.gov download failed; trying once more in 2 minutes"; sleep 120; python3 tools/update_bids.py; }
       - name: Rebuild every page and the sitemap
+        id: build
+        if: ${{ !cancelled() }}   # also when the download failed: expired notices still drop off (the run stays red)
         run: python3 tools/build.py
       - name: Publish
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}   # never publish a half-built site
         run: |
-          git config user.name "bidbell-bot"; git config user.email "bot@users.noreply.github.com"
+          git config user.name "bidbell-bot"; git config user.email "41898282+github-actions[bot]@users.noreply.github.com"   # GitHub's Actions address ("bot@users..." is a stranger's account)
           git add -A
           git commit -m "Cleaning bids $(date -u +%F)" || { echo "no changes"; exit 0; }
           for i in 1 2 3 4 5; do git pull -q --rebase && git push -q && exit 0; sleep $((i * 10)); done
