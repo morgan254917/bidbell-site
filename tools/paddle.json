@@ -1,1 +1,6 @@
-{"env": "sandbox", "client_token": "", "price_monthly": "", "price_yearly": ""}
+{
+ "env": "production",
+ "client_token": "live_d9478e03e313189d5c0de69b93f",
+ "price_monthly": "pri_01m3s3gf1b4s40rnf7wretkrzf",
+ "price_yearly": "pri_01m3s3hqm98wfz4f2dxvadzq5a"
+}
