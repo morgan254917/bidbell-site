@@ -190,7 +190,7 @@ td a,th a{color:var(--ink);font-weight:600}
 
 /* pricing */
 .plans{display:grid;gap:1.25rem;grid-template-columns:1fr;align-items:stretch}
-@media (min-width:60rem){.plans{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (min-width:48rem){.plans{grid-template-columns:repeat(2,minmax(0,1fr));max-width:54rem;margin-inline:auto}}
 .plan{position:relative;background:#fff;border:1px solid var(--line);border-radius:18px;padding:2rem;display:flex;flex-direction:column;box-shadow:var(--shadow-sm)}
 .plan.best{border:2px solid var(--navy);box-shadow:var(--shadow-lg)}
 .plan .badge{position:absolute;top:-.8rem;left:2rem;background:var(--red);color:#fff;font:700 .72rem var(--sans);letter-spacing:.08em;text-transform:uppercase;padding:.3rem .7rem;border-radius:999px}

@@ -1,6 +1,6 @@
 # Clauses for a lawyer to review
 
-1. Terms 3: Lemon Squeezy as merchant of record, billing in advance, price-change notice, and the founding-price lock.
+1. Terms 3: Lemon Squeezy as merchant of record, billing in advance, and price-change notice.
 2. Terms 6: "as is" disclaimer of warranties (enforceability varies by state and country).
 3. Terms 7: liability capped at fees paid in the previous 3 months; exclusion of indirect loss and of liability for missed, changed or withdrawn notices and bid outcomes.
 4. Terms 8: customer indemnity for misuse, resale or breach.

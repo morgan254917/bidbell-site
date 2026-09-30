@@ -76,7 +76,6 @@ def layout(path, title, desc, body, jsonld=None, updated=None, noindex=False, og
     ld = ''.join(f'\n<script type="application/ld+json">{json.dumps(j, separators=(",", ":"))}</script>'
                  for j in (jsonld or []))
     upd = updated or TODAY
-    fp = C['founding_price']
     popular = ['Texas', 'California', 'Virginia', 'Florida', 'Illinois', 'Massachusetts']
     state_links = ''.join(f'<li><a href="/cleaning-bids/{slug(s)}/">{s}</a></li>' for s in popular)
     return f'''<!doctype html>
@@ -106,7 +105,7 @@ def layout(path, title, desc, body, jsonld=None, updated=None, noindex=False, og
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
-<div class="topbar">Founding offer: <b>${fp}/month, locked in</b>, for the first {C['founding_spots']} cleaning companies. <a href="{E(start_url())}">Start 14 days free &rarr;</a></div>
+<div class="topbar"><b>14 days free</b>, no card needed. Then ${C['standard_price']}/month, cancel anytime. <a href="{E(start_url())}">Start your free trial &rarr;</a></div>
 <header class="site-head"><div class="wrap">
   <a class="logo" href="/">{BELL}BidBell</a>
   <nav class="nav" aria-label="Main">
@@ -177,7 +176,7 @@ def cta_box(heading='Get the right bids every morning instead'):
   <h2>{heading}</h2>
   <p>This page is a free weekly snapshot. BidBell subscribers get, every morning around 6 AM Eastern, only the bids in their states that their business is allowed to bid on.</p>
   <div class="cta-row"><a class="btn light" href="{E(start_url())}">Start 14 days free {ICON['arrow']}</a></div>
-  {checks(['No card required', f"${C['founding_price']}/month after, first {C['founding_spots']} companies", 'Cancel anytime'])}
+  {checks(['No card required', f"${C['standard_price']}/month after, or ${C['annual_price']}/year", 'Cancel anytime'])}
 </div>'''
 
 
@@ -277,7 +276,7 @@ def hero_mock():
 
 
 def home():
-    fp, sp, ap = C['founding_price'], C['standard_price'], C['annual_price']
+    sp, ap = C['standard_price'], C['annual_price']
     n_open = len(open_bids(0))
     faq_html = ''.join(f'<details><summary>{E(q)}</summary><p>{E(a)}</p></details>' for q, a in FAQ)
     pill = (f'<span class="live-dot" aria-hidden="true"></span><b>Live</b> {n_open} federal cleaning bids open this week'
@@ -429,17 +428,13 @@ def home():
     <p>No card to start. If the alerts aren&rsquo;t useful, do nothing and they stop.</p>
   </div>
   <div class="plans">
-    <div class="plan best"><span class="badge">First {C['founding_spots']} companies</span><h3>Founding</h3>
-      <p class="price">${fp}<span> /month</span></p><p class="desc">Locked in for as long as you stay subscribed.</p>
-      {plan_items(['Daily alert filtered to your business', 'One trade group, up to 10 states or nationwide', 'Contract history and contracts ending soon', 'Deadline and site-visit reminders'])}
+    <div class="plan best"><h3>Monthly</h3>
+      <p class="price">${sp}<span> /month</span></p><p class="desc">Billed monthly. Cancel anytime.</p>
+      {plan_items(['Daily alert filtered to your business', 'One trade group, up to 10 states or nationwide', 'Contract history and contracts ending soon', 'Deadline and site-visit reminders', 'Full refund within 7 days of a payment'])}
       <a class="btn" href="{su}">Start 14 days free</a></div>
-    <div class="plan"><h3>Monthly</h3>
-      <p class="price">${sp}<span> /month</span></p><p class="desc">Standard price once the founding places are taken.</p>
-      {plan_items(['Everything in Founding', 'Cancel anytime', 'Full refund within 7 days of a payment'])}
-      <a class="btn ghost" href="{su}">Start 14 days free</a></div>
-    <div class="plan"><h3>Yearly</h3>
-      <p class="price">${ap}<span> /year</span></p><p class="desc">Two months free compared with paying monthly.</p>
-      {plan_items(['Everything in Founding', 'One payment a year', 'Full refund within 14 days'])}
+    <div class="plan"><span class="badge">2 months free</span><h3>Yearly</h3>
+      <p class="price">${ap}<span> /year</span></p><p class="desc">One payment a year, ${sp * 12 - ap} less than paying monthly.</p>
+      {plan_items(['Everything in Monthly', 'One payment a year', 'Full refund within 14 days'])}
       <a class="btn ghost" href="{su}">Start 14 days free</a></div>
   </div>
   <p class="small muted center-note">Prices in US dollars. Payments are handled by Lemon Squeezy, our merchant of record, which adds sales tax where it applies. See our <a href="/refunds/">refund policy</a>.</p>
@@ -474,7 +469,7 @@ def home():
     <h2>See your first alert tomorrow morning.</h2>
     <p>Tell us your trade, states and eligibility in 2 minutes. Your free 14 days start with the next morning&rsquo;s email.</p>
     <div class="cta-row"><a class="btn light" href="{su}">Start 14 days free {ICON['arrow']}</a></div>
-    {checks(['No card required', f'${fp}/month after, locked in', 'Cancel anytime'])}
+    {checks(['No card required', f'${sp}/month after, or ${ap}/year', 'Cancel anytime'])}
   </div>
 </div></section>'''
     org = {'@context': 'https://schema.org', '@type': 'Organization', 'name': 'BidBell', 'url': BASE + '/',
@@ -489,7 +484,7 @@ def home():
     product = {'@context': 'https://schema.org', '@type': 'Product', 'name': 'BidBell daily government bid alerts',
                'description': 'A daily email of US federal cleaning contract bids filtered by trade, state and eligibility, with the likely current contractor and contract amount.',
                'brand': {'@type': 'Brand', 'name': 'BidBell'},
-               'offers': [offer('Founding (monthly)', fp, 'P1M'), offer('Standard (monthly)', sp, 'P1M'), offer('Standard (yearly)', ap, 'P1Y')]}
+               'offers': [offer('Monthly', sp, 'P1M'), offer('Yearly', ap, 'P1Y')]}
     faqld = {'@context': 'https://schema.org', '@type': 'FAQPage',
              'mainEntity': [{'@type': 'Question', 'name': q, 'acceptedAnswer': {'@type': 'Answer', 'text': a}} for q, a in FAQ]}
     write('', layout('', 'BidBell | Federal cleaning bids you can actually win',
@@ -587,7 +582,7 @@ def start():
       <ol class="next-steps">
         <li><div><b>We confirm your details</b><span>By email, within 1 business day.</span></div></li>
         <li><div><b>Your alerts start</b><span>The next morning, around 6 AM Eastern, on days with matching bids.</span></div></li>
-        <li><div><b>Day 12: your summary</b><span>The bids you received, and a secure checkout link. ${C['founding_price']}/month for our first {C['founding_spots']} companies.</span></div></li>
+        <li><div><b>Day 12: your summary</b><span>The bids you received, and a secure checkout link: ${C['standard_price']}/month or ${C['annual_price']}/year.</span></div></li>
         <li><div><b>Or do nothing</b><span>Your alerts stop after 14 days. Nothing is charged.</span></div></li>
       </ol>
     </div>
@@ -697,7 +692,7 @@ def legal_page(path, title, desc, inner):
 
 def legal():
     who = f'{E(C["owner_name"])}, trading as BidBell (&ldquo;BidBell&rdquo;, &ldquo;we&rdquo;, &ldquo;us&rdquo;). Mailing address: {E(C["mailing_address"])}. Email: <a href="mailto:{C["email"]}">{C["email"]}</a>'
-    fp, sp, ap = C['founding_price'], C['standard_price'], C['annual_price']
+    sp, ap = C['standard_price'], C['annual_price']
 
     legal_page('terms/', 'Terms of Service', 'The terms that apply when you use BidBell.', f'''
 <p>These terms are an agreement between you (the business using BidBell, and the person accepting for it) and {who}. By starting a trial or subscription you accept them. Nothing in these terms takes away rights you have under a law that cannot be excluded by contract.</p>
@@ -706,9 +701,9 @@ def legal():
 <h2>2. Free trial</h2>
 <p>New customers get a free 2-week trial. We do not ask for a card to start it. If you do not subscribe, your alerts stop at the end of the trial and nothing is charged.</p>
 <h2>3. Plans, payment and taxes</h2>
-{lawyer('Merchant of record / payments', 'Terms 3: Lemon Squeezy as merchant of record, billing in advance, price-change notice, and the founding-price lock.')}
-<p>Paid plans are ${fp}/month (Founding, for our first {C['founding_spots']} customers), ${sp}/month or ${ap}/year (Standard), billed in advance. Payments are processed by Lemon Squeezy, which acts as the merchant of record: it sells the subscription to you, charges your payment method, issues receipts and collects any sales tax. Lemon Squeezy's own terms apply to the payment. We never see or store your card details.</p>
-<p>The Founding price stays the same for as long as your subscription stays active without a break. We may change other prices; we will email you at least 30 days before a change affects your next renewal, and you can cancel before it does.</p>
+{lawyer('Merchant of record / payments', 'Terms 3: Lemon Squeezy as merchant of record, billing in advance, and price-change notice.')}
+<p>Paid plans are ${sp}/month or ${ap}/year, billed in advance. Payments are processed by Lemon Squeezy, which acts as the merchant of record: it sells the subscription to you, charges your payment method, issues receipts and collects any sales tax. Lemon Squeezy's own terms apply to the payment. We never see or store your card details.</p>
+<p>We may change our prices; we will email you at least 30 days before a change affects your next renewal, and you can cancel before it does.</p>
 <h2>4. Cancelling and refunds</h2>
 <p>You can cancel anytime from the link in your Lemon Squeezy receipt or by replying to any BidBell email. Your alerts continue until the end of the period you have paid for. Refunds follow our <a href="/refunds/">refund policy</a>.</p>
 <h2>5. Your responsibilities</h2>
