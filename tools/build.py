@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """
-Builds the whole BidBell website as static files (no server, no database; the only script is form.js on /start/).
+Builds the whole BidBell website as static files (no server, no database). The only scripts are form.js on /start/
+and, on /subscribe/ only, checkout.js plus Paddle.js (loaded only once tools/paddle.json is filled in).
 
   python3 tools/build.py            -> writes every page into the project root
-Inputs:  tools/site.json (business facts), tools/style.css, data/cleaning_bids.json (public SAM.gov data)
+Inputs:  tools/site.json (business facts), tools/paddle.json (Paddle checkout settings), tools/style.css,
+         data/cleaning_bids.json (public SAM.gov data)
 Run daily by .github/workflows/weekly-bids.yml (drops notices whose deadline has passed); on Mondays
 tools/update_bids.py refreshes the bid data first.
 
@@ -12,10 +14,26 @@ Legal clauses a lawyer should review are listed in tools/LAWYER_REVIEW.md (not i
 import html, json, os, re, shutil
 from datetime import date, datetime
 
+# ---------------------------------------------------------------- SUPPORT PHONE: SET IT HERE
+# Put the US support number between the quotes, e.g. PHONE = '(501) 555-0123', then run python3 tools/build.py.
+# Leave it empty ('') to show no phone anywhere. When set, it appears in the footer (next to the email), the Terms
+# (Contact), the Privacy Policy (Contact), the Refund policy and /subscribe/.
+PHONE = ''
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 T = os.path.join(ROOT, 'tools')
 C = json.load(open(os.path.join(T, 'site.json')))
 DATA = json.load(open(os.path.join(ROOT, 'data', 'cleaning_bids.json')))
+# Paddle checkout settings for /subscribe/: {"env": "sandbox" or "production", "client_token", "price_monthly",
+# "price_yearly"}. The client-side token is public by design (it only opens checkouts); never put a Paddle API key here.
+# While client_token or a price id is empty, /subscribe/ shows "Payments open soon" and loads no Paddle script.
+PADDLE = json.load(open(os.path.join(T, 'paddle.json')))
+PADDLE_READY = all(str(PADDLE.get(k) or '').strip() for k in ('client_token', 'price_monthly', 'price_yearly'))
+if PADDLE.get('env') not in ('sandbox', 'production'):
+    raise SystemExit('tools/paddle.json: "env" must be "sandbox" or "production"')
+if PADDLE_READY and not PADDLE['client_token'].strip().startswith('test_' if PADDLE['env'] == 'sandbox' else 'live_'):
+    print(f'warning: tools/paddle.json: a {PADDLE["env"]} client token normally starts with '
+          f'{"test_" if PADDLE["env"] == "sandbox" else "live_"}')
 BASE = 'https://' + C['domain']
 TODAY = date.fromisoformat(os.environ.get('BUILD_DATE', date.today().isoformat()))
 E = html.escape
@@ -47,6 +65,30 @@ def lawyer(tag, text):
     return ''   # listed in tools/LAWYER_REVIEW.md only; never in the public HTML
 
 
+def phone_link():
+    """The support phone (PHONE at the top of this file) as a tap-to-call link, or '' when it is not set."""
+    if not PHONE.strip():
+        return ''
+    digits = re.sub(r'\D', '', PHONE)
+    if len(digits) == 10:
+        digits = '1' + digits
+    if len(digits) != 11 or not digits.startswith('1'):
+        raise SystemExit(f'PHONE in tools/build.py must be a US number like (501) 555-0123, not {PHONE!r}')
+    return f'<a href="tel:+{digits}">{E(PHONE.strip())}</a>'
+
+
+# Content-Security-Policy for every page. /subscribe/ adds Paddle's hosts, and only once checkout is configured.
+CSP = ("default-src 'none'; img-src 'self'; style-src 'self'; font-src 'self'; script-src 'self'; "
+       "connect-src 'self' https://docs.google.com; base-uri 'none'; form-action https://docs.google.com; upgrade-insecure-requests")
+# Paddle.js comes from cdn.paddle.com, loads its stylesheet from (sandbox-)cdn.paddle.com and opens the overlay
+# checkout in a frame from (sandbox-)buy.paddle.com. 'unsafe-inline' styles let Paddle.js size and place that overlay.
+CSP_PADDLE = ("default-src 'none'; img-src 'self' https://*.paddle.com; "
+              "style-src 'self' 'unsafe-inline' https://cdn.paddle.com https://sandbox-cdn.paddle.com; font-src 'self'; "
+              "script-src 'self' https://cdn.paddle.com https://sandbox-cdn.paddle.com; "
+              "frame-src https://buy.paddle.com https://sandbox-buy.paddle.com; connect-src 'self' https://*.paddle.com; "
+              "base-uri 'none'; form-action 'none'; upgrade-insecure-requests")
+
+
 BELL = ('<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2.2" '
         'stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>'
         '<path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>')
@@ -72,7 +114,7 @@ def checks(items):
     return '<ul class="checks">' + ''.join(f'<li>{ICON["check"]}{x}</li>' for x in items) + '</ul>'
 
 
-def layout(path, title, desc, body, jsonld=None, updated=None, noindex=False, og_type='website'):
+def layout(path, title, desc, body, jsonld=None, updated=None, noindex=False, og_type='website', csp=CSP):
     url = BASE + '/' + path
     ld = ''.join(f'\n<script type="application/ld+json">{json.dumps(j, separators=(",", ":"))}</script>'
                  for j in (jsonld or []))
@@ -84,7 +126,7 @@ def layout(path, title, desc, body, jsonld=None, updated=None, noindex=False, og
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self'; style-src 'self'; font-src 'self'; script-src 'self'; connect-src 'self' https://docs.google.com; base-uri 'none'; form-action https://docs.google.com; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="{csp}">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="color-scheme" content="light">
 <title>{E(title)}</title>
@@ -122,13 +164,13 @@ def layout(path, title, desc, body, jsonld=None, updated=None, noindex=False, og
     <div class="brand">
       <a class="logo" href="/">{BELL}BidBell</a>
       <p class="foot-about">Daily federal cleaning bids for janitorial, carpet and window companies, filtered to the jobs you can win.</p>
-      <p class="small">{E(C['mailing_address'])}<br><a href="mailto:{C['email']}">{C['email']}</a></p>
+      <p class="small">{E(C['mailing_address'])}<br><a href="mailto:{C['email']}">{C['email']}</a>{' &middot; ' + phone_link() if PHONE.strip() else ''}</p>
     </div>
     <nav aria-label="Product"><h2>Product</h2><ul>
       <li><a href="/#features">Features</a></li><li><a href="/#how">How it works</a></li><li><a href="/#sample">Sample alert</a></li><li><a href="/#pricing">Pricing</a></li><li><a href="/#faq">FAQ</a></li><li><a href="{E(start_url())}">Start free trial</a></li></ul></nav>
     <nav aria-label="Free bid pages"><h2>Free bid pages</h2><ul>{state_links}<li><a href="/cleaning-bids/">All states &rarr;</a></li></ul></nav>
     <nav aria-label="Company"><h2>Company</h2><ul>
-      <li><a href="/#about">About</a></li><li><a href="/terms/">Terms</a></li><li><a href="/privacy/">Privacy</a></li><li><a href="/refunds/">Refunds</a></li><li><a href="/acceptable-use/">Acceptable use</a></li><li><a href="/disclaimer/">Disclaimer</a></li><li><a href="/email-policy/">Email policy</a></li></ul></nav>
+      <li><a href="/#about">About</a></li><li><a href="/terms/">Terms</a></li><li><a href="/privacy/">Privacy</a></li><li><a href="/refunds/">Refund policy</a></li><li><a href="/acceptable-use/">Acceptable use</a></li><li><a href="/disclaimer/">Disclaimer</a></li><li><a href="/email-policy/">Email policy</a></li></ul></nav>
   </div>
   <div class="foot-bottom">
     <span>&copy; {TODAY.year} BidBell. Run by {E(C['owner_name'])}. Page updated {long_date(upd)}.</span>
@@ -189,7 +231,7 @@ WHO = {'Total Small Business Set-Aside': 'Small businesses', 'HUBZone Set-Aside'
 STAGE = {'Solicitation': 'BID OPEN', 'Combined Synopsis/Solicitation': 'BID OPEN',
          'Presolicitation': 'COMING SOON', 'Sources Sought': 'MARKET RESEARCH'}
 
-FAQ = [
+FAQ = [   # (question, answer); answers are HTML (links allowed); the FAQ structured data gets them as plain text
     ('Where do the bids come from?',
      'From SAM.gov, the official US government website where federal agencies publish contract opportunities. '
      'Past contract winners and amounts come from USAspending.gov, the official public database of federal spending. '
@@ -207,8 +249,9 @@ FAQ = [
      'We show a contract only when one clearly fits, label it "likely" unless the notice names it, and link to the official record so you can check. '
      'When no contract clearly fits, we show nothing rather than guess.'),
     ('How do I pay, and how do I cancel?',
-     'On day 12 of your free 14 days we email you a secure checkout link from Lemon Squeezy, our payment provider. '
-     'You can cancel anytime from the link in your receipt or by replying to any BidBell email; you keep access until the end of the period you paid for.'),
+     'On day 12 of your free 14 days we email you a secure checkout link. Payments are handled by Paddle, our merchant of record. '
+     'Your plan renews automatically until you cancel. You can cancel anytime by replying to any BidBell email; your alerts continue '
+     'until the end of the period you paid for. Every payment has a 30-day money-back guarantee; see our <a href="/refunds/">refund policy</a>.'),
     ('Is my information safe?',
      'We collect only what we need to send your alerts: your name, business details, trades, states and eligibility. '
      'We never see your card, we do not sell data, and this website has no tracking or advertising cookies.'),
@@ -281,7 +324,7 @@ def hero_mock():
 def home():
     sp, ap = C['standard_price'], C['annual_price']
     n_open = len(open_bids(0))
-    faq_html = ''.join(f'<details><summary>{E(q)}</summary><p>{E(a)}</p></details>' for q, a in FAQ)
+    faq_html = ''.join(f'<details><summary>{E(q)}</summary><p>{a}</p></details>' for q, a in FAQ)
     pill = (f'<span class="live-dot" aria-hidden="true"></span><b>Live</b> {n_open} federal cleaning bids open this week'
             if n_open else '<span class="live-dot" aria-hidden="true"></span><b>Live</b> New federal cleaning bids, checked every morning')
     su = E(start_url())
@@ -435,15 +478,15 @@ def home():
   </div>
   <div class="plans">
     <div class="plan best"><h3>Monthly</h3>
-      <p class="price">${sp}<span> /month</span></p><p class="desc">Billed monthly. Cancel anytime.</p>
-      {plan_items(['Daily alert filtered to your business', 'One trade group, up to 10 states or nationwide', 'Contract history and contracts ending soon', 'Deadline and site-visit reminders', 'Full refund within 7 days of a payment'])}
+      <p class="price">${sp}<span> /month</span></p><p class="desc">Billed every month until you cancel. Cancel anytime.</p>
+      {plan_items(['Daily alert filtered to your business', 'One trade group, up to 10 states or nationwide', 'Contract history and contracts ending soon', 'Deadline and site-visit reminders', '30-day money-back guarantee'])}
       <a class="btn" href="{su}">Start 14 days free</a></div>
     <div class="plan"><span class="badge">2 months free</span><h3>Yearly</h3>
-      <p class="price">${ap}<span> /year</span></p><p class="desc">One payment a year, ${sp * 12 - ap} less than paying monthly.</p>
-      {plan_items(['Everything in Monthly', 'One payment a year', 'Full refund within 14 days'])}
+      <p class="price">${ap}<span> /year</span></p><p class="desc">Billed every year until you cancel, ${sp * 12 - ap} less than paying monthly.</p>
+      {plan_items(['Everything in Monthly', 'One payment a year', '30-day money-back guarantee'])}
       <a class="btn ghost" href="{su}">Start 14 days free</a></div>
   </div>
-  <p class="small muted center-note">Prices in US dollars. Payments are handled by Lemon Squeezy, our merchant of record, which adds sales tax where it applies. See our <a href="/refunds/">refund policy</a>.</p>
+  <p class="small muted center-note">Prices in US dollars. Plans renew automatically until you cancel. Payments are handled by Paddle.com, our merchant of record; any sales tax is shown at checkout. See our <a href="/refunds/">refund policy</a>.</p>
 </div></section>
 
 <section id="about" class="tint" aria-labelledby="about-h"><div class="wrap two">
@@ -492,7 +535,8 @@ def home():
                'brand': {'@type': 'Brand', 'name': 'BidBell'}, 'image': BASE + '/og.png',
                'offers': [offer('Monthly', sp, 'P1M'), offer('Yearly', ap, 'P1Y')]}
     faqld = {'@context': 'https://schema.org', '@type': 'FAQPage',
-             'mainEntity': [{'@type': 'Question', 'name': q, 'acceptedAnswer': {'@type': 'Answer', 'text': a}} for q, a in FAQ]}
+             'mainEntity': [{'@type': 'Question', 'name': q, 'acceptedAnswer': {'@type': 'Answer', 'text': html.unescape(re.sub(r'<[^>]+>', '', a))}}
+                            for q, a in FAQ]}
     write('', layout('', 'BidBell | Federal cleaning bids you can actually win',
                      'Every morning, BidBell emails US cleaning companies only the federal janitorial, carpet and window-cleaning bids in their states that they are allowed to bid on, with who holds each job now and what they were paid.',
                      body, [org, product, faqld]))
@@ -610,6 +654,71 @@ def start():
                            'Start a free 14-day BidBell trial: daily federal cleaning bids for your trade, states and eligibility. No card needed.', body))
 
 
+# ------------------------------------------------------------------ subscribe (trial customers choose a plan)
+def subscribe():
+    """/subscribe/?plan=monthly|yearly&c=<customer id>: linked from the trial emails; not in the sitemap, noindex.
+    checkout.js highlights the plan from ?plan= and opens Paddle's overlay checkout; tools/paddle.json holds the settings."""
+    sp, ap = C['standard_price'], C['annual_price']
+    mail = f'<a href="mailto:{C["email"]}">{C["email"]}</a>'
+    agree = 'By continuing you agree to the <a href="/terms/">Terms</a> and the <a href="/refunds/">Refund policy</a>.'
+
+    def card(key, name, price, per, renews, items, badge=''):
+        button = (f'<p class="small muted terms-line">{agree}</p>'
+                  f'<button class="btn{"" if key == "monthly" else " ghost"}" type="button" data-checkout="{key}">'
+                  f'Subscribe for ${price}/{per}</button>') if PADDLE_READY else ''
+        lis = ''.join(f'<li>{ICON["check"]}<span>{x}</span></li>' for x in items)
+        return (f'<div class="plan{" best" if key == "monthly" else ""}" data-plan="{key}">{badge}<h3>{name}</h3>'
+                f'<p class="price">${price}<span> /{per}</span></p><p class="desc">{renews}</p><ul>{lis}</ul>{button}</div>')
+
+    plans = (card('monthly', 'Monthly', sp, 'month', 'Renews every month until you cancel.',
+                  ['30-day money-back guarantee', 'Cancel anytime']) +
+             card('yearly', 'Yearly', ap, 'year', 'Renews every year until you cancel.',
+                  [f'${sp * 12 - ap} less than paying monthly', '30-day money-back guarantee', 'Cancel anytime'],
+                  '<span class="badge">2 months free</span>'))
+    if PADDLE_READY:
+        cfg = {'env': PADDLE['env'], 'client_token': PADDLE['client_token'].strip(),
+               'prices': {'monthly': PADDLE['price_monthly'].strip(), 'yearly': PADDLE['price_yearly'].strip()},
+               'success_url': BASE + '/subscribe/thanks/'}
+        cfg_json = json.dumps(cfg, separators=(',', ':')).replace('<', '\\u003c').replace('>', '\\u003e').replace('&', '\\u0026')
+        foot = (f'<div class="form-error" id="checkout-error" role="alert" hidden>The secure checkout could not load. '
+                f'Please refresh the page and try again, or email {C["email"]}.</div>'
+                f'<p class="small muted">Prices in US dollars. Checkout is handled by Paddle.com, our merchant of record. '
+                f'Any sales tax is shown before you pay. Your receipt comes from Paddle.</p>')
+        scripts = (f'\n<script type="application/json" id="paddle-config">{cfg_json}</script>'
+                   '\n<script src="https://cdn.paddle.com/paddle/v2/paddle.js" defer></script>'
+                   '\n<script src="/checkout.js" defer></script>')
+    else:
+        foot = (f'<div class="note"><p>Payments open soon. We\'ll email you as soon as you can subscribe; your alerts keep going until then.</p></div>'
+                f'<p class="small muted">Prices in US dollars. {agree}</p>')
+        scripts = '\n<script src="/checkout.js" defer></script>'
+    phone = f' or call {phone_link()}' if PHONE.strip() else ''
+    body = f'''<div class="page-head"><div class="wrap">
+  <p class="crumbs"><a href="/">Home</a> / Choose your plan</p>
+  <h1>Choose your plan</h1>
+  <p class="lead">Keep your BidBell alerts coming after your free trial. Pick monthly or yearly.</p>
+</div></div>
+<div class="wrap page">
+  <h2 class="sr-only">Plans</h2>
+  <div class="plans">{plans}</div>
+  <div class="subscribe-foot">
+    {foot}
+    <p class="small muted">Questions? Email {mail}{phone}.</p>
+  </div>
+</div>{scripts}'''
+    thanks = f'''<div class="page-head"><div class="wrap">
+  <p class="crumbs"><a href="/">Home</a> / Subscription</p>
+  <h1>Thank you &mdash; your subscription is active.</h1>
+  <p class="lead">Your alerts continue as usual; your receipt comes from Paddle.</p>
+  <div class="cta-row"><a class="btn" href="/">Back to BidBell</a><a class="btn ghost" href="/refunds/">Refund policy</a></div>
+  <p class="small muted">Questions about your plan? Email {mail}{phone}.</p>
+</div></div>'''
+    write('subscribe/thanks/', layout('subscribe/thanks/', 'Subscription active | BidBell',
+                                      'Your BidBell subscription is active.', thanks, noindex=True), sitemap=False)
+    write('subscribe/', layout('subscribe/', 'Choose your plan | BidBell',
+                               f'Choose a BidBell plan: ${sp}/month or ${ap}/year, renews until you cancel, 30-day money-back guarantee.',
+                               body, noindex=True, csp=CSP_PADDLE if PADDLE_READY else CSP), sitemap=False)
+
+
 # ------------------------------------------------------------------ public bid pages (gamechanger 1)
 def bid_pages():
     upd = date.fromisoformat(DATA['updated'])
@@ -698,6 +807,8 @@ def legal_page(path, title, desc, inner):
 
 def legal():
     who = f'{E(C["owner_name"])}, trading as BidBell (&ldquo;BidBell&rdquo;, &ldquo;we&rdquo;, &ldquo;us&rdquo;). Mailing address: {E(C["mailing_address"])}. Email: <a href="mailto:{C["email"]}">{C["email"]}</a>'
+    phone = f' Phone: {phone_link()}.' if PHONE.strip() else ''
+    mail = f'<a href="mailto:{C["email"]}">{C["email"]}</a>'
     sp, ap = C['standard_price'], C['annual_price']
 
     legal_page('terms/', 'Terms of Service', 'The terms that apply when you use BidBell.', f'''
@@ -707,11 +818,13 @@ def legal():
 <h2>2. Free trial</h2>
 <p>New customers get a free 2-week trial. We do not ask for a card to start it. If you do not subscribe, your alerts stop at the end of the trial and nothing is charged.</p>
 <h2>3. Plans, payment and taxes</h2>
-{lawyer('Merchant of record / payments', 'Terms 3: Lemon Squeezy as merchant of record, billing in advance, and price-change notice.')}
-<p>Paid plans are ${sp}/month or ${ap}/year, billed in advance. Payments are processed by Lemon Squeezy, which acts as the merchant of record: it sells the subscription to you, charges your payment method, issues receipts and collects any sales tax. Lemon Squeezy's own terms apply to the payment. We never see or store your card details.</p>
-<p>We may change our prices; we will email you at least 30 days before a change affects your next renewal, and you can cancel before it does.</p>
+{lawyer('Merchant of record / payments', 'Terms 3: Paddle as reseller and merchant of record (Paddle-required wording), seller identity as a sole proprietor, billing in advance, automatic renewal, and price-change notice.')}
+<p>BidBell is operated by {E(C["owner_name"])}, a sole proprietor (not a registered company) trading as BidBell, at {E(C["mailing_address"])}.</p>
+<p>Our order process is conducted by our online reseller Paddle.com. Paddle.com is the Merchant of Record for all our orders. Paddle provides all customer service inquiries and handles returns.</p>
+<p>Paid plans are ${sp}/month or ${ap}/year, in US dollars, billed in advance. Paddle charges your payment method, sends your receipt and collects any sales tax, which is shown at checkout. Paddle's own terms apply to the purchase. We never see or store your card details.</p>
+<p>Your subscription renews automatically at the end of each month or year, and the plan price is charged for the next period, until you cancel. We may change our prices; we will email you at least 30 days before a change affects your next renewal, and you can cancel before it does.</p>
 <h2>4. Cancelling and refunds</h2>
-<p>You can cancel anytime from the link in your Lemon Squeezy receipt or by replying to any BidBell email. Your alerts continue until the end of the period you have paid for. Refunds follow our <a href="/refunds/">refund policy</a>.</p>
+<p>You can cancel anytime by emailing <a href="mailto:{C["email"]}">{C["email"]}</a> or replying to any BidBell email. Your alerts continue until the end of the period you have paid for, and you are not charged again. Every payment has a 30-day money-back guarantee; see our <a href="/refunds/">Refund policy</a>.</p>
 <h2>5. Your responsibilities</h2>
 <p>You are responsible for giving us accurate details, for reading the full official notice and its attachments before relying on any bid, for checking deadlines, eligibility and requirements yourself, for your registration in SAM.gov, and for every decision to bid or not bid. You must follow our <a href="/acceptable-use/">acceptable use policy</a>.</p>
 <h2>6. Accuracy of information</h2>
@@ -733,14 +846,14 @@ def legal():
 <h2>12. General</h2>
 <p>If any part of these terms is found unenforceable, the rest stays in effect. If we do not enforce a right, we have not waived it. You may not transfer your subscription without our written consent. These terms, with the policies linked here, are the whole agreement between you and us about BidBell.</p>
 <h2>13. Contact</h2>
-<p>{who}.</p>''')
+<p>{who}.{phone}</p>''')
 
     legal_page('privacy/', 'Privacy Policy', 'What BidBell collects, why, who processes it, how long we keep it and your rights.', f'''
 <p>This policy explains how {who} handles personal information. We collect as little as we can, we do not sell it, and this website uses no tracking or advertising cookies.</p>
 <h2>1. What we collect</h2>
 <ul>
 <li><strong>Trial and subscriber details</strong> you give us: first name, business email, business name and website, trades, states, eligibility (small business, HUBZone, SDVOSB, 8(a), WOSB) and whether you are registered in SAM.gov.</li>
-<li><strong>Payment information</strong> from Lemon Squeezy: your name, email, country, plan, amounts and subscription status. We never receive your card details.</li>
+<li><strong>Payment information</strong> from Paddle: your name, email, country, plan, amounts and subscription status. We never receive your card details.</li>
 <li><strong>Emails</strong> you send us, and replies to our emails.</li>
 <li><strong>Business contact details</strong> of companies we may email about BidBell: company name, business location, and a business email address published on the company's own website or in public government contract records. See our <a href="/email-policy/">email policy</a>.</li>
 </ul>
@@ -753,7 +866,7 @@ def legal():
 <ul>
 <li><strong>Google Workspace</strong> (Google LLC): our email, and our sign-up form (Google Forms). Sign-up answers are stored in BidBell&rsquo;s private Google account.</li>
 <li><strong>GitHub</strong> (GitHub, Inc.): runs the program that sends alerts and hosts this website. GitHub may log visitor IP addresses for security; see GitHub's privacy statement.</li>
-<li><strong>Lemon Squeezy</strong>: payments, as merchant of record.</li>
+<li><strong>Paddle</strong> (Paddle.com Market Ltd and its affiliates): our merchant of record. Paddle processes your payment details, billing address and email to handle purchases and tax.</li>
 <li><strong>Anthropic</strong> (Anthropic, PBC): Claude, an AI assistant, helps us draft replies to the emails you send us.</li>
 </ul>
 <p>These providers process data on our instructions and under their own security and privacy commitments. Data may be processed in the United States, the European Union and other countries where they operate.</p>
@@ -770,24 +883,28 @@ def legal():
 <p><strong>California and other US states:</strong> you have the right to know, access, correct and delete your personal information, and not to be discriminated against for using these rights. We do not sell or share personal information for cross-context behavioral advertising, and we do not use it for profiling.</p>
 <p><strong>European Union and United Kingdom:</strong> you also have the rights to object, to restrict processing and to data portability, and you may complain to your local data protection authority.</p>
 <h2>6. Cookies and tracking</h2>
-<p>This website sets no cookies and uses no analytics, advertising pixels or third-party scripts. Our emails contain no tracking pixels.</p>
+<p>This website sets no cookies and uses no analytics or advertising pixels. The only third-party script is Paddle&rsquo;s checkout (Paddle.js), which loads only on our plan page (/subscribe/) so you can pay; Paddle may use cookies there for checkout and fraud prevention, under Paddle&rsquo;s own privacy notice. Our emails contain no tracking pixels.</p>
 <h2>7. Security</h2>
 <p>We use providers with strong security, two-step verification on every account, and we keep customer data out of this public website. No system is perfectly secure; if a breach affects you, we will tell you as the law requires.</p>
 <h2>8. Children</h2>
 <p>BidBell is a business service and is not meant for anyone under 18.</p>
 <h2>9. Changes</h2>
-<p>We will post changes here and email subscribers about material changes before they take effect.</p>''')
+<p>We will post changes here and email subscribers about material changes before they take effect.</p>
+<h2>10. Contact</h2>
+<p>For privacy questions or requests, email {mail} or write to {E(C["owner_name"])}, BidBell, {E(C["mailing_address"])}.{phone}</p>''')
 
-    legal_page('refunds/', 'Refund Policy', 'BidBell refund and cancellation policy.', f'''
-<p>Every plan starts with a free 2-week trial, so you can judge the alerts before paying.</p>
-<h2>Monthly plans</h2>
-<p>If you are not satisfied, email <a href="mailto:{C["email"]}">{C["email"]}</a> within 7 days of a payment and we will refund that payment in full.</p>
-<h2>Yearly plan</h2>
-<p>Full refund within 14 days of payment. After that, we refund the unused whole months.</p>
-<h2>Cancelling</h2>
-<p>Cancel anytime from the link in your Lemon Squeezy receipt, or reply to any BidBell email. Your alerts continue until the end of the period you paid for, and you will not be charged again.</p>
+    legal_page('refunds/', 'Refund policy', 'BidBell refund policy: a 30-day money-back guarantee on every payment, and how to cancel.', f'''
+{lawyer('Refunds and automatic renewal', 'Refund policy and Terms 3-4: 30-day money-back guarantee, automatic-renewal disclosures and cancellation by email, under state automatic-renewal laws (for example California).')}
+<p>Every plan starts with a free 14-day trial, with no card needed, so you can judge the alerts before you pay.</p>
+<h2>30-day money-back guarantee</h2>
+<p>If you are not happy with BidBell, we will refund any payment in full, on the monthly or the yearly plan, if you ask within 30 days of that payment.</p>
+<h2>How to ask for a refund</h2>
+<p>Email {mail}, or reply to any BidBell email, within 30 days of the payment.{f" You can also call us at {phone_link()}." if PHONE.strip() else ""}</p>
 <h2>How refunds are paid</h2>
-<p>Refunds are made by Lemon Squeezy to your original payment method. Your bank may take 5 to 10 business days to show it.</p>''')
+<p>Our payments are handled by Paddle.com, our merchant of record, so Paddle issues your refund to your original payment method. How long it takes to show depends on your bank or card provider.</p>
+<h2>Cancelling</h2>
+<p>Your subscription renews automatically until you cancel, and you can cancel anytime: email {mail} or reply to any BidBell email. After you cancel, you are not charged again, and your alerts continue to the end of the period you have paid for.</p>
+<p>See also our <a href="/terms/">Terms of Service</a>.</p>''')
 
     legal_page('acceptable-use/', 'Acceptable Use Policy', 'How BidBell alerts and pages may be used.', f'''
 {lawyer('Acceptable use', 'Acceptable use: resale ban, one-business-per-subscription rule, and enforcement.')}
@@ -852,15 +969,18 @@ def extras():
     open(os.path.join(ROOT, '.nojekyll'), 'w').write('')
     shutil.copy(os.path.join(T, 'style.css'), os.path.join(ROOT, 'style.css'))
     shutil.copy(os.path.join(T, 'form.js'), os.path.join(ROOT, 'form.js'))
+    shutil.copy(os.path.join(T, 'checkout.js'), os.path.join(ROOT, 'checkout.js'))
     open(os.path.join(ROOT, 'favicon.svg'), 'w').write(
         BELL.replace('aria-hidden="true" focusable="false"', 'xmlns="http://www.w3.org/2000/svg"').replace('currentColor', '#C8102E'))
 
 
 def main():
-    home(); start(); bid_pages(); legal(); extras()
+    home(); start(); subscribe(); bid_pages(); legal(); extras()
     open(os.path.join(T, 'LAWYER_REVIEW.md'), 'w').write(
         '# Clauses for a lawyer to review\n\n' + ''.join(f'{i}. {t}\n' for i, t in enumerate(LAWYER, 1)))
-    print(f'built {len(PAGES)} pages + 404, sitemap, robots, security.txt; {len(LAWYER)} lawyer-review items')
+    print(f'built {len(PAGES)} pages + 404, sitemap, robots, security.txt; {len(LAWYER)} lawyer-review items; '
+          f'/subscribe/ checkout {"ON (" + PADDLE["env"] + ")" if PADDLE_READY else "off (tools/paddle.json not filled in)"}; '
+          f'phone {"shown" if PHONE.strip() else "not set"}')
 
 
 if __name__ == '__main__':

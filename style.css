@@ -317,6 +317,14 @@ input[type=checkbox],input[type=radio]{accent-color:var(--navy);width:1.05rem;he
 .next-steps b{display:block;color:var(--ink);font-weight:600}
 .next-steps span{display:block;color:var(--muted);font-size:.93rem;line-height:1.5}
 .plain-list{padding-left:1.2rem;margin:1rem 0 0;display:grid;gap:.4rem}
+
+/* plan page (/subscribe/) */
+button.btn{cursor:pointer}
+.plan .terms-line{margin:0 0 .8rem;text-align:center}
+.subscribe-foot{max-width:54rem;margin:2rem auto 0;text-align:center}
+.subscribe-foot .note,.subscribe-foot .form-error{text-align:left;margin:0 0 1rem}
+.subscribe-foot .note p{margin:0}
+.subscribe-foot p.small{margin:0 0 .5rem}
 .page-head .lead{max-width:44rem}
 .page-head p.small{margin:0}
 
