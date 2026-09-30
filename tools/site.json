@@ -1,11 +1,11 @@
 {
   "owner_name": "Morgan Karichu",
-  "mailing_address": "628 W Broadway St, Ste 203, North Little Rock, AR 72114, United States",
+  "mailing_address": "1670 Broadway, Denver, CO 80202, United States",
   "address_parts": {
-    "street": "628 W Broadway St, Ste 203",
-    "city": "North Little Rock",
-    "region": "AR",
-    "postal": "72114",
+    "street": "1670 Broadway",
+    "city": "Denver",
+    "region": "CO",
+    "postal": "80202",
     "country": "US"
   },
   "email": "hello@getbidbell.com",
