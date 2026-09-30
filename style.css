@@ -88,6 +88,11 @@ section{padding:6rem 0}
 @media (min-width:64rem){.hero .wrap{grid-template-columns:1.05fr .95fr}}
 .pill{display:inline-flex;align-items:center;gap:.55rem;background:#fff;border:1px solid var(--line);border-radius:999px;padding:.35rem .8rem .35rem .45rem;font-size:.88rem;color:var(--text);box-shadow:var(--shadow-sm);margin:0 0 1.5rem}
 .pill b{background:var(--tint-2);color:var(--ink);border-radius:999px;padding:.1rem .55rem;font-size:.78rem;font-weight:600}
+a.pill{text-decoration:none;transition:border-color .15s,box-shadow .15s}
+a.pill:hover{color:var(--text);border-color:var(--line-2);box-shadow:var(--shadow)}
+.pill-go{display:inline-flex;align-items:center;gap:.25rem;margin-left:.2rem;padding-left:.6rem;border-left:1px solid var(--line);color:var(--ink);font-weight:600}
+.pill-go svg{width:.85rem;height:.85rem}
+a.pill:hover .pill-go{color:var(--red)}
 .live-dot{width:.55rem;height:.55rem;border-radius:50%;background:var(--red);animation:bb-pulse 2s ease-out infinite}
 
 /* product mock (the real alert email, drawn in HTML) */
@@ -303,6 +308,9 @@ input[type=checkbox],input[type=radio]{accent-color:var(--navy);width:1.05rem;he
 .agree input{margin-top:.25rem}
 .form-foot .btn{width:100%;padding:1rem;font-size:1.05rem;cursor:pointer}
 .form-foot p{margin:.9rem 0 0;text-align:center}
+.form-foot .btn[disabled]{opacity:.7;cursor:wait;transform:none}
+.form-error{background:#FDECEE;border:1px solid #F5C2C9;color:#8A0B1F;border-radius:10px;padding:.8rem 1rem;margin:0 0 1.5rem;font-weight:600;font-size:.95rem}
+.form-error[hidden]{display:none}
 .next-steps{list-style:none;counter-reset:s;padding:0;margin:0;display:grid;gap:1.1rem}
 .next-steps li{counter-increment:s;display:grid;grid-template-columns:2rem 1fr;gap:.8rem;align-items:start}
 .next-steps li::before{content:counter(s);display:grid;place-items:center;width:2rem;height:2rem;border-radius:50%;background:var(--tint-2);color:var(--ink);font-weight:600;font-size:.9rem}

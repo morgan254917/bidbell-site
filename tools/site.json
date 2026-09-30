@@ -10,12 +10,24 @@
   },
   "email": "hello@getbidbell.com",
   "domain": "getbidbell.com",
-  "form_url": "",
+  "form_url": "https://docs.google.com/forms/d/e/1FAIpQLScYT-Un9xrBxfsaP41WLhjKINBK-zStkk4OO6RcA12S7zruaw/viewform",
   "founding_price": 29,
   "standard_price": 39,
   "annual_price": 390,
   "founding_spots": 20,
   "legal_updated": "2026-09-30",
   "governing_law": "the State of Arkansas, United States",
-  "venue": "the state or federal courts located in Pulaski County, Arkansas"
+  "venue": "the state or federal courts located in Pulaski County, Arkansas",
+  "form_post": "https://docs.google.com/forms/d/e/1FAIpQLScYT-Un9xrBxfsaP41WLhjKINBK-zStkk4OO6RcA12S7zruaw/formResponse",
+  "form_entries": {
+    "first": "entry.1776956707",
+    "email": "entry.1786475895",
+    "business": "entry.1795417945",
+    "website": "entry.1395736645",
+    "trades": "entry.49510283",
+    "states": "entry.1322471200",
+    "certs": "entry.807221673",
+    "sam": "entry.1341135439",
+    "agree": "entry.439508872"
+  }
 }

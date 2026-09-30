@@ -84,7 +84,7 @@ def layout(path, title, desc, body, jsonld=None, updated=None, noindex=False, og
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self'; style-src 'self'; font-src 'self'; connect-src 'self'; base-uri 'none'; form-action https://docs.google.com; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self'; style-src 'self'; font-src 'self'; script-src 'self'; connect-src 'self' https://docs.google.com; base-uri 'none'; form-action https://docs.google.com; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="color-scheme" content="light">
 <title>{E(title)}</title>
@@ -296,7 +296,7 @@ def home():
     body = f'''
 <section class="hero"><div class="wrap">
   <div class="copy">
-    <p class="pill">{pill}</p>
+    <a class="pill" href="/cleaning-bids/">{pill}<span class="pill-go">See them {ICON['arrow']}</span></a>
     <h1>Every federal cleaning bid you can win. In your inbox by 6&nbsp;AM.</h1>
     <p class="lead">BidBell reads every new contract notice on SAM.gov each morning and sends your company only the janitorial, carpet and window jobs in your states that you&rsquo;re eligible to bid on. Plain English, deadline first.</p>
     <div class="cta-row"><a class="btn" href="{su}">Start 14 days free {ICON['arrow']}</a><a class="btn ghost" href="#sample">See a real alert</a></div>
@@ -515,7 +515,8 @@ def signup_form():
     state_names = sorted(STATES.values())
     states = (f'<label class="all"><input type="checkbox" name="{f["states"]}" value="{NATIONWIDE}"> Nationwide (all states)</label>'
               + ''.join(f'<label><input type="checkbox" name="{f["states"]}" value="{E(s)}"> {E(s)}</label>' for s in state_names))
-    return f'''<form class="signup" action="{E(post)}" method="post" accept-charset="utf-8">
+    return f'''<form class="signup" id="signup" action="{E(post)}" method="post" accept-charset="utf-8" data-thanks="/start/thanks/">
+  <div class="form-error" id="form-error" role="alert" hidden></div>
   <fieldset>
     <legend>About you</legend>
     <div class="fields">
@@ -525,17 +526,17 @@ def signup_form():
       <div class="field"><label for="f-web">Business website <span class="opt">(optional)</span></label><input id="f-web" type="text" inputmode="url" name="{f['website']}" autocomplete="url" placeholder="yourcompany.com"></div>
     </div>
   </fieldset>
-  <fieldset>
+  <fieldset data-need="1" data-label="the cleaning work you do">
     <legend>What cleaning work do you do?</legend>
     <p class="hint">Choose all that apply.</p>
     <div class="options">{''.join(opt('checkbox', f['trades'], v) for v in TRADE_CHOICES)}</div>
   </fieldset>
-  <fieldset>
+  <fieldset data-need="1" data-max="10" data-label="your states">
     <legend>Which states do you work in?</legend>
     <p class="hint">Choose up to 10 states, or Nationwide. Bids are matched to where the work is.</p>
     <div class="state-box">{states}</div>
   </fieldset>
-  <fieldset>
+  <fieldset data-need="1" data-label="whether your business is any of these">
     <legend>Is your business any of these?</legend>
     <p class="hint">This decides which set-aside bids you see. Choose all that apply.</p>
     <div class="options cols-2">{''.join(opt('checkbox', f['certs'], v) for v in CERT_CHOICES)}</div>
@@ -543,14 +544,15 @@ def signup_form():
   <fieldset>
     <legend>Are you registered in SAM.gov?</legend>
     <p class="hint">You can start your trial either way.</p>
-    <div class="options cols-3">{''.join(opt('radio', f['sam'], v) for v in SAM_CHOICES)}</div>
+    <div class="options cols-3">{''.join(opt('radio', f['sam'], v).replace('type="radio"', 'type="radio" required', 1) for v in SAM_CHOICES)}</div>
   </fieldset>
   <div class="form-foot">
     <label class="agree"><input type="checkbox" name="{f['agree']}" value="{E(AGREE)}" required><span>I agree to the BidBell <a href="/terms/">Terms</a> and <a href="/privacy/">Privacy Policy</a>.</span></label>
     <button class="btn" type="submit">Start my free 14 days {ICON['arrow']}</button>
     <p class="small muted">No card needed. Your answers are sent securely to BidBell&rsquo;s private Google Forms account.</p>
   </div>
-</form>'''
+</form>
+<script src="/form.js" defer></script>'''
 
 
 def start():
@@ -595,6 +597,14 @@ def start():
     </div>
   </aside>
 </div></div>'''
+    thanks = f'''<div class="page-head"><div class="wrap">
+  <p class="crumbs"><a href="/">Home</a> / <a href="/start/">Start free trial</a> / Done</p>
+  <h1>You&rsquo;re in.</h1>
+  <p class="lead">Thanks for signing up for BidBell. We&rsquo;ll confirm your details by email within 1 business day, and your free 14 days of alerts start the next morning, around 6 AM Eastern.</p>
+  <div class="cta-row"><a class="btn" href="/#sample">See what an alert looks like</a><a class="btn ghost" href="/cleaning-bids/">Browse this week&rsquo;s bids</a></div>
+  <p class="small muted">Something wrong, or want to change your states? Email <a href="mailto:{C['email']}">{C['email']}</a>.</p>
+</div></div>'''
+    write('start/thanks/', layout('start/thanks/', 'You\u2019re in | BidBell', 'Your free BidBell trial has started.', thanks, noindex=True), sitemap=False)
     write('start/', layout('start/', 'Start your free 14 days | BidBell',
                            'Start a free 14-day BidBell trial: daily federal cleaning bids for your trade, states and eligibility. No card needed.', body))
 
@@ -839,6 +849,7 @@ def extras():
     open(os.path.join(ROOT, 'CNAME'), 'w').write(C['domain'] + '\n')
     open(os.path.join(ROOT, '.nojekyll'), 'w').write('')
     shutil.copy(os.path.join(T, 'style.css'), os.path.join(ROOT, 'style.css'))
+    shutil.copy(os.path.join(T, 'form.js'), os.path.join(ROOT, 'form.js'))
     open(os.path.join(ROOT, 'favicon.svg'), 'w').write(
         BELL.replace('aria-hidden="true" focusable="false"', 'xmlns="http://www.w3.org/2000/svg"').replace('currentColor', '#C8102E'))
 
