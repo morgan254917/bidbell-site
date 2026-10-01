@@ -10,7 +10,8 @@ Inputs:  tools/site.json (business facts), tools/paddle.json (Paddle checkout se
 Run daily by .github/workflows/weekly-bids.yml (drops notices whose deadline has passed); on Mondays
 tools/update_bids.py refreshes the bid data first.
 
-Legal clauses a lawyer should review are listed in tools/LAWYER_REVIEW.md (not in the public HTML).
+Legal review notes are kept in the private repository (bidbell-morgan/legal/), never here:
+everything in this public repository, tools/ included, is served on getbidbell.com.
 """
 import html, json, os, re, shutil
 from datetime import date, datetime
@@ -39,7 +40,6 @@ BASE = 'https://' + C['domain']
 TODAY = date.fromisoformat(os.environ.get('BUILD_DATE', date.today().isoformat()))
 E = html.escape
 PAGES = []          # (path, lastmod) for sitemap
-LAWYER = []         # clauses to review
 
 STATES = {'AL': 'Alabama', 'AK': 'Alaska', 'AZ': 'Arizona', 'AR': 'Arkansas', 'CA': 'California', 'CO': 'Colorado',
           'CT': 'Connecticut', 'DE': 'Delaware', 'DC': 'District of Columbia', 'FL': 'Florida', 'GA': 'Georgia',
@@ -59,11 +59,6 @@ long_date = lambda d: d.strftime('%B ') + str(d.day) + d.strftime(', %Y')
 
 def ext(url, text):
     return f'<a href="{E(url)}" rel="noopener noreferrer">{text}</a>'
-
-
-def lawyer(tag, text):
-    LAWYER.append(text)
-    return ''   # listed in tools/LAWYER_REVIEW.md only; never in the public HTML
 
 
 def phone_link():
@@ -871,8 +866,7 @@ def legal():
 <h2>2. Free trial</h2>
 <p>New customers get a free 14-day trial. We do not ask for a card to start it. If you do not subscribe, your alerts stop at the end of the trial and nothing is charged.</p>
 <h2>3. Plans, payment and taxes</h2>
-{lawyer('Merchant of record / payments', 'Terms 3: Paddle as reseller and merchant of record (Paddle-required wording, which says Paddle "provides all customer service inquiries and handles returns" while Terms 4 and the Refund Policy ask customers to email BidBell: check the two read together); seller identity (a sole proprietor, not a registered company, operated from Kenya, with a US mailing address in Colorado: if that address is a virtual mailbox or commercial mail-receiving agency, is it acceptable as the postal address in the Terms and, under CAN-SPAM, in sales emails?); billing in advance; automatic renewal; 30-day price-change notice.')}
-<p>BidBell is operated from Kenya by {E(C["owner_name"])}, a sole proprietor (not a registered company) trading as BidBell. Our US mailing address is {E(C["mailing_address"])}.</p>
+<p>BidBell is operated by {E(C["owner_name"])}, a sole proprietor (not a registered company) trading as BidBell. Our US mailing address is {E(C["mailing_address"])}.</p>
 <p>Our order process is conducted by our online reseller Paddle.com. Paddle.com is the Merchant of Record for all our orders. Paddle provides all customer service inquiries and handles returns.</p>
 <p>Paid plans are ${sp}/month or ${ap}/year, in US dollars, billed in advance. Paddle charges your payment method, sends your receipt and collects any sales tax, which is shown at checkout. Paddle&rsquo;s own terms apply to the purchase. We never see or store your card details.</p>
 <p>Your subscription renews automatically at the end of each month or year, and the plan price is charged for the next period, until you cancel. We may change our prices; we will email you at least 30 days before a change affects your next renewal, and you can cancel before it does.</p>
@@ -881,20 +875,16 @@ def legal():
 <h2>5. Your responsibilities</h2>
 <p>You are responsible for giving us accurate details, for reading the full official notice and its attachments before relying on any bid, for checking deadlines, eligibility and requirements yourself, for your registration in SAM.gov, and for every decision to bid or not bid. You must follow our <a href="/acceptable-use/">acceptable use policy</a>.</p>
 <h2>6. Accuracy of information</h2>
-{lawyer('Warranty disclaimer', 'Terms 6: "as is" disclaimer of warranties (enforceability varies by state and country).')}
 <p>BidBell is provided &ldquo;as is&rdquo; and &ldquo;as available&rdquo;. We work carefully, but the information comes from public government sources that can be incomplete, late, amended or withdrawn, and our matching (for example of work sites, eligibility and likely current contracts) can be wrong. To the fullest extent the law allows, we make no warranties, express or implied, including that every relevant notice will be found, that any information is accurate or complete, that the service will be uninterrupted, or that you will win any contract. See our <a href="/disclaimer/">disclaimer</a>.</p>
 <h2>7. Limitation of liability</h2>
-{lawyer('Liability cap and exclusions', 'Terms 7: liability capped at the fees paid for BidBell in the previous 3 months (so $0 during the free trial, and the fees are paid to Paddle as reseller, not to BidBell); exclusion of indirect loss and of liability for missed, changed or withdrawn notices and bid outcomes.')}
 <p>To the fullest extent the law allows: (a) we are not liable for any indirect, incidental, special or consequential loss, or for lost profits, revenue, contracts or business opportunities; (b) we are not liable for any notice that we did not send, sent late, or that was changed or withdrawn, or for the outcome of any bid; and (c) our total liability for all claims relating to BidBell is limited to the fees you paid for BidBell in the 3 months before the event giving rise to the claim. These limits do not apply to liability that cannot be limited by law, such as for fraud.</p>
 <h2>8. Indemnity</h2>
-{lawyer('Indemnity', 'Terms 8: customer indemnity for misuse, resale or breach.')}
 <p>You agree to compensate us for reasonable losses and costs (including reasonable legal fees) arising from your breach of these terms, your misuse of BidBell, or your resale or republishing of our alerts.</p>
 <h2>9. Suspension and ending the service</h2>
 <p>We may suspend or end your access if you break these terms, if payment fails, or if we stop offering BidBell. If we end the service for reasons other than your breach, we will refund any unused prepaid period.</p>
 <h2>10. Changes to these terms</h2>
 <p>We may update these terms. For changes that materially affect you, we will email subscribers at least 30 days before they take effect. If you do not agree, you can cancel before then. The date at the top shows the latest version.</p>
 <h2>11. Governing law and disputes</h2>
-{lawyer('Governing law and venue', f"Terms 11: governing law ({C['governing_law']}) and venue ({C['venue']}) for a seller operated from Kenya; consumer and small-business protections; whether to add arbitration; the promised first response within 1 business day (the same figure as on the home page).")}
 <p>If you have a problem, please email us first; most issues are solved quickly, and we will respond within 1 business day. If a dispute is not solved within 30 days of your first message, it will be governed by the laws of {E(C["governing_law"])}, without regard to conflict-of-law rules, and resolved in {E(C["venue"])}, unless the law where you are located requires otherwise.</p>
 <h2>12. General</h2>
 <p>If any part of these terms is found unenforceable, the rest stays in effect. If we do not enforce a right, we have not waived it. You may not transfer your subscription without our written consent. These terms, with the policies linked here, are the whole agreement between you and us about BidBell.</p>
@@ -913,10 +903,8 @@ def legal():
 </ul>
 <p>We do not ask for passwords, card numbers, tax IDs or government ID numbers.</p>
 <h2>2. Why we use it</h2>
-{lawyer('Legal bases', 'Privacy 2: legal bases for EU/UK visitors (contract, legitimate interests) and the legitimate-interest basis for business outreach.')}
 <p>To provide the service you asked for (sending your alerts, managing your trial and subscription, answering you); to keep records required for tax and accounting; and, for business contacts, to offer BidBell to companies that may need it (our legitimate interest), with an easy opt-out.</p>
 <h2>3. Who processes it for us</h2>
-{lawyer('Processors and transfers', 'Privacy 3: list of processors (Google Workspace; GitHub, which stores the customer and business-contact records in a private repository; Paddle, which as merchant of record may be an independent controller rather than a processor; Anthropic, whose Claude drafts replies, researches published business emails and runs the private dashboard that holds customer names, emails and inbox messages); a data processing agreement or equivalent terms with each; international transfers, including access to the data from Kenya where BidBell is operated; whether the Kenya Data Protection Act 2019 applies and whether registration with the Office of the Data Protection Commissioner (Kenya) is needed.')}
 <ul>
 <li><strong>Google Workspace</strong> (Google LLC): our email (including the alerts we send you), and our sign-up form (Google Forms). Sign-up answers are stored in BidBell&rsquo;s private Google account.</li>
 <li><strong>GitHub</strong> (GitHub, Inc.): stores our customer and business-contact records in a private repository, runs the programs that prepare and send our emails, and hosts this website. GitHub may log visitor IP addresses for security; see GitHub&rsquo;s privacy statement.</li>
@@ -925,14 +913,12 @@ def legal():
 </ul>
 <p>We only download public data from SAM.gov and USAspending.gov; we do not send them your details. These providers process data on our instructions and under their own security and privacy commitments. Data may be processed in the United States, the European Union and other countries where they operate.</p>
 <h2>4. How long we keep it</h2>
-{lawyer('Retention periods', 'Privacy 4: retention periods (trial 12 months, customers +2 years, suppression list kept indefinitely). Nothing deletes records automatically today, every record is kept in the git history of the private repository, and no period is stated for business contacts who never opted out: confirm the periods and how deletion requests are honoured.')}
 <ul>
-<li>Trial details, if you do not subscribe: up to 12 months after the trial ends.</li>
-<li>Customer details: while you are subscribed, then up to 2 years for records, or longer where tax law requires.</li>
+<li>Trial details, if you do not subscribe: 1 year after the trial ends, then deleted.</li>
+<li>Customer details: while you are subscribed, then 1 year after your subscription ends, then deleted. Payment and tax records are kept by Paddle, our merchant of record, under its own policy.</li>
 <li>Business contacts who opt out: we keep only the email address on a do-not-contact list, so we never email it again.</li>
 </ul>
 <h2>5. Your rights</h2>
-{lawyer('Rights for US states and EU/UK', 'Privacy 5: rights wording for California and other US states (check whether these state laws apply to a business as small as BidBell at all, and whether offering the rights voluntarily is worded safely), EU/UK GDPR, the 30-day response time, and supervisory-authority complaint.')}
 <p>Wherever you are, you can ask us to tell you what we hold about you, correct it, delete it, or stop contacting you. Email <a href="mailto:{C["email"]}">{C["email"]}</a>; we reply within 30 days and do not charge.</p>
 <p><strong>California and other US states:</strong> you have the right to know, access, correct and delete your personal information, and not to be discriminated against for using these rights. We do not sell or share personal information for cross-context behavioral advertising, and we do not use it for profiling.</p>
 <p><strong>European Union and United Kingdom:</strong> you also have the rights to object, to restrict processing and to data portability, and you may complain to your local data protection authority.</p>
@@ -945,10 +931,9 @@ def legal():
 <h2>9. Changes</h2>
 <p>We will post changes here and email subscribers about material changes before they take effect.</p>
 <h2>10. Contact</h2>
-<p>For privacy questions or requests, email {mail} or write to {E(C["owner_name"])}, BidBell, at our US mailing address: {E(C["mailing_address"])}. BidBell is operated from Kenya.{phone}</p>''')
+<p>For privacy questions or requests, email {mail} or write to {E(C["owner_name"])}, BidBell, at our US mailing address: {E(C["mailing_address"])}. We may store and access your information outside the United States.{phone}</p>''')
 
     legal_page('refunds/', 'Refund Policy', 'BidBell refund policy: a 30-day money-back guarantee on every payment, and how to cancel.', f'''
-{lawyer('Refunds and automatic renewal', 'Refund Policy and Terms 3-4: 30-day money-back guarantee (Paddle gives some buyers statutory withdrawal rights of its own; check the two fit together), whether a refund also ends the subscription (not stated), automatic-renewal disclosures on /subscribe/ and cancellation by email, reply or the Paddle "Manage subscription" link, under state automatic-renewal laws (for example California, including its online-cancellation rules).')}
 <p>New customers can try BidBell free for 14 days, with no card needed, so you can judge the alerts before you pay.</p>
 <h2>30-day money-back guarantee</h2>
 <p>If you are not happy with BidBell, we will refund any payment in full, on the monthly or the yearly plan, if you ask within 30 days of that payment.</p>
@@ -961,7 +946,6 @@ def legal():
 <p>See also our <a href="/terms/">Terms of Service</a>.</p>''')
 
     legal_page('acceptable-use/', 'Acceptable Use Policy', 'How BidBell alerts and pages may be used.', f'''
-{lawyer('Acceptable use', 'Acceptable use: resale ban, one-business-per-subscription rule, and enforcement.')}
 <p>BidBell alerts are for the internal use of the business that subscribes. You agree not to:</p>
 <ul>
 <li>resell, republish, forward in bulk or share our paid alerts or their contents with other businesses;</li>
@@ -973,7 +957,6 @@ def legal():
 <p>Our free public pages are built from public data; you may link to them. If you break this policy we may suspend or end your subscription under our <a href="/terms/">terms</a>.</p>''')
 
     legal_page('disclaimer/', 'Disclaimer', 'Important limits of BidBell information.', f'''
-{lawyer('Disclaimer', 'Disclaimer page as a whole: data-accuracy, no-affiliation and no-advice statements.')}
 <h2>Not a government service</h2>
 <p>BidBell is a private service. It is not affiliated with, endorsed by or connected to SAM.gov, the General Services Administration, USAspending.gov or any government agency.</p>
 <h2>Data can change</h2>
@@ -984,7 +967,6 @@ def legal():
 <p>Nothing from BidBell is legal, financial, tax or bidding advice. We do not guarantee that you will find, bid on or win any contract.</p>''')
 
     legal_page('email-policy/', 'Email Policy', 'How BidBell contacts businesses and how to opt out.', f'''
-{lawyer('CAN-SPAM and outreach', 'Email policy: outreach practices (one plain-text email per company and no follow-ups, to addresses published on the company’s own website, its own business pages or in public US government records), CAN-SPAM compliance (sender identification, postal address, "reply no" opt-out, the sales-email statement in the footer), and whether any recipient states or countries need extra rules.')}
 <h2>Who we email</h2>
 <p>We send a small number of emails to businesses that may need BidBell: commercial cleaning companies (janitorial, carpet and window cleaning), including companies that have won federal contracts, at a business email address published on their own website, their own business pages (such as Facebook or Google) or in public US government records. We never buy email lists or use data brokers, and we never guess addresses.</p>
 <h2>What every email contains</h2>
@@ -1032,26 +1014,7 @@ def extras():
 
 def main():
     home(); start(); subscribe(); bid_pages(); legal(); extras()
-    LAWYER.extend([
-        'Home page and sample alert image: they name a real individual (a sole-proprietor contractor '
-        'found in USAspending.gov public records) as an example of a likely current contract. Is using a private person\'s name '
-        'in marketing examples acceptable (right of publicity, for example Massachusetts law, where the contractor is), or should the example use a '
-        'company-held contract?',
-        'Terms 9: suspension or ending of access without prior notice (only a refund of any unused prepaid period when '
-        'BidBell ends the service).',
-        'Sign-up (/start/): consent is one checkbox for the Terms and the Privacy Policy together, and the Google Form '
-        'stores the agreement text; is that enough record of acceptance, and should /subscribe/ also link the Privacy '
-        'Policy next to "By continuing you agree to the Terms and the Refund Policy"?',
-    ])
-    open(os.path.join(T, 'LAWYER_REVIEW.md'), 'w').write(
-        '# Clauses for a lawyer to review\n\n'
-        f'Current as of {long_date(TODAY)}. Generated by tools/build.py from the pages as built (not in the public HTML).\n'
-        'Facts a lawyer needs: BidBell is run by Morgan Karichu, a sole proprietor operated from Kenya, with a US mailing '
-        f'address in Colorado ({C["mailing_address"]}); customers are US cleaning businesses; prices ${C["standard_price"]}/month '
-        f'or ${C["annual_price"]}/year after a free 14-day trial with no card; Paddle.com is the merchant of record '
-        '(Paddle Billing, live); 30-day money-back guarantee on every payment.\n\n'
-        + ''.join(f'{i}. {t}\n' for i, t in enumerate(LAWYER, 1)))
-    print(f'built {len(PAGES)} pages + 404, sitemap, robots, security.txt; {len(LAWYER)} lawyer-review items; '
+    print(f'built {len(PAGES)} pages + 404, sitemap, robots, security.txt; '
           f'/subscribe/ checkout {"ON (" + PADDLE["env"] + ")" if PADDLE_READY else "off (tools/paddle.json not filled in)"}; '
           f'phone {"shown" if PHONE.strip() else "not set"}')
 
