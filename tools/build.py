@@ -909,7 +909,7 @@ def legal():
 <li><strong>Service records</strong>: the alerts and bids we have sent you and when, so we can send reminders and updates and your day-12 summary.</li>
 <li><strong>Payment information</strong> from Paddle: your name, email, country, plan, amounts and subscription status. We never receive your card details.</li>
 <li><strong>Emails</strong> you send us, and replies to our emails.</li>
-<li><strong>Business contact details</strong> of companies we may email about BidBell: company name, website and location, the federal contracts it has won (public records), a business email address the company publishes itself (on its website or its own business pages) or that appears in a public government business directory, and a contact&rsquo;s first name when it is published next to that address. See our <a href="/email-policy/">email policy</a>.</li>
+<li><strong>Business contact details</strong> of companies we may email about BidBell: company name, website and location, any federal contracts it has won (public records), a business email address the company publishes itself (on its website or its own business pages) or that appears in a public government business directory, and a contact&rsquo;s first name when it is published next to that address. See our <a href="/email-policy/">email policy</a>.</li>
 </ul>
 <p>We do not ask for passwords, card numbers, tax IDs or government ID numbers.</p>
 <h2>2. Why we use it</h2>
@@ -986,7 +986,7 @@ def legal():
     legal_page('email-policy/', 'Email Policy', 'How BidBell contacts businesses and how to opt out.', f'''
 {lawyer('CAN-SPAM and outreach', 'Email policy: outreach practices (one plain-text email per company and no follow-ups, to addresses published on the company’s own website, its own business pages or in public US government records), CAN-SPAM compliance (sender identification, postal address, "reply no" opt-out, the sales-email statement in the footer), and whether any recipient states or countries need extra rules.')}
 <h2>Who we email</h2>
-<p>We send a small number of emails to businesses that may need BidBell: companies in cleaning and facility services that have won federal contracts, at a business email address published on their own website, their own business pages (such as Facebook or Google) or in public US government records. We never buy email lists or use data brokers, and we never guess addresses.</p>
+<p>We send a small number of emails to businesses that may need BidBell: commercial cleaning companies (janitorial, carpet and window cleaning), including companies that have won federal contracts, at a business email address published on their own website, their own business pages (such as Facebook or Google) or in public US government records. We never buy email lists or use data brokers, and we never guess addresses.</p>
 <h2>What every email contains</h2>
 <ul>
 <li>Our real name and business name, and an honest subject line.</li>
