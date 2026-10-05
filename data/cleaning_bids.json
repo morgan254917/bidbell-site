@@ -1,31 +1,7 @@
 {
- "updated": "2026-09-30",
+ "updated": "2026-10-05",
  "source": "SAM.gov public Contract Opportunities data",
  "bids": [
-  {
-   "trade": "janitorial",
-   "title": "TSA-MCI Janitorial & Related Services",
-   "type": "Sources Sought",
-   "agency": "General Services Administration",
-   "city": "Kansas City",
-   "state": "MO",
-   "due": "2026-10-02",
-   "set_aside": "Small Business Set Aside - Total",
-   "link": "https://sam.gov/workspace/contract/opp/1ec529a984a74005882bd5a013b44bff/view",
-   "sol": "47PG5426Q0003"
-  },
-  {
-   "trade": "janitorial",
-   "title": "Kansas FY27 Mass Solicitation - Custodial Services",
-   "type": "Solicitation",
-   "agency": "Dept Of Defense",
-   "city": "Lawrence",
-   "state": "KS",
-   "due": "2026-10-02",
-   "set_aside": "Small Business Set Aside - Total",
-   "link": "https://sam.gov/workspace/contract/opp/f5c3a542093c4703a466387471a09be2/view",
-   "sol": "W912DQ27QA001"
-  },
   {
    "trade": "janitorial",
    "title": "Lake Tahoe Basin Janitorial",
@@ -35,7 +11,7 @@
    "state": "CA",
    "due": "2026-10-06",
    "set_aside": "Small Business Set Aside - Total",
-   "link": "https://sam.gov/workspace/contract/opp/fe3ee2ce603241198bcfdd1b337bede1/view",
+   "link": "https://sam.gov/workspace/contract/opp/29c7cdb8097740cfaa9d59eb844fe0e7/view",
    "sol": "127EAY26Q0143"
   },
   {
@@ -47,7 +23,7 @@
    "state": "TX",
    "due": "2026-10-07",
    "set_aside": "Historically Underutilized Business (HUBZone) Set-Aside (FAR 19.13)",
-   "link": "https://sam.gov/workspace/contract/opp/68a0912bb79e4c43b3bb5085e50aff3b/view",
+   "link": "https://sam.gov/workspace/contract/opp/a6c846a6d52e4c609d2a14bc2b9a2c8a/view",
    "sol": "W91151-26-R-A004"
   },
   {
@@ -76,6 +52,18 @@
   },
   {
    "trade": "janitorial",
+   "title": "F.E. Warren Resident Office Janitorial Service",
+   "type": "Solicitation",
+   "agency": "Dept Of Defense",
+   "city": "Fe Warren Afb",
+   "state": "WY",
+   "due": "2026-10-16",
+   "set_aside": "Small Business Set Aside - Total",
+   "link": "https://sam.gov/workspace/contract/opp/a49b9011736f4f06b389f232c452e871/view",
+   "sol": "W9128F27QA003"
+  },
+  {
+   "trade": "janitorial",
    "title": "Harry S. Truman Mass Solicitation - Custodial Services",
    "type": "Solicitation",
    "agency": "Dept Of Defense",
@@ -83,7 +71,7 @@
    "state": "MO",
    "due": "2026-10-19",
    "set_aside": "Small Business Set Aside - Total",
-   "link": "https://sam.gov/workspace/contract/opp/e194168cd0544bba87335bdb59445787/view",
+   "link": "https://sam.gov/workspace/contract/opp/9323b5b854d646b886ad8dcafea51034/view",
    "sol": "W912DQ27QA011"
   },
   {
@@ -119,7 +107,7 @@
    "state": "TX",
    "due": "2026-10-28",
    "set_aside": "Service-Disabled Veteran-Owned Small Business (SDVOSB) Set-Aside (FAR 19.14)",
-   "link": "https://sam.gov/workspace/contract/opp/aedfd13a03ae4482a054ab3532c5d915/view",
+   "link": "https://sam.gov/workspace/contract/opp/376e115d93c749319aaf41cb7bb7d90f/view",
    "sol": "36C25727Q0019"
   }
  ]
