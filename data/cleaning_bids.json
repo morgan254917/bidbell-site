@@ -4,42 +4,6 @@
  "bids": [
   {
    "trade": "janitorial",
-   "title": "Custodial Services - Ashley, PA (PA004)",
-   "type": "Sources Sought",
-   "agency": "Dept Of Defense",
-   "city": "Ashley",
-   "state": "PA",
-   "due": "2026-10-13",
-   "set_aside": "",
-   "link": "https://sam.gov/workspace/contract/opp/458ee52e1e7b4693b003eccab813140d/view",
-   "sol": "W15QKN-27-Q-A004"
-  },
-  {
-   "trade": "window",
-   "title": "Snow and Ice Removal Services - Newark, DE (DE007)",
-   "type": "Sources Sought",
-   "agency": "Dept Of Defense",
-   "city": "Newark",
-   "state": "DE",
-   "due": "2026-10-13",
-   "set_aside": "",
-   "link": "https://sam.gov/workspace/contract/opp/2a1b5823e3f8471b8fb00e1f93185933/view",
-   "sol": "W15QKN-27-Q-A005"
-  },
-  {
-   "trade": "window",
-   "title": "Snow and Ice Removal Services - Owing Mills, MD (MD019)",
-   "type": "Sources Sought",
-   "agency": "Dept Of Defense",
-   "city": "Owings Mills",
-   "state": "MD",
-   "due": "2026-10-13",
-   "set_aside": "",
-   "link": "https://sam.gov/workspace/contract/opp/f1513b20d2204fa5b6c8e096088b975d/view",
-   "sol": "W15QKN-27-Q-A006"
-  },
-  {
-   "trade": "janitorial",
    "title": "S201--Sources Sought Notice -Janitorial Services for Richmond National Cemetery and Satellite Cemeteries",
    "type": "Sources Sought",
    "agency": "Veterans Affairs, Department Of",
