@@ -1,42 +1,54 @@
 {
- "updated": "2026-10-05",
+ "updated": "2026-10-12",
  "source": "SAM.gov public Contract Opportunities data",
  "bids": [
   {
    "trade": "janitorial",
-   "title": "Lake Tahoe Basin Janitorial",
-   "type": "Combined Synopsis/Solicitation",
-   "agency": "Agriculture, Department Of",
-   "city": "South Lake Tahoe",
-   "state": "CA",
-   "due": "2026-10-06",
-   "set_aside": "Small Business Set Aside - Total",
-   "link": "https://sam.gov/workspace/contract/opp/29c7cdb8097740cfaa9d59eb844fe0e7/view",
-   "sol": "127EAY26Q0143"
-  },
-  {
-   "trade": "janitorial",
-   "title": "Fort Hood Installation Custodial Services",
-   "type": "Solicitation",
+   "title": "Custodial Services - Ashley, PA (PA004)",
+   "type": "Sources Sought",
    "agency": "Dept Of Defense",
-   "city": "Fort Hood",
-   "state": "TX",
-   "due": "2026-10-07",
-   "set_aside": "Historically Underutilized Business (HUBZone) Set-Aside (FAR 19.13)",
-   "link": "https://sam.gov/workspace/contract/opp/a6c846a6d52e4c609d2a14bc2b9a2c8a/view",
-   "sol": "W91151-26-R-A004"
+   "city": "Ashley",
+   "state": "PA",
+   "due": "2026-10-13",
+   "set_aside": "",
+   "link": "https://sam.gov/workspace/contract/opp/458ee52e1e7b4693b003eccab813140d/view",
+   "sol": "W15QKN-27-Q-A004"
+  },
+  {
+   "trade": "window",
+   "title": "Snow and Ice Removal Services - Newark, DE (DE007)",
+   "type": "Sources Sought",
+   "agency": "Dept Of Defense",
+   "city": "Newark",
+   "state": "DE",
+   "due": "2026-10-13",
+   "set_aside": "",
+   "link": "https://sam.gov/workspace/contract/opp/2a1b5823e3f8471b8fb00e1f93185933/view",
+   "sol": "W15QKN-27-Q-A005"
+  },
+  {
+   "trade": "window",
+   "title": "Snow and Ice Removal Services - Owing Mills, MD (MD019)",
+   "type": "Sources Sought",
+   "agency": "Dept Of Defense",
+   "city": "Owings Mills",
+   "state": "MD",
+   "due": "2026-10-13",
+   "set_aside": "",
+   "link": "https://sam.gov/workspace/contract/opp/f1513b20d2204fa5b6c8e096088b975d/view",
+   "sol": "W15QKN-27-Q-A006"
   },
   {
    "trade": "janitorial",
-   "title": "Cabin Cleaning, Olympic National Forest",
-   "type": "Combined Synopsis/Solicitation",
-   "agency": "Agriculture, Department Of",
-   "city": "Quilcene",
-   "state": "WA",
-   "due": "2026-10-08",
-   "set_aside": "Small Business Set Aside - Total",
-   "link": "https://sam.gov/workspace/contract/opp/d2f8527fdb854756af01f569c1c1d389/view",
-   "sol": "1240BD26Q0008"
+   "title": "S201--Sources Sought Notice -Janitorial Services for Richmond National Cemetery and Satellite Cemeteries",
+   "type": "Sources Sought",
+   "agency": "Veterans Affairs, Department Of",
+   "city": "Richmond",
+   "state": "VA",
+   "due": "2026-10-14",
+   "set_aside": "Service-Disabled Veteran-Owned Small Business (SDVOSB) Set-Aside (FAR 19.14)",
+   "link": "https://sam.gov/workspace/contract/opp/eab43be507a34d7986973e3e7aed9b86/view",
+   "sol": "36C78627Q0010"
   },
   {
    "trade": "janitorial",
@@ -45,9 +57,9 @@
    "agency": "Energy, Department Of",
    "city": "",
    "state": "IL",
-   "due": "2026-10-09",
+   "due": "2026-10-16",
    "set_aside": "Small Business Set Aside - Total",
-   "link": "https://sam.gov/workspace/contract/opp/18011fdf88c84e35a15ee186f0b5c29f/view",
+   "link": "https://sam.gov/workspace/contract/opp/76a83839cbac4a0bac2cddd1e6e654e0/view",
    "sol": "DH-377725"
   },
   {
@@ -59,8 +71,44 @@
    "state": "WY",
    "due": "2026-10-16",
    "set_aside": "Small Business Set Aside - Total",
-   "link": "https://sam.gov/workspace/contract/opp/a49b9011736f4f06b389f232c452e871/view",
+   "link": "https://sam.gov/workspace/contract/opp/9b9dfd6a01b2492bb8bbd2b0f9bd15fc/view",
    "sol": "W9128F27QA003"
+  },
+  {
+   "trade": "janitorial",
+   "title": "S201--NFS Deep cleaning (VA-27-00008465)",
+   "type": "Sources Sought",
+   "agency": "Veterans Affairs, Department Of",
+   "city": "Washington",
+   "state": "DC",
+   "due": "2026-10-16",
+   "set_aside": "",
+   "link": "https://sam.gov/workspace/contract/opp/dd566a0295184d88bdd535b8f9581f41/view",
+   "sol": "36C24527Q0020"
+  },
+  {
+   "trade": "janitorial",
+   "title": "Building 1085 Weekly Cleaning Services",
+   "type": "Presolicitation",
+   "agency": "Dept Of Defense",
+   "city": "",
+   "state": "ND",
+   "due": "2026-10-17",
+   "set_aside": "No Set aside used",
+   "link": "https://sam.gov/workspace/contract/opp/78a07cd6ac8c45958e96502eb797b0c8/view",
+   "sol": "FA452827NPKB1"
+  },
+  {
+   "trade": "janitorial",
+   "title": "Mt Shasta-McCloud Ranger Districts Janitorial",
+   "type": "Combined Synopsis/Solicitation",
+   "agency": "Agriculture, Department Of",
+   "city": "Mount Shasta",
+   "state": "CA",
+   "due": "2026-10-19",
+   "set_aside": "Small Business Set Aside - Total",
+   "link": "https://sam.gov/workspace/contract/opp/213e5c7b7f474d8798fc2ea427c413d8/view",
+   "sol": "127EAY27Q0002"
   },
   {
    "trade": "janitorial",
@@ -83,7 +131,7 @@
    "state": "MA",
    "due": "2026-10-20",
    "set_aside": "Small Business Set Aside - Total",
-   "link": "https://sam.gov/workspace/contract/opp/acaccd4ddab1488fbc52b51511cc447f/view",
+   "link": "https://sam.gov/workspace/contract/opp/dfb8ffcc30744fd8a669aa623eb60993/view",
    "sol": "697DCK-27-R-00004"
   },
   {
@@ -109,6 +157,18 @@
    "set_aside": "Service-Disabled Veteran-Owned Small Business (SDVOSB) Set-Aside (FAR 19.14)",
    "link": "https://sam.gov/workspace/contract/opp/376e115d93c749319aaf41cb7bb7d90f/view",
    "sol": "36C25727Q0019"
+  },
+  {
+   "trade": "janitorial",
+   "title": "Janitorial Services, DeQueen Project Office",
+   "type": "Combined Synopsis/Solicitation",
+   "agency": "Dept Of Defense",
+   "city": "",
+   "state": "AR",
+   "due": "2026-11-04",
+   "set_aside": "Small Business Set Aside - Total",
+   "link": "https://sam.gov/workspace/contract/opp/9d92e76c697e46d1b088c1db9ce69c88/view",
+   "sol": "W9127S27QA004"
   }
  ]
 }
