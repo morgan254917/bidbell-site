@@ -186,7 +186,7 @@ def layout(path, title, desc, body, jsonld=None, updated=None, noindex=False, og
       <li><a href="/#features">Features</a></li><li><a href="/#how">How it works</a></li><li><a href="/#sample">Sample alert</a></li><li><a href="/#pricing">Pricing</a></li><li><a href="/#faq">FAQ</a></li><li><a href="{E(start_url())}">Start free trial</a></li></ul></nav>
     <nav aria-label="Free bid pages"><h2>Free bid pages</h2><ul>{state_links}<li><a href="/cleaning-bids/">All states &rarr;</a></li></ul></nav>
     <nav aria-label="Company"><h2>Company</h2><ul>
-      <li><a href="/#about">About</a></li><li><a href="/terms/">Terms</a></li><li><a href="/privacy/">Privacy</a></li><li><a href="/refunds/">Refund policy</a></li><li><a href="/acceptable-use/">Acceptable use</a></li><li><a href="/disclaimer/">Disclaimer</a></li><li><a href="/email-policy/">Email policy</a></li></ul></nav>
+      <li><a href="/#about">About</a></li><li><a href="/terms/">Terms</a></li><li><a href="/privacy/">Privacy</a></li><li><a href="/refunds/">Refund policy</a></li><li><a href="/acceptable-use/">Acceptable use</a></li><li><a href="/disclaimer/">Disclaimer</a></li><li><a href="/email-policy/">Email policy</a></li><li><a href="https://www.facebook.com/profile.php?id=61595464021652" rel="noopener">BidBell on Facebook</a></li></ul></nav>
   </div>
   <div class="foot-bottom">
     <span>&copy; {TODAY.year} BidBell. Run by {E(C['owner_name'])}. Page updated {long_date(upd)}.</span>
