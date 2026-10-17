@@ -361,6 +361,10 @@ def hero_mock():
 
 
 def home():
+    # The homepage is now hand-made (index.html + home.css + home.js, approved by Morgan 2026-10-17): keep it, only list it
+    if '/home.css' in open(os.path.join(ROOT, 'index.html')).read():
+        PAGES.append(('', TODAY.isoformat()))
+        return
     sp, ap = C['standard_price'], C['annual_price']
     n_open = len(open_bids(0))
     faq_html = ''.join(f'<details><summary>{E(q)}</summary><p>{a}</p></details>' for q, a in FAQ)
