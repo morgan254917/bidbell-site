@@ -17,13 +17,13 @@
 <meta property="og:image" content="https://getbidbell.com/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="BidBell: federal cleaning bids you can win, in your inbox around 6 AM. An example alert email lists open bids with their deadlines and who can bid.">
+<meta property="og:image:alt" content="BidBell: federal cleaning bids you can bid on, in your inbox around 6 AM. An example alert email lists open bids with their deadlines and who can bid.">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="theme-color" content="#FFFFFF">
+<meta name="theme-color" content="#0E1C3A">
 <link rel="icon" href="/favicon.ico" sizes="32x32">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<link rel="preload" href="/fonts/source-serif-4.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/archivo.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/public-sans.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/home.css">
 <script src="/home.js" defer></script>
@@ -35,7 +35,7 @@
 <a class="skip" href="#top">Skip to content</a>
 <header class="top">
   <div class="wrap">
-    <a class="logo" href="/" aria-label="BidBell home"><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#0B1F3A"/><path d="M16 6.5a6.2 6.2 0 0 0-6.2 6.2v4.6L7.8 21h16.4l-2-3.7v-4.6A6.2 6.2 0 0 0 16 6.5z" fill="#fff"/><circle cx="16" cy="24.6" r="2.3" fill="#C8102E"/></svg>BidBell</a>
+    <a class="logo" href="/" aria-label="BidBell home"><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#F0A04B"/><path d="M16 6.5a6.2 6.2 0 0 0-6.2 6.2v4.6L7.8 21h16.4l-2-3.7v-4.6A6.2 6.2 0 0 0 16 6.5z" fill="#0E1C3A"/><circle cx="16" cy="24.6" r="2.3" fill="#C8102E"/></svg>BidBell</a>
     <nav class="links" aria-label="Sections"><a href="#sort">How it filters</a><a href="#calendar">Contract calendar</a><a href="#texas">Texas</a><a href="#price">Price</a><a href="#faq">Questions</a></nav>
     <a class="btn btn-primary" href="/start/">Start free trial</a>
   </div>
@@ -43,15 +43,19 @@
 
 <main id="top">
 <section class="hero">
+  <div class="sun" aria-hidden="true"></div>
+  <div class="sky"><img fetchpriority="high" src="/img/bb-hero.webp" alt="" loading="eager" decoding="async" width="1536" height="1024"></div>
   <div class="wrap hero-grid">
     <div>
-      <h1>Federal cleaning bids for your states. In your inbox by 6&nbsp;AM.</h1>
+      <h1><span class="line">Federal cleaning bids</span> <span class="line">for your states.</span> <span class="line">In your inbox by 6&nbsp;AM.</span></h1>
       <p class="lede measure">Each morning BidBell reads the new contract notices on SAM.gov and sends you the janitorial, carpet and window jobs your company is allowed to bid on. Due date first, plain English, one link to the official notice.</p>
       <div class="ctas"><a class="btn btn-primary" href="/start/">Start 14 days free</a><a class="btn btn-quiet" href="#alert">See a real alert</a></div>
       <p class="terms">No card to start. $39 a month after the trial. Cancel anytime.</p>
     </div>
     <div class="stage">
-      <div class="photo settle has-img"><img fetchpriority="high" src="/img/bb-hero.webp" alt="A long marble hallway at sunrise with a cleaning cart and floor machine" loading="eager" decoding="async" width="1536" height="1024"></div>
+      <div class="clock num" aria-hidden="true"><b id="clk">6:05</b><span>AM</span><small>your time</small></div>
+      <div class="deck" id="deck">
+      <div class="sheet s2" aria-hidden="true"></div><div class="sheet s1" aria-hidden="true"></div>
       <div class="mail" id="mail" aria-label="Example BidBell email">
         <div class="mail-head">
           <div class="mail-av"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 5a7 7 0 0 0-7 7v5.5L6.5 22h19L23 17.5V12a7 7 0 0 0-7-7z" fill="#fff"/><circle cx="16" cy="25.5" r="2.5" fill="#C8102E"/></svg></div>
@@ -60,13 +64,15 @@
         </div>
         <div class="mail-subj">3 new janitorial bids open now</div>
         <div class="mail-sub">Janitorial, Massachusetts, Illinois and Kansas. Sorted by due date.</div>
-        <div class="bid"><div><div class="t">Housekeeping Services, Fermilab</div><div class="w">Department of Energy, Batavia, IL</div></div><div class="d num"><b>Due Oct 9</b><span>10 days left</span></div><div class="ref num">Ref DH-377725 &nbsp; <span class="stamp ok">Small business</span></div></div>
-        <div class="bid"><div><div class="t">Janitorial Services at the FMH SSC</div><div class="w">FAA, Falmouth, MA</div></div><div class="d num"><b>Due Oct 20</b><span>21 days left</span></div><div class="ref num">Ref 697DCK-27-R-00004 &nbsp; Site visit Sep 29, 8:30 ET</div></div>
-        <div class="bid"><div><div class="t">Janitorial Services at the MVY ATCT</div><div class="w">FAA, Martha&rsquo;s Vineyard, MA</div></div><div class="d num"><b>Due Oct 22</b><span>23 days left</span></div><div class="ref num">Ref 697DCK-27-R-00001 &nbsp; Site visit Oct 6, 8:30 ET</div></div>
+        <div class="bid"><div><div class="t">Housekeeping Services, Fermilab</div><div class="w">Department of Energy, Batavia, IL</div></div><div class="d num"><b>Due Oct 9</b></div><div class="ref num">Ref DH-377725 &nbsp; <span class="stamp ok">Small business</span></div></div>
+        <div class="bid"><div><div class="t">Janitorial Services at the FMH SSC</div><div class="w">FAA, Falmouth, MA</div></div><div class="d num"><b>Due Oct 20</b></div><div class="ref num">Ref 697DCK-27-R-00004 &nbsp; Site visit Sep 29, 8:30 ET</div></div>
+        <div class="bid"><div><div class="t">Janitorial Services at the MVY ATCT</div><div class="w">FAA, Martha&rsquo;s Vineyard, MA</div></div><div class="d num"><b>Due Oct 22</b></div><div class="ref num">Ref 697DCK-27-R-00001 &nbsp; Site visit Oct 6, 8:30 ET</div></div>
         <div class="mail-foot"><span>From the real alert of Sept 29, 2026</span><span>Open the notice on SAM.gov</span></div>
+      </div>
       </div>
     </div>
   </div>
+  <div class="wrap"><div class="sources"><span>Read every morning from</span><span><b>SAM.gov</b> federal notices</span><span><b>USAspending.gov</b> contract records</span><span><b>Texas ESBD</b> state and city bids</span></div></div>
 </section>
 
 <section id="sort" class="wash">
@@ -84,15 +90,16 @@
       <div class="sort-foot">Real SAM.gov notices from Sept 29, 2026. Award notices, sole-source notices, duplicates and bids closing in under 2 days are removed too. <button class="replay" id="replay" type="button">Sort again</button></div>
     </div>
   </div>
+  <div class="wrap sec-cta"><a class="btn btn-primary" href="/start/">Get only the bids you can bid on</a></div>
 </section>
 
 <section id="alert">
   <div class="wrap alert-grid">
     <figure class="u-m0">
       <div class="alert-img"><img src="/sample-alert.webp" alt="A real BidBell alert email from Sept 29, 2026 with three janitorial bids" loading="lazy"></div>
-      <figcaption class="caption">A real BidBell alert, built from live SAM.gov notices on Sept 29, 2026, for a small cleaning company in Massachusetts, Illinois and Kansas.</figcaption>
+      <figcaption class="caption">A real BidBell alert, built from live SAM.gov notices on Sept 29, 2026, for a small cleaning company in Massachusetts, Illinois and Kansas. One contractor&rsquo;s personal name is blurred and the footer is not shown. BidBell is not affiliated with SAM.gov or any government agency.</figcaption>
     </figure>
-    <div>
+    <div class="alert-copy">
       <h2>This is what you get at 6&nbsp;AM.</h2>
       <ul class="marks u-mt28">
         <li><b>Due date first</b>With the days left, and a warning when a bid closes soon.</li>
@@ -170,7 +177,7 @@
       <p class="lede">Pick the trades you do. A carpet company does not get mopping contracts, and a window crew does not get custodial ones.</p>
     </div>
     <div class="trades">
-      <figure class="big"><div class="photo settle u-h100 has-img"><img src="/img/bb-crew.webp" alt="Two cleaners mopping and wiping glass in an office lobby at dawn" loading="lazy" decoding="async" width="1536" height="1024"></div><figcaption><b>Janitorial and custodial.</b> Offices, VA clinics, Army reserve centers, ranger stations.</figcaption></figure>
+      <figure class="big"><div class="photo settle has-img"><img src="/img/bb-crew.webp" alt="Two cleaners mopping and wiping glass in an office lobby at dawn" loading="lazy" decoding="async" width="1536" height="1024"></div><figcaption><b>Janitorial and custodial.</b> Offices, VA clinics, Army reserve centers, ranger stations.</figcaption></figure>
       <figure><div class="photo settle sm has-img"><img src="/img/bb-carpet.webp" alt="A carpet cleaning wand leaving a clean stripe" loading="lazy" decoding="async" width="1536" height="1024"></div><figcaption><b>Carpet cleaning.</b> Offices, courthouses, libraries.</figcaption></figure>
       <figure><div class="photo settle sm has-img"><img src="/img/bb-windows.webp" alt="A squeegee clearing a tall office window at sunrise" loading="lazy" decoding="async" width="1536" height="1024"></div><figcaption><b>Window and exterior.</b> Glass, facades, pressure washing.</figcaption></figure>
     </div>
@@ -218,8 +225,8 @@
 
 <section id="faq" class="wash">
   <div class="wrap">
-    <h2 class="u-mb36">Questions</h2>
-    <div class="faq"><details><summary>Where do the bids come from?</summary><p>From SAM.gov, the official US government website where federal agencies publish contract opportunities. Past contract winners and amounts come from USAspending.gov, the official public database of federal spending. Every bid in your email links to its official notice so you can check it.</p></details><details><summary>Are you part of the government?</summary><p>No. BidBell is a private alert service. It is not affiliated with SAM.gov, the General Services Administration or any government agency. Registering in SAM.gov is free; we never charge for it.</p></details><details><summary>Do I need to be registered in SAM.gov?</summary><p>To win a federal contract, yes: a free registration at sam.gov. You can get BidBell alerts while your registration is in progress.</p></details><details><summary>How many bids will I get?</summary><p>It depends on your trade and states. Some days there are none. Then we only write if a reminder or an update for a bid we sent you is due, or on a Monday: contracts ending soon in your states, or a short note if nothing new matched all week. We never pad the email with bids you cannot use.</p></details><details><summary>What time does the email arrive?</summary><p>Around 6 AM your time, on days when there is something new for you (and on a Monday after a quiet week, one short note). We use the time zone of the states you choose (the one most of them share); for nationwide alerts we use US Eastern time.</p></details><details><summary>What does “likely current contract” mean?</summary><p>We look in USAspending.gov, the official record of federal spending, for the contract covering the same work: the same agency, the same kind of work and the same work site. If the notice itself names the previous contract number, we use that. We show a contract only when one clearly fits, label it “likely” unless the notice names it, and link to the official record so you can check. When no contract clearly fits, we show nothing rather than guess.</p></details><details><summary>How do I pay, and how do I cancel?</summary><p>On day 12 of your free 14 days we email you links to choose a plan. Payments are handled by Paddle, our merchant of record. Your plan renews automatically until you cancel. You can cancel anytime by replying to any BidBell email, or with the “Manage subscription” link in your receipt from Paddle; your alerts continue until the end of the period you paid for. Every payment has a 30-day money-back guarantee; see our refund policy.</p></details><details><summary>Is my information safe?</summary><p>We collect only what we need to send your alerts: your name, email, business details, trades, states and eligibility. We never see your card, we do not sell data, and this website has no tracking or advertising cookies.</p></details></div>
+    <div class="faq-grid"><h2>Questions</h2>
+    <div class="faq"><details><summary>Where do the bids come from?</summary><p>From SAM.gov, the official US government website where federal agencies publish contract opportunities. Past contract winners and amounts come from USAspending.gov, the official public database of federal spending. Every bid in your email links to its official notice so you can check it.</p></details><details><summary>Are you part of the government?</summary><p>No. BidBell is a private alert service. It is not affiliated with SAM.gov, the General Services Administration or any government agency. Registering in SAM.gov is free; we never charge for it.</p></details><details><summary>Do I need to be registered in SAM.gov?</summary><p>To win a federal contract, yes: a free registration at sam.gov. You can get BidBell alerts while your registration is in progress.</p></details><details><summary>How many bids will I get?</summary><p>It depends on your trade and states. Some days there are none. Then we only write if a reminder or an update for a bid we sent you is due, or on a Monday: contracts ending soon in your states, or a short note if nothing new matched all week. We never pad the email with bids you cannot use.</p></details><details><summary>What time does the email arrive?</summary><p>Around 6 AM your time, on days when there is something new for you (and on a Monday after a quiet week, one short note). We use the time zone of the states you choose (the one most of them share); for nationwide alerts we use US Eastern time.</p></details><details><summary>What does “likely current contract” mean?</summary><p>We look in USAspending.gov, the official record of federal spending, for the contract covering the same work: the same agency, the same kind of work and the same work site. If the notice itself names the previous contract number, we use that. We show a contract only when one clearly fits, label it “likely” unless the notice names it, and link to the official record so you can check. When no contract clearly fits, we show nothing rather than guess.</p></details><details><summary>How do I pay, and how do I cancel?</summary><p>On day 12 of your free 14 days we email you links to choose a plan. Payments are handled by Paddle, our merchant of record. Your plan renews automatically until you cancel. You can cancel anytime by replying to any BidBell email, or with the “Manage subscription” link in your receipt from Paddle; your alerts continue until the end of the period you paid for. Every payment has a 30-day money-back guarantee; see our refund policy.</p></details><details><summary>Is my information safe?</summary><p>We collect only what we need to send your alerts: your name, email, business details, trades, states and eligibility. We never see your card, we do not sell data, and this website has no tracking or advertising cookies.</p></details></div></div>
   </div>
 </section>
 
@@ -238,7 +245,7 @@
     <div class="photo settle u-r32 has-img"><img src="/img/bb-dawn-desk.webp" alt="A desk by a window at 6 AM with coffee and van keys" loading="lazy" decoding="async" width="1536" height="1024"></div>
     <div>
       <h2 class="u-w16">Get tomorrow morning&rsquo;s email.</h2>
-      <p class="lede u-close">Two minutes to set up. No card. If nothing fits your company tomorrow, you will hear from us when something does.</p>
+      <p class="lede">Two minutes to set up. No card. If nothing fits your company tomorrow, you will hear from us when something does.</p>
       <a class="btn btn-primary" href="/start/">Start 14 days free</a>
     </div>
   </div>

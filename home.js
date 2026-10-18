@@ -19,7 +19,15 @@
   });});
   // motion: the email arrives once; the sort runs when it scrolls into view; photos settle
   var mail=document.getElementById('mail'), sorter=document.getElementById('sorter');
-  requestAnimationFrame(function(){setTimeout(function(){mail.classList.add('arrived');},250);});
+  // the clock turns 5:58, 5:59, 6:00 ... 6:05, then the email lands (reduced motion: shown at 6:05 at once)
+  document.querySelector('.hero').classList.add('dawn');
+  var clk=document.getElementById('clk'), still=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(still||!clk){mail.classList.add('arrived');}
+  else{var times=['5:58','5:59','6:00','6:01','6:02','6:03','6:04','6:05'],k=0;clk.textContent=times[0];
+    var step=function(){k++;if(k>=times.length){mail.classList.add('arrived');return;}
+      clk.textContent=times[k];clk.classList.remove('tick');void clk.offsetWidth;clk.classList.add('tick');
+      setTimeout(step,k<2?420:150);};
+    setTimeout(step,500);}
   if(!('IntersectionObserver' in window)){sorter.classList.add('done');document.querySelectorAll('.photo.settle').forEach(function(p){p.classList.add('seen');});return;}
   var io=new IntersectionObserver(function(es){es.forEach(function(e){
     if(!e.isIntersecting) return;
@@ -28,4 +36,12 @@
   });},{threshold:.35});
   io.observe(sorter); document.querySelectorAll('.photo.settle').forEach(function(p){io.observe(p);});
   document.getElementById('replay').addEventListener('click',function(){sorter.classList.remove('done');setTimeout(function(){sorter.classList.add('done');},700);});
+  // 3D lean toward the pointer (mouse only, big screens, motion allowed)
+  var deck=document.getElementById('deck');
+  if(deck&&!still&&matchMedia('(hover:hover) and (pointer:fine) and (min-width:1001px)').matches){
+    var hero=document.querySelector('.hero'),raf=0,px=0,py=0;
+    hero.addEventListener('pointermove',function(e){var r=hero.getBoundingClientRect();px=(e.clientX-r.left)/r.width-.5;py=(e.clientY-r.top)/r.height-.5;
+      if(!raf)raf=requestAnimationFrame(function(){raf=0;deck.style.setProperty('transform','rotateY('+(-8+px*10).toFixed(2)+'deg) rotateX('+(4-py*8).toFixed(2)+'deg)');});});
+    hero.addEventListener('pointerleave',function(){deck.style.removeProperty('transform');});
+  }
 })();
