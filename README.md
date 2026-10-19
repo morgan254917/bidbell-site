@@ -1,6 +1,23 @@
-# bidbell-site
+# BidBell
 
-The public BidBell website (getbidbell.com), served by GitHub Pages. Static files only: no server, no database,
+**Federal cleaning bids, every morning.** BidBell is a daily email for US cleaning companies. Each morning it lists
+the new government cleaning bids on SAM.gov that fit your business: your states, your work (janitorial, carpet,
+window cleaning) and your set-asides (small business, HUBZone, SDVOSB, 8(a), women-owned). Every bid links to its
+official notice on SAM.gov.
+
+- Website: [getbidbell.com](https://getbidbell.com)
+- Free cleaning-bid lists by state: [getbidbell.com/cleaning-bids/](https://getbidbell.com/cleaning-bids/)
+- Free 14-day trial, no card: [getbidbell.com/start/](https://getbidbell.com/start/)
+- Price after the trial: $39/month or $390/year
+- Contact: hello@getbidbell.com · BidBell, 1670 Broadway, Denver, CO 80202, United States
+
+BidBell is not affiliated with SAM.gov or any government agency. It finds bids; it does not promise you will win one.
+
+---
+
+## About this repository
+
+This repository is the public BidBell website (getbidbell.com), served by GitHub Pages. Static files only: no server, no database,
 no cookies, no trackers; JavaScript only for the phone menu, the sign-up form (/start/) and Paddle's checkout (/subscribe/). **Never put secrets, customer data or email lists in this project** — it is public.
 
 | Path | What |
