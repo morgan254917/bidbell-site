@@ -20,7 +20,7 @@ from datetime import date, datetime
 # Put the US support number between the quotes, e.g. PHONE = '(501) 555-0123', then run python3 tools/build.py.
 # Leave it empty ('') to show no phone anywhere. When set, it appears in the footer (next to the email), the Terms
 # (Contact), the Privacy Policy (Contact), the Refund policy and /subscribe/.
-PHONE = '(913) 252-0636'
+PHONE = '(413) 255-7289'
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 T = os.path.join(ROOT, 'tools')
