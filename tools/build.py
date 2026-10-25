@@ -157,7 +157,7 @@ def layout(path, title, desc, body, jsonld=None, updated=None, noindex=False, og
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preload" href="/fonts/public-sans.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/public-sans.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/style.css">
+<link rel="stylesheet" href="/style.css?v=20261025-green">
 <script src="/nav.js" defer></script>{ld}
 </head>
 <body>
@@ -1029,3 +1029,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
