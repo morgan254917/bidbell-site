@@ -1,5 +1,5 @@
-// BidBell sign-up form: checks the answers, sends them to BidBell's Google Form in the background,
-// then shows the thank-you page on getbidbell.com. Without JavaScript the form still posts normally.
+// Validate locally, then let the browser POST directly to Google Forms.
+// Only the provider can confirm receipt. Never retry automatically or claim opaque-request success.
 (function () {
   var form = document.getElementById('signup');
   if (!form) return;
@@ -58,6 +58,19 @@
   });
   showCount();
 
+  var search = document.getElementById('state-search');
+  var searchStatus = document.getElementById('state-search-status');
+  if (search) search.addEventListener('input', function () {
+    var query = search.value.trim().toLowerCase(), visible = 0;
+    states.forEach(function (cb) {
+      var label = cb.closest('label');
+      var matches = cb === all || cb.checked || label.textContent.toLowerCase().indexOf(query) !== -1;
+      label.hidden = !matches;
+      if (matches && cb !== all) visible++;
+    });
+    if (searchStatus) searchStatus.textContent = query ? visible + ' states shown. Selected states stay visible.' : '';
+  });
+
   // A group's error goes away as soon as a choice is made in it.
   form.querySelectorAll('fieldset[data-need]').forEach(function (g) {
     g.addEventListener('change', function () {
@@ -79,14 +92,10 @@
       if (g.dataset.max && picked > +g.dataset.max) { ev.preventDefault(); problem('Please choose up to ' + g.dataset.max + ' states, or Nationwide.', g); return; }
       clearProblem(g);
     }
-    if (!window.fetch || !window.URLSearchParams) return;   // old browser: normal post to Google
-    ev.preventDefault();
-    if (btn.disabled) return;
+    if (btn.disabled) { ev.preventDefault(); return; }
     btn.disabled = true;
-    btn.textContent = 'Sending…';
-    var body = new URLSearchParams(new FormData(form));
-    fetch(form.action, { method: 'POST', mode: 'no-cors', body: body })
-      .then(function () { window.location.href = form.dataset.thanks; })
-      .catch(function () { form.submit(); });   // network hiccup: fall back to a normal post
+    btn.textContent = 'Opening confirmation...';
+    // Do not preventDefault: native POST displays the provider response or browser error.
+
   });
 })();

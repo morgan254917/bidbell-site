@@ -1,55 +1,7 @@
 {
- "updated": "2026-10-19",
+ "updated": "2026-10-25",
  "source": "SAM.gov public Contract Opportunities data",
  "bids": [
-  {
-   "trade": "janitorial",
-   "title": "Janitorial Services at the FMH SSC in Falmouth, MA",
-   "type": "Combined Synopsis/Solicitation",
-   "agency": "Transportation, Department Of",
-   "city": "Falmouth",
-   "state": "MA",
-   "due": "2026-10-20",
-   "set_aside": "Small Business Set Aside - Total",
-   "link": "https://sam.gov/workspace/contract/opp/dfb8ffcc30744fd8a669aa623eb60993/view",
-   "sol": "697DCK-27-R-00004"
-  },
-  {
-   "trade": "janitorial",
-   "title": "Janitorial Services at the MVY ATCT in Massachusetts",
-   "type": "Combined Synopsis/Solicitation",
-   "agency": "Transportation, Department Of",
-   "city": "",
-   "state": "MA",
-   "due": "2026-10-22",
-   "set_aside": "Small Business Set Aside - Total",
-   "link": "https://sam.gov/workspace/contract/opp/eff59fe41e34497595a726312004e8f9/view",
-   "sol": "697DCK-27-R-00001"
-  },
-  {
-   "trade": "janitorial",
-   "title": "Fort Hood Installation Custodial Services",
-   "type": "Solicitation",
-   "agency": "Dept Of Defense",
-   "city": "Fort Hood",
-   "state": "TX",
-   "due": "2026-10-23",
-   "set_aside": "Historically Underutilized Business (HUBZone) Set-Aside (FAR 19.13)",
-   "link": "https://sam.gov/workspace/contract/opp/6db95006c8004c87a4724199c454fa6d/view",
-   "sol": "W91151-26-R-A004"
-  },
-  {
-   "trade": "window",
-   "title": "Snow and Ice Management Services for Indian Health Service (IHS) Mashpee Wampanoag Service Unit (MWSU)",
-   "type": "Solicitation",
-   "agency": "Health And Human Services, Department Of",
-   "city": "Mashpee",
-   "state": "MA",
-   "due": "2026-10-23",
-   "set_aside": "No Set aside used",
-   "link": "https://sam.gov/workspace/contract/opp/a317706c17ec47138451fc2a973f70ca/view",
-   "sol": "IHS1532149"
-  },
   {
    "trade": "janitorial",
    "title": "Southern Research Station - Bent Creek Janitorial Services",
@@ -59,8 +11,20 @@
    "state": "NC",
    "due": "2026-10-26",
    "set_aside": "Small Business Set Aside - Total",
-   "link": "https://sam.gov/workspace/contract/opp/6dac9db1ec8840efb3beb2679078872f/view",
+   "link": "https://sam.gov/workspace/contract/opp/b2f160174f7d442cade5fcbb3dd44ed8/view",
    "sol": "1240BE27Q0006"
+  },
+  {
+   "trade": "janitorial",
+   "title": "S--AMARILLO FIELD OFFICE JANITORIAL SERVICES",
+   "type": "Sources Sought",
+   "agency": "Interior, Department Of The",
+   "city": "Amarillo",
+   "state": "TX",
+   "due": "2026-10-28",
+   "set_aside": "Small Business Set Aside - Total",
+   "link": "https://sam.gov/workspace/contract/opp/55310392f07642a7840173a58e854adb/view",
+   "sol": "140LL027Q0008"
   },
   {
    "trade": "janitorial",
@@ -76,14 +40,26 @@
   },
   {
    "trade": "janitorial",
-   "title": "S201--Janitorial Services CBOC'S",
+   "title": "JBMDL, NJ Lakehurst Custodial Services - 2027-2032",
+   "type": "Sources Sought",
+   "agency": "Dept Of Defense",
+   "city": "Joint Base Mdl",
+   "state": "NJ",
+   "due": "2026-10-30",
+   "set_aside": "Small Business Set Aside - Total",
+   "link": "https://sam.gov/workspace/contract/opp/ed5ce028def240be8844339e4c5ec025/view",
+   "sol": "FA448427CUSTODIAL"
+  },
+  {
+   "trade": "janitorial",
+   "title": "S201--Janitorial Services for NH CBOCs",
    "type": "Combined Synopsis/Solicitation",
    "agency": "Veterans Affairs, Department Of",
    "city": "Manchester",
    "state": "NH",
    "due": "2026-11-03",
    "set_aside": "Service-Disabled Veteran-Owned Small Business (SDVOSB) Set-Aside (FAR 19.14)",
-   "link": "https://sam.gov/workspace/contract/opp/eb19d242944d4e25be4c2e09a63b7d31/view",
+   "link": "https://sam.gov/workspace/contract/opp/9683c9f3509746c7ae7ef6a8c381c131/view",
    "sol": "36C24127Q0022"
   },
   {
@@ -95,8 +71,32 @@
    "state": "AR",
    "due": "2026-11-04",
    "set_aside": "Small Business Set Aside - Total",
-   "link": "https://sam.gov/workspace/contract/opp/9d92e76c697e46d1b088c1db9ce69c88/view",
+   "link": "https://sam.gov/workspace/contract/opp/8bf07aef44b242efa9906b729b50a9b4/view",
    "sol": "W9127S27QA004"
+  },
+  {
+   "trade": "janitorial",
+   "title": "146 DFAC Janitorial Service",
+   "type": "Presolicitation",
+   "agency": "Dept Of Defense",
+   "city": "Port Hueneme",
+   "state": "CA",
+   "due": "2026-11-07",
+   "set_aside": "",
+   "link": "https://sam.gov/workspace/contract/opp/90497777f1f741638a8f31e86f1cad84/view",
+   "sol": "W50S7527QX001"
+  },
+  {
+   "trade": "janitorial",
+   "title": "Swan Lake Ranger District Janitorial Contract, Flathead National Forest",
+   "type": "Combined Synopsis/Solicitation",
+   "agency": "Agriculture, Department Of",
+   "city": "",
+   "state": "MT",
+   "due": "2026-11-12",
+   "set_aside": "Small Business Set Aside - Total",
+   "link": "https://sam.gov/workspace/contract/opp/b8ccbbe3ee9548bb9ba4f1617224649d/view",
+   "sol": "1240LS26Q0044"
   },
   {
    "trade": "janitorial",
@@ -105,10 +105,46 @@
    "agency": "Dept Of Defense",
    "city": "Joint Base Mdl",
    "state": "NJ",
-   "due": "2026-11-15",
+   "due": "2026-11-16",
    "set_aside": "8(a) Set-Aside (FAR 19.8)",
    "link": "https://sam.gov/workspace/contract/opp/05044bcd730f4077a74ba996c13d1eb5/view",
    "sol": "FA448427Q0002"
+  },
+  {
+   "trade": "janitorial",
+   "title": "S201--VANIHCS Window Cleaning - Engineering Service Fort Wayne and Marion Campuses",
+   "type": "Combined Synopsis/Solicitation",
+   "agency": "Veterans Affairs, Department Of",
+   "city": "Fort Wayne",
+   "state": "IN",
+   "due": "2026-11-19",
+   "set_aside": "Service-Disabled Veteran-Owned Small Business (SDVOSB) Set-Aside (FAR 19.14)",
+   "link": "https://sam.gov/workspace/contract/opp/6908ff7a8ee54ccaa6ab40b0fe6665aa/view",
+   "sol": "36C25027Q0016"
+  },
+  {
+   "trade": "window",
+   "title": "USAG Pressure Washing",
+   "type": "Combined Synopsis/Solicitation",
+   "agency": "Dept Of Defense",
+   "city": "Fort Bragg",
+   "state": "NC",
+   "due": "2026-11-23",
+   "set_aside": "Historically Underutilized Business (HUBZone) Set-Aside (FAR 19.13)",
+   "link": "https://sam.gov/workspace/contract/opp/b5e40cbc14e246c49ef8dd5577d266e2/view",
+   "sol": "W91247-27-Q-A001"
+  },
+  {
+   "trade": "window",
+   "title": "Vent Hood Services",
+   "type": "Solicitation",
+   "agency": "Dept Of Defense",
+   "city": "Moody Afb",
+   "state": "GA",
+   "due": "2026-11-24",
+   "set_aside": "Small Business Set Aside - Total",
+   "link": "https://sam.gov/workspace/contract/opp/4eabd9cf67a9464d9b39e7155bd67625/view",
+   "sol": "FA483027Q0004"
   }
  ]
 }

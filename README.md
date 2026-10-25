@@ -1,37 +1,51 @@
 # BidBell
 
-**Federal cleaning bids, every morning.** BidBell is a daily email for US cleaning companies. Each morning it lists
-the new government cleaning bids on SAM.gov that fit your business: your states, your work (janitorial, carpet,
-window cleaning) and your set-asides (small business, HUBZone, SDVOSB, 8(a), women-owned). Every bid links to its
-official notice on SAM.gov.
+BidBell helps building-service contractors find opportunities, keep a shortlist and prepare a bid. The brand is broader than any individual feed. Show actual coverage beside each service rather than implying every trade is available everywhere.
 
-- Website: [getbidbell.com](https://getbidbell.com)
-- Free cleaning-bid lists by state: [getbidbell.com/cleaning-bids/](https://getbidbell.com/cleaning-bids/)
-- Free 14-day trial, no card: [getbidbell.com/start/](https://getbidbell.com/start/)
-- Price after the trial: $39/month or $390/year
-- Contact: hello@getbidbell.com · BidBell, 1670 Broadway, Denver, CO 80202, United States
+- Website: https://getbidbell.com/
+- Opportunity workspace: https://getbidbell.com/workspace/
+- Bid preparation checklist: https://getbidbell.com/prepare/
+- Cleaning notices by state: https://getbidbell.com/cleaning-bids/
+- Current daily cleaning alerts: 14 days free, then $39/month or $390/year at https://getbidbell.com/start/
 
-BidBell is not affiliated with SAM.gov or any government agency. It finds bids; it does not promise you will win one.
+The current paid alert plan covers janitorial, carpet, window and exterior cleaning. Adding a public-data category does not automatically expand paid coverage. Daily email includes a short status update on quiet days. Existing subscribers and billing remain separate from the free workspace.
 
----
+The public workspace reads a dated federal building-services snapshot, with trade, state and text filters. Users can keep a shortlist, choose a stage, record a next action and export a text copy. The preparation checklist works with any manually entered bid. Neither tool certifies eligibility, writes a complete proposal or submits a bid.
 
-## About this repository
+## Data and privacy
 
-This repository is the public BidBell website (getbidbell.com), served by GitHub Pages. Static files only: no server, no database,
-no cookies, no trackers; JavaScript only for the phone menu, the sign-up form (/start/) and Paddle's checkout (/subscribe/). **Never put secrets, customer data or email lists in this project** — it is public.
+This is a public static website served by GitHub Pages. Never commit credentials, private customer records, recipient lists or internal research to this repository.
 
-| Path | What |
+The workspace and preparation checklist use browser localStorage only after an explicit Save action. Those records do not have a cloud account or cross-device synchronization. Later edits require another save. Both pages offer export and deletion. People sharing the browser profile may access its saved records.
+
+The workspace fetches public data from this website. Signup sends answers to the configured Google Form. The plan page loads Paddle for checkout when configured. The site adds no advertising or analytics tracking. Do not describe it as having no browser storage or only a signup form.
+
+## Source files
+
+| Path | Purpose |
 |---|---|
-| `tools/site.json` | Business facts used on every page (owner name, mailing address, email, prices, form link, governing law) |
-| `tools/build.py` | Builds every page: home, /start/, /subscribe/, /cleaning-bids/ (50 states + DC, carpet, window), legal pages, 404, sitemap, robots, security.txt. The support phone is `PHONE` at the top (empty = no phone shown) |
-| `tools/paddle.json` | Paddle checkout for /subscribe/: `env` (sandbox or production), client-side token, monthly and yearly price ids. While any is empty, /subscribe/ says "Payments open soon" and loads no Paddle script. Never put a Paddle API key here |
-| `tools/checkout.js` | /subscribe/: highlights the plan from `?plan=` and opens Paddle's overlay checkout |
-| `tools/form.js` | /start/: checks the answers, sends them to BidBell's Google Form in the background and shows the thank-you page (without JavaScript the form still posts normally) |
-| `tools/nav.js` | The phone menu: closes it after a link is tapped, on Escape or on a tap outside it (the menu works without it) |
-| `tools/update_bids.py` | Downloads SAM.gov's public CSV and keeps open federal cleaning bids (NAICS 561720, 561740, 561790) |
-| `tools/style.css` | The one stylesheet (light and dark mode) |
-| `favicon.ico`, `favicon.svg`, `apple-touch-icon.png`, `icon-512.png`, `og.png` | Fixed image files (browser tab, phone home screen, search results, link previews); `favicon.svg` is written by the build |
-| (lawyer review notes) | Kept in the private repository (bidbell-morgan/legal/), because everything here, tools/ included, is public on getbidbell.com |
-| `.github/workflows/weekly-bids.yml` | Mondays 07:07 UTC: new bid data; daily 07:37 UTC: rebuild so expired notices drop off. If GitHub skips a time, the backup clock in the private BidBell project starts it about 20 minutes later. |
+| `index.html`, `home.css`, `home.js` | Authored homepage, preserved by the builder |
+| `workspace/` | Public notice search, personal shortlist and progress |
+| `prepare/` | Manual bid checklist and validated source prefill |
+| `data/service_bids.json` | Dated building-services snapshot, when available |
+| `data/cleaning_bids.json` | Existing cleaning-only data for state/category pages |
+| `tools/update_bids.py` | Official public-data ingestion and category filtering |
+| `tools/build.py` | Generates signup, subscription, category, policy and error pages; preserves authored product pages and registers their sitemap routes |
+| `tools/site.json` | Business facts, current prices and signup fields |
+| `tools/paddle.json` | Public checkout settings; never a Paddle API secret |
+| `tools/form.js`, `tools/checkout.js`, `tools/nav.js` | Generated-page scripts copied by the builder |
+| `tools/style.css` | Shared generated-page styling |
+| `tools/test_site.py` | Route, signup-contract, pricing and copy checks |
+| `.github/workflows/weekly-bids.yml` | Scheduled data refresh/rebuild; manual refresh=false rebuilds without a data download |
 
-To change a fact (name, address, prices, sign-up form link): edit `tools/site.json`, then run `python3 tools/build.py`.
+## Build and verify
+
+Run `python tools/build.py`, then `python tools/test_site.py`.
+
+Run browser-tool unit tests with `node --test workspace/core.test.mjs prepare/plan.test.mjs`.
+
+The builder fails if the authored homepage, workspace or preparation page is missing. It cannot restore the obsolete cleaning-only homepage. Cleaning-specific routes remain because they are still useful, accurate category pages.
+
+Rebuilding existing data does not refresh its source date. Check source freshness, filters, form behavior and checkout settings before release. Do not send customer emails or initiate charges just to test a page.
+
+The local `desk/` experiment is not part of this release and must be excluded from deployments. Internal plans and private notes stay outside the public repository.
