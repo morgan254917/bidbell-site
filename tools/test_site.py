@@ -27,14 +27,15 @@ class Site(unittest.TestCase):
   cfg=json.loads((ROOT/'tools/site.json').read_text(encoding='utf-8'))
   page=Page((ROOT/'start/index.html').read_text(encoding='utf-8'))
   self.assertEqual(page.forms[0]['action'],cfg['form_post'])
-  self.assertEqual({i['name'] for i in page.inputs},set(cfg['form_entries'].values()))
+  self.assertEqual({i['name'] for i in page.inputs if i.get('name')},set(cfg['form_entries'].values()))
   self.assertIn('Nationwide (all states)',[i.get('value') for i in page.inputs])
  def test_pricing_and_structured_data(self):
   text=(ROOT/'index.html').read_text(encoding='utf-8')
   objects=[json.loads(x) for x in re.findall(r'<script type="application/ld\+json">(.*?)</script>',text,re.S)]
   product=next(x for x in objects if x['@type']=='Product')
   self.assertEqual([x['price'] for x in product['offers']],['39.00','390.00'])
-  self.assertIn('Historical sample',text)
+  self.assertIn('INTERACTIVE DEMONSTRATION',text)
+  self.assertIn('not a live bid feed',text)
   self.assertNotIn('no extensions left',text)
   self.assertIn('does not guarantee a new bid',text)
  def test_rendered_copy_no_em_dash(self):

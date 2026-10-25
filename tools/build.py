@@ -85,7 +85,7 @@ CSP_PADDLE = ("default-src 'none'; img-src 'self' https://*.paddle.com; "
               "base-uri 'none'; form-action 'none'; upgrade-insecure-requests")
 
 
-BELL = '<svg viewBox="0 0 40 40" aria-hidden="true" focusable="false"><rect width="40" height="40" rx="11" fill="#193e34"/><path d="M12 8h11l6 6v18H12z" fill="#f7f6ef"/><path d="M23 8v7h6" fill="#d9ee83"/><path d="M15.5 25h10l-1.4-2.3v-3a3.6 3.6 0 0 0-7.2 0v3z" fill="#193e34"/><path d="M19 27h3" stroke="#193e34" stroke-width="2" stroke-linecap="round"/></svg>'
+BELL = '<svg aria-hidden="true" focusable="false" viewBox="0 0 64 64"><rect width="64" height="64" rx="16" fill="#141728"/><path d="M18 43V28a14 14 0 0 1 28 0v15l5 5H13l5-5Z" fill="#ff6b57"/><path d="M27 54h10M32 10v5" stroke="#bdb0ff" stroke-width="4" stroke-linecap="round"/></svg>'
 
 
 def start_url():
@@ -157,13 +157,13 @@ def layout(path, title, desc, body, jsonld=None, updated=None, noindex=False, og
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preload" href="/fonts/public-sans.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/public-sans.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/style.css?v=20261025-green">
+<link rel="stylesheet" href="/style.css?v=20261025-rebuild2">
 <script src="/nav.js" defer></script>{ld}
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
 {topbar}<header class="site-head"><div class="wrap">
-  <a class="logo" href="/">{BELL}BidBell</a>
+  <a class="logo" href="/">{BELL}BidBell<span class="brand-dot" aria-hidden="true">.</span></a>
   <nav class="nav" aria-label="Main">{links}</nav>{head_cta}
   <details class="menu">
     <summary aria-label="Menu">{MENU_ICON}</summary>
@@ -176,7 +176,7 @@ def layout(path, title, desc, body, jsonld=None, updated=None, noindex=False, og
 <footer class="site-foot"><div class="wrap">
   <div class="foot-grid">
     <div class="brand">
-      <a class="logo" href="/">{BELL}BidBell</a>
+      <a class="logo" href="/">{BELL}BidBell<span class="brand-dot" aria-hidden="true">.</span></a>
       <p class="foot-about">Daily federal cleaning bids for janitorial, carpet and window companies, filtered by your trades, states and stated set-asides.</p>
       <p class="small">{E(C['mailing_address'])}<br><a href="mailto:{C['email']}">{C['email']}</a>{' &middot; ' + phone_link() if PHONE.strip() else ''}</p>
     </div>
@@ -603,7 +603,7 @@ def signup_form():
     state_names = sorted(STATES.values())
     states = (f'<label class="all"><input type="checkbox" name="{f["states"]}" value="{NATIONWIDE}"> Nationwide (all states)</label>'
               + ''.join(f'<label><input type="checkbox" name="{f["states"]}" value="{E(s)}"> {E(s)}</label>' for s in state_names))
-    return f'''<form class="signup" id="signup" action="{E(post)}" method="post" accept-charset="utf-8" data-thanks="/start/thanks/">
+    return f'''<form class="signup" id="signup" action="{E(post)}" method="post" accept-charset="utf-8">
   <div class="form-error" id="form-error" role="alert" hidden></div>
   <fieldset>
     <legend>About you</legend>
@@ -625,7 +625,8 @@ def signup_form():
     <legend>Which states do you work in?</legend>
     <p class="hint" id="h-states">Choose up to 10 states you can actually serve, or Nationwide. We use the stated work location when available, not just the agency office.</p>
     <p class="field-error" id="e-states" role="alert" hidden></p>
-    <div class="state-box">{states}</div>
+    <label class="state-search-label" for="state-search">Find a state</label><input id="state-search" class="state-search" type="search" placeholder="Search by state name" autocomplete="off" aria-controls="state-options"><p id="state-search-status" class="small muted" aria-live="polite"></p>
+    <div class="state-box" id="state-options">{states}</div>
     <p class="state-count" id="state-count" aria-live="polite"></p>
   </fieldset>
   <fieldset data-need="1" data-label="at least one answer to &ldquo;Is your business any of these?&rdquo; (or &ldquo;None of these / not sure&rdquo;)" aria-describedby="h-certs">
@@ -642,10 +643,10 @@ def signup_form():
   <div class="form-foot">
     <label class="agree"><input type="checkbox" name="{f['agree']}" value="{E(AGREE)}" required><span>I agree to the BidBell <a href="/terms/">Terms</a> and <a href="/privacy/">Privacy Policy</a>.</span></label>
     <button class="btn" type="submit">Start my free 14 days {ICON['arrow']}</button>
-    <p class="small muted">No card needed. Your answers are sent securely to BidBell&rsquo;s private Google Forms account.</p>
+    <p class="small muted">No card needed. Your signup finishes on Google Forms. Look for its confirmation before closing.</p>
   </div>
 </form>
-<script src="/form.js" defer></script>'''
+<script src="/form.js?v=20261025-rebuild2" defer></script>'''
 
 
 def start():
@@ -669,7 +670,7 @@ def start():
 </div>'''
     body = f'''<div class="page-head"><div class="wrap">
   <p class="crumbs"><a href="/">Home</a> / Start free trial</p>
-  <h1>Start your free 14 days</h1>
+  <p class="eyebrow">YOUR NEXT OPPORTUNITY STARTS HERE</p><h1>Your work. Your states.<br>Your morning shortlist.</h1>
   <p class="lead">Tell us about your business once. Alerts start from the next morning, usually around 6 AM your time. Quiet days include a short status update. No card needed.</p>
 </div></div>
 <div class="wrap page"><div class="signup-grid">
@@ -695,12 +696,12 @@ def start():
 </div></div>'''
     thanks = f'''<div class="page-head"><div class="wrap">
   <p class="crumbs"><a href="/">Home</a> / <a href="/start/">Start free trial</a> / Done</p>
-  <h1>You&rsquo;re in.</h1>
-  <p class="lead">Thanks for signing up for BidBell. A welcome email confirming your details is on its way (it usually arrives within a few minutes), and your free 14 days of alerts start the next morning, around 6 AM your time.</p>
+  <h1>Check your submission.</h1>
+  <p class="lead">Google Forms displays a confirmation when your answers are accepted. Visiting this page does not confirm your sign-up or start a trial. After your details are processed, look for a BidBell welcome email.</p>
   <div class="cta-row"><a class="btn" href="/#sample">See what an alert looks like</a><a class="btn ghost" href="/cleaning-bids/">Browse this week&rsquo;s bids</a></div>
   <p class="small muted">No welcome email within an hour? Check your spam folder, then write to <a href="mailto:{C['email']}">{C['email']}</a> so we can make sure your sign-up reached us. Something wrong, or want to change your states? Email us at the same address.</p>
 </div></div>'''
-    write('start/thanks/', layout('start/thanks/', 'You\u2019re in | BidBell', 'Your free BidBell trial has started.', thanks, noindex=True, promo=False), sitemap=False)
+    write('start/thanks/', layout('start/thanks/', 'Sign-up next steps | BidBell', 'How to check your BidBell sign-up.', thanks, noindex=True, promo=False), sitemap=False)
     write('start/', layout('start/', 'Start your free 14 days | BidBell',
                            'Start a free 14-day BidBell trial: daily federal cleaning bids for your trade, states and eligibility. No card needed.', body,
                            promo=False))
@@ -793,7 +794,7 @@ def bid_pages():
         if sb:
             lst = bid_table(sb, f'{len(sb)} open federal cleaning notice{"s" if len(sb) != 1 else ""} in {name}')
         else:
-            lst = f'<div class="note"><p>No open federal cleaning notices were listed for {name} in this week&rsquo;s data. When one is posted, BidBell subscribers who work in {name} and can bid on it get it in their next morning&rsquo;s email.</p></div>'
+            lst = f'<div class="note"><p>No open federal cleaning notices were listed for {name} in this week&rsquo;s data. Daily alerts check available sources for new matches against your selected services, location and eligibility filters.</p></div>'
         body = f'''<div class="page-head"><div class="wrap">
 <p class="crumbs"><a href="/">Home</a> / <a href="/cleaning-bids/">Cleaning bids</a> / {E(name)}</p>
 <h1>Open federal cleaning bids in {E(name)}</h1>
