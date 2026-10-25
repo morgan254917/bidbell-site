@@ -279,9 +279,9 @@ FAQ = [   # (question, answer); answers are HTML (links allowed); the FAQ struct
     ('Do I need to be registered in SAM.gov?',
      'To win a federal contract, yes: a free registration at sam.gov. You can get BidBell alerts while your registration is in progress.'),
     ('How many bids will I get?',
-     'It depends on your trade and states. Some days there are none. Then we only write if a reminder or an update for a bid we sent you is due, or on a Monday: contracts ending soon in your states, or a short note if nothing new matched all week. We never pad the email with bids you cannot use.'),
+     'You receive a daily email. New matches depend on your trades and states; some days there are none. On quiet days, we send a short status update. Emails can also include reminders and weekly research or summaries. Relevance depends on your preferences and the information in each notice.'),
     ('What time does the email arrive?',
-     'Around 6 AM your time, on days when there is something new for you (and on a Monday after a quiet week, one short note). We use the time zone of the states you choose '
+     'Usually around 6 AM your time, every day, including a short status update when there are no new matches. We use the time zone of the states you choose '
      '(the one most of them share); for nationwide alerts we use US Eastern time.'),
     ('What does “likely current contract” mean?',
      'We look in USAspending.gov, the official record of federal spending, for the contract covering the same work: the same agency, '
@@ -681,7 +681,7 @@ def start():
       <h2>What happens next</h2>
       <ol class="next-steps">
         <li><div><b>A welcome email</b><span>Confirming your details, usually within a few minutes.</span></div></li>
-        <li><div><b>Your alerts start</b><span>The next morning, around 6 AM your time, on days with matching bids.</span></div></li>
+        <li><div><b>Your alerts start</b><span>From the next morning, usually around 6 AM your time, including a short status update on quiet days.</span></div></li>
         <li><div><b>Day 12: your summary</b><span>How many bids we sent you, and links to keep your alerts: ${C['standard_price']}/month or ${C['annual_price']}/year.</span></div></li>
         <li><div><b>Or do nothing</b><span>Your alerts stop after 14 days. Nothing is charged.</span></div></li>
       </ol>
@@ -764,7 +764,7 @@ def subscribe():
     thanks = f'''<div class="page-head"><div class="wrap">
   <p class="crumbs"><a href="/">Home</a> / Subscription</p>
   <h1>Thank you. Your payment went through.</h1>
-  <p class="lead">Your BidBell plan is active. Your alerts carry on, or start, with your next morning email, around 6 AM your time, on days with matching bids. Paddle, which processes our orders, emails you the receipt, and we send you a short confirmation.</p>
+  <p class="lead">Your BidBell plan is active. Your alerts carry on, or start, with your next morning email, usually around 6 AM your time. You receive a daily email, including a short status update on quiet days. Paddle, which processes our orders, emails you the receipt, and we send you a short confirmation.</p>
   <div class="cta-row"><a class="btn" href="/">Back to BidBell</a><a class="btn ghost" href="/refunds/">Refund policy</a></div>
   <p class="small muted">Questions about your plan, or want to cancel? Email {mail}{phone}, or reply to any BidBell email.</p>
 </div></div>'''
@@ -871,7 +871,7 @@ def legal():
     legal_page('terms/', 'Terms of Service', 'The terms that apply when you use BidBell.', f'''
 <p>These terms are an agreement between you (the business using BidBell, and the person accepting for it) and {seller}. {contact}. By starting a trial or subscription you accept them. Nothing in these terms takes away rights you have under a law that cannot be excluded by contract.</p>
 <h2>1. What BidBell is</h2>
-<p>BidBell is an email service. Each morning we read new US federal contract notices published on SAM.gov, select the ones that match the trades, states and eligibility you give us, and email them to you. Where we can, we add information from USAspending.gov about the likely current or previous contract for the same work. Your alerts also carry reminders and updates for bids we sent you and, on Mondays, federal contracts in your states that end in 3 to 6 months. We email you only on days when there is something new for you, and on a Monday after a week with nothing new, one short note saying so. We also publish free public pages listing open federal cleaning notices by state. We are not a government service, a bidding agent, a law firm or a consultant.</p>
+<p>BidBell is an email service. Each morning we read new US federal contract notices published on SAM.gov, select the ones that match the trades, states and eligibility you give us, and email them to you. Where we can, we add information from USAspending.gov about the likely current or previous contract for the same work. Your alerts also carry reminders and updates for bids we sent you and, on Mondays, federal contracts in your states that end in 3 to 6 months. We send a daily email, including a short status update when there are no new matching notices. We also publish free public pages listing open federal cleaning notices by state. We are not a government service, a bidding agent, a law firm or a consultant.</p>
 <h2>2. Free trial</h2>
 <p>New customers get a free 14-day trial. We do not ask for a card to start it. If you do not subscribe, your alerts stop at the end of the trial and nothing is charged.</p>
 <h2>3. Plans, payment and taxes</h2>
