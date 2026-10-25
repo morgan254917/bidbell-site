@@ -151,7 +151,7 @@ def layout(path, title, desc, body, jsonld=None, updated=None, noindex=False, og
 {og_url}<meta property="og:image" content="{BASE}/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="BidBell: federal cleaning bids you can win, in your inbox around 6 AM. An example alert email lists open bids with their deadlines and who can bid.">
+<meta property="og:image:alt" content="BidBell: federal cleaning opportunities to review, in your inbox around 6 AM. An example alert email lists open bids with their deadlines and who can bid.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#FFFFFF">
 <link rel="icon" href="/favicon.ico" sizes="32x32">
@@ -179,7 +179,7 @@ def layout(path, title, desc, body, jsonld=None, updated=None, noindex=False, og
   <div class="foot-grid">
     <div class="brand">
       <a class="logo" href="/">{BELL}BidBell</a>
-      <p class="foot-about">Daily federal cleaning bids for janitorial, carpet and window companies, filtered to the jobs you can win.</p>
+      <p class="foot-about">Daily federal cleaning bids for janitorial, carpet and window companies, filtered by your trades, states and stated set-asides.</p>
       <p class="small">{E(C['mailing_address'])}<br><a href="mailto:{C['email']}">{C['email']}</a>{' &middot; ' + phone_link() if PHONE.strip() else ''}</p>
     </div>
     <nav aria-label="Product"><h2>Product</h2><ul>
@@ -201,7 +201,9 @@ def layout(path, title, desc, body, jsonld=None, updated=None, noindex=False, og
 def write(path, content, lastmod=None, sitemap=True):
     full = os.path.join(ROOT, path, 'index.html') if (path == '' or path.endswith('/')) else os.path.join(ROOT, path)
     os.makedirs(os.path.dirname(full), exist_ok=True)
-    open(full, 'w').write(content)
+    # Keep raw notice evidence untouched; normalize punctuation only in rendered pages.
+    content = content.replace(chr(8212), ' - ').replace('&mdash;', ' - ').replace('&#8212;', ' - ').replace('&#x2014;', ' - ')
+    open(full, 'w', encoding='utf-8').write(content)
     if sitemap:
         PAGES.append((path, (lastmod or TODAY).isoformat()))
 
@@ -233,7 +235,7 @@ def bid_table(bids, caption):
 def cta_box(heading='Get the right bids every morning instead'):
     return f'''<div class="cta-band">
   <h2>{heading}</h2>
-  <p>This page is a free weekly snapshot. BidBell subscribers get only the bids in their states that their business is allowed to bid on, by email around 6 AM their time on days with new matches.</p>
+  <p>This page is a free weekly snapshot. BidBell subscribers get a shortlist matched to their trades, states and stated set-asides, by email each morning, usually around 6 AM their time. Quiet days include a short status update.</p>
   <div class="cta-row"><a class="btn light" href="{E(start_url())}">Start 14 days free {ICON['arrow']}</a></div>
   {checks(['No card required', f"${C['standard_price']}/month after, or ${C['annual_price']}/year", 'Cancel anytime'])}
 </div>'''
@@ -353,7 +355,7 @@ def hero_mock():
     </div>
     <div class="float-card" aria-hidden="true">
       <div class="k">{ICON['check']}Delivered &middot; 6:15 AM your time</div>
-      <div class="t">Only bids you can win</div>
+      <div class="t">A shortlist for your business</div>
       <div class="m">Filtered by trade, state and set-aside</div>
     </div>
     <figcaption class="sr-only">Example BidBell alert built from real SAM.gov notices open on {long_date(TODAY)}.</figcaption>
@@ -362,7 +364,7 @@ def hero_mock():
 
 def home():
     # The homepage is now hand-made (index.html + home.css + home.js, approved by Morgan 2026-10-17): keep it, only list it
-    if '/home.css' in open(os.path.join(ROOT, 'index.html')).read():
+    if '/home.css' in open(os.path.join(ROOT, 'index.html'), encoding='utf-8').read():
         PAGES.append(('', TODAY.isoformat()))
         return
     sp, ap = C['standard_price'], C['annual_price']
@@ -372,7 +374,7 @@ def home():
             if n_open else '<span class="live-dot" aria-hidden="true"></span><b>Live</b> New federal cleaning bids, checked every morning')
     su = E(start_url())
     feats = [
-        ('filter', 'Only bids you can win', 'Filtered by your trade, your states and your eligibility: small business, HUBZone, service-disabled veteran-owned, 8(a) or women-owned.'),
+        ('filter', 'A shortlist for your business', 'Filtered by your trade, your states and your eligibility: small business, HUBZone, service-disabled veteran-owned, 8(a) or women-owned.'),
         ('pin', 'Where the work really is', 'We use the work site given in the notice, not the contracting office three states away.'),
         ('doc', 'Plain English', 'What the job is, where it is, who can bid, when it is due and what to do next. No code numbers, no search filters.'),
         ('dollar', 'What the job is worth', 'Where public records clearly show it: who holds the job now and what the contract is worth, from USAspending.gov.'),
@@ -385,8 +387,8 @@ def home():
 <section class="hero"><div class="wrap">
   <div class="copy">
     <a class="pill" href="/cleaning-bids/">{pill}<span class="pill-go">See them {ICON['arrow']}</span></a>
-    <h1>Federal cleaning bids you can win. In your inbox around 6&nbsp;AM.</h1>
-    <p class="lead">BidBell reads every new contract notice on SAM.gov each morning and sends your company only the janitorial, carpet and window jobs in your states that you&rsquo;re eligible to bid on. Plain English, deadline first.</p>
+    <h1>Federal cleaning opportunities to review. In your inbox around 6&nbsp;AM.</h1>
+    <p class="lead">BidBell checks new public cleaning notices and sends a shortlist matched to your trades, states and stated set-asides. Review the official notice to confirm the full requirements.</p>
     <div class="cta-row"><a class="btn" href="{su}">Start 14 days free {ICON['arrow']}</a><a class="btn ghost" href="#sample">See a real alert</a></div>
     {checks(['No card required', 'Set up in 2 minutes', 'Cancel anytime'])}
   </div>
@@ -410,7 +412,7 @@ def home():
 <section id="filter" class="tint" aria-labelledby="filter-h"><div class="wrap two">
   <div>
     <p class="eyebrow">Eligibility filter</p>
-    <h2 id="filter-h">Only the bids you&rsquo;re allowed to bid on.</h2>
+    <h2 id="filter-h">A shortlist matched to your stated preferences.</h2>
     <p class="lead">Many federal cleaning contracts are reserved for HUBZone, veteran-owned, 8(a) or women-owned businesses. Tell us what your company qualifies for once, and BidBell leaves out everything else.</p>
     <ul class="ticks">
       <li>{ICON['check']}<span>Small business, HUBZone, service-disabled veteran-owned, 8(a) and women-owned set-asides handled for you</span></li>
@@ -467,7 +469,7 @@ def home():
   <div class="stats mt">
     <div><strong>50 + DC</strong><span>Every state and Washington, D.C. covered</span></div>
     <div><strong>3 trades</strong><span>Janitorial, carpet, and window &amp; exterior cleaning</span></div>
-    <div><strong>6 AM</strong><span>your time, every morning with new matches</span></div>
+    <div><strong>6 AM</strong><span>your time, every morning</span></div>
     <div><strong>$0</strong><span>For your first 14 days. No card needed.</span></div>
   </div>
 </div></section>
@@ -475,11 +477,11 @@ def home():
 <section id="sample" aria-labelledby="sample-h"><div class="wrap two">
   <div>
     <p class="eyebrow">A real alert</p>
-    <h2 id="sample-h">This is a real BidBell alert.</h2>
+    <h2 id="sample-h">A historical BidBell alert.</h2>
     <p class="lead">Built from live SAM.gov notices on September 29, 2026, for a small cleaning company working in Massachusetts, Illinois and Kansas. Every bid, deadline and reference number in it is real.</p>
     <ul class="ticks">
       <li>{ICON['check']}<span><strong>Deadline first</strong>, with the days left and a warning when it closes soon</span></li>
-      <li>{ICON['check']}<span><strong>Who can bid</strong>, so you never open a bid you can&rsquo;t win</span></li>
+      <li>{ICON['check']}<span><strong>Who can bid</strong>, to help you check the notice against your current status</span></li>
       <li>{ICON['check']}<span><strong>What to do next</strong>, in one plain sentence</span></li>
       <li>{ICON['check']}<span><strong>Site visit</strong>, quoted from the notice when it states one</span></li>
       <li>{ICON['check']}<span><strong>Likely current contract</strong> and what it is worth, where public records clearly show it</span></li>
@@ -580,8 +582,8 @@ def home():
     faqld = {'@context': 'https://schema.org', '@type': 'FAQPage',
              'mainEntity': [{'@type': 'Question', 'name': q, 'acceptedAnswer': {'@type': 'Answer', 'text': html.unescape(re.sub(r'<[^>]+>', '', a))}}
                             for q, a in FAQ]}
-    write('', layout('', 'BidBell | Federal cleaning bids you can actually win',
-                     'Every morning, BidBell emails US cleaning companies only the federal janitorial, carpet and window-cleaning bids in their states that they are allowed to bid on and, where public records show it, who holds the job now and what the contract is worth.',
+    write('', layout('', 'BidBell | Federal cleaning bid alerts for your business',
+                     'Every morning, BidBell emails US cleaning companies a shortlist of federal cleaning notices matched to their stated preferences and, where public records show it, who holds the job now and what the contract is worth.',
                      body, [org, product, faqld]))
 
 
@@ -617,20 +619,20 @@ def signup_form():
   </fieldset>
   <fieldset data-need="1" data-label="the cleaning work you do" aria-describedby="h-trades">
     <legend>What cleaning work do you do?</legend>
-    <p class="hint" id="h-trades">Choose all that apply.</p>
+    <p class="hint" id="h-trades">Choose the services your team currently delivers. Notices may bundle several types of work.</p>
     <p class="field-error" id="e-trades" role="alert" hidden></p>
     <div class="options">{''.join(opt('checkbox', f['trades'], v) for v in TRADE_CHOICES)}</div>
   </fieldset>
   <fieldset data-need="1" data-max="10" data-label="your states" aria-describedby="h-states">
     <legend>Which states do you work in?</legend>
-    <p class="hint" id="h-states">Choose up to 10 states, or Nationwide. Bids are matched to where the work is.</p>
+    <p class="hint" id="h-states">Choose up to 10 states you can actually serve, or Nationwide. We use the stated work location when available, not just the agency office.</p>
     <p class="field-error" id="e-states" role="alert" hidden></p>
     <div class="state-box">{states}</div>
     <p class="state-count" id="state-count" aria-live="polite"></p>
   </fieldset>
   <fieldset data-need="1" data-label="at least one answer to &ldquo;Is your business any of these?&rdquo; (or &ldquo;None of these / not sure&rdquo;)" aria-describedby="h-certs">
     <legend>Is your business any of these?</legend>
-    <p class="hint" id="h-certs">This decides which set-aside bids you see. Choose all that apply.</p>
+    <p class="hint" id="h-certs">Used to filter notices by stated set-aside. Select only current statuses; choose None of these / not sure if uncertain. Verify the full notice before bidding.</p>
     <p class="field-error" id="e-certs" role="alert" hidden></p>
     <div class="options cols-2">{''.join(opt('checkbox', f['certs'], v) for v in CERT_CHOICES)}</div>
   </fieldset>
@@ -670,7 +672,7 @@ def start():
     body = f'''<div class="page-head"><div class="wrap">
   <p class="crumbs"><a href="/">Home</a> / Start free trial</p>
   <h1>Start your free 14 days</h1>
-  <p class="lead">Tell us about your business once. Your first alert arrives the next morning, around 6 AM your time. No card needed.</p>
+  <p class="lead">Tell us about your business once. Alerts start from the next morning, usually around 6 AM your time. Quiet days include a short status update. No card needed.</p>
 </div></div>
 <div class="wrap page"><div class="signup-grid">
   {action}
@@ -683,6 +685,9 @@ def start():
         <li><div><b>Day 12: your summary</b><span>How many bids we sent you, and links to keep your alerts: ${C['standard_price']}/month or ${C['annual_price']}/year.</span></div></li>
         <li><div><b>Or do nothing</b><span>Your alerts stop after 14 days. Nothing is charged.</span></div></li>
       </ol>
+    </div>
+    <div class="card">
+      <h2>Already receiving alerts?</h2><p>Reply to an existing alert to update your trades, states or current certifications. Include one notice that did not fit and why. You do not need to start another trial.</p>
     </div>
     <div class="card">
       <h2>We never ask for</h2>
