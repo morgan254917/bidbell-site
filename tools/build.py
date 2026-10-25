@@ -85,9 +85,7 @@ CSP_PADDLE = ("default-src 'none'; img-src 'self' https://*.paddle.com; "
               "base-uri 'none'; form-action 'none'; upgrade-insecure-requests")
 
 
-BELL = ('<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2.2" '
-        'stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>'
-        '<path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>')
+BELL = '<svg viewBox="0 0 40 40" aria-hidden="true" focusable="false"><rect width="40" height="40" rx="11" fill="#193e34"/><path d="M12 8h11l6 6v18H12z" fill="#f7f6ef"/><path d="M23 8v7h6" fill="#d9ee83"/><path d="M15.5 25h10l-1.4-2.3v-3a3.6 3.6 0 0 0-7.2 0v3z" fill="#193e34"/><path d="M19 27h3" stroke="#193e34" stroke-width="2" stroke-linecap="round"/></svg>'
 
 
 def start_url():
@@ -153,11 +151,11 @@ def layout(path, title, desc, body, jsonld=None, updated=None, noindex=False, og
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="BidBell: federal cleaning opportunities to review, in your inbox around 6 AM. An example alert email lists open bids with their deadlines and who can bid.">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="theme-color" content="#FFFFFF">
+<meta name="theme-color" content="#193e34">
 <link rel="icon" href="/favicon.ico" sizes="32x32">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<link rel="preload" href="/fonts/source-serif-4.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/public-sans.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/public-sans.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/style.css">
 <script src="/nav.js" defer></script>{ld}
