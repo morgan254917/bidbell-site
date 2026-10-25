@@ -11,6 +11,15 @@ class Signup(unittest.TestCase):
   for field in config['form_entries'].values():self.assertIn('name="'+field+'"',form)
   self.assertIn('id="state-search"',form)
   self.assertNotIn('data-thanks=',form)
+ def test_expanded_positioning_does_not_sell_unvalidated_trades(self):
+  module=runpy.run_path(str(ROOT/'tools/build.py'),run_name='build_test')
+  block=module['coverage_block']();form=module['signup_form']()
+  self.assertIn('Coverage being validated:',block)
+  self.assertIn('not included in the current trial or paid plans',block)
+  self.assertIn('Available daily alerts',form)
+  self.assertNotIn('value="HVAC',form)
+  self.assertNotIn('value="Grounds',form)
+  self.assertIn('building-service contractors',block.lower())
  def test_native_submission_no_fetch_redirect_or_duplicate_retry(self):
   js=r'''
 const fs=require('fs'),vm=require('vm'),assert=require('assert');
