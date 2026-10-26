@@ -85,7 +85,7 @@ CSP_PADDLE = ("default-src 'none'; img-src 'self' https://*.paddle.com; "
               "base-uri 'none'; form-action 'none'; upgrade-insecure-requests")
 
 
-BELL = '<svg aria-hidden="true" focusable="false" viewBox="0 0 64 64"><rect width="64" height="64" rx="16" fill="#141728"/><path d="M18 43V28a14 14 0 0 1 28 0v15l5 5H13l5-5Z" fill="#ff6b57"/><path d="M27 54h10M32 10v5" stroke="#bdb0ff" stroke-width="4" stroke-linecap="round"/></svg>'
+BELL = '<svg aria-hidden="true" focusable="false" viewBox="0 0 64 64"><rect width="64" height="64" rx="16" fill="#141728"/><path d="M18 43V28a14 14 0 0 1 28 0v15l5 5H13l5-5Z" fill="#8870da"/><path d="M27 54h10M32 10v5" stroke="#bdb0ff" stroke-width="4" stroke-linecap="round"/></svg>'
 
 
 def start_url():
@@ -108,8 +108,9 @@ def checks(items):
     return '<ul class="checks">' + ''.join(f'<li>{ICON["check"]}{x}</li>' for x in items) + '</ul>'
 
 
-NAV_LINKS = [('/workspace/', 'Browse opportunities'), ('/prepare/', 'Bid checklist'), ('/#how', 'How it works'),
-             ('/#pricing', 'Pricing'), ('/#faq', 'FAQ')]
+WORKSPACE_URL = 'https://bidbell-workspace.onrender.com/app'
+NAV_LINKS = [(WORKSPACE_URL, 'Preparation workspace'), ('/workspace/', 'Browse notices'), ('/#how', 'How it works'),
+             ('/start/', 'Alert trial'), ('/#faq', 'FAQ')]
 MENU_ICON = ('<svg class="i-open" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" '
              'stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>'
              '<svg class="i-close" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" '
@@ -117,7 +118,7 @@ MENU_ICON = ('<svg class="i-open" viewBox="0 0 24 24" aria-hidden="true" focusab
 
 
 def layout(path, title, desc, body, jsonld=None, updated=None, noindex=False, og_type='website', csp=CSP, promo=True):
-    """promo=False (sign-up, thank-you and plan pages): no "14 days free" bar and no "Start free trial" button in the
+    """promo=False (sign-up, thank-you and plan pages): no "14 days free" bar and no "Alert trial" button in the
     header, so people who are signing up, just signed up, or are paying are not sent back to the trial offer."""
     url = BASE + '/' + path
     ld = ''.join(f'\n<script type="application/ld+json">{json.dumps(j, separators=(",", ":"))}</script>'
@@ -129,9 +130,9 @@ def layout(path, title, desc, body, jsonld=None, updated=None, noindex=False, og
     canonical = '' if is_404 else f'<link rel="canonical" href="{url}">\n'
     og_url = '' if is_404 else f'<meta property="og:url" content="{url}">\n'
     links = ''.join(f'<a href="{h}">{t}</a>' for h, t in NAV_LINKS)
-    topbar = (f'<aside class="topbar" aria-label="Free trial offer"><b>14 days free</b>, no card needed. Then ${C["standard_price"]}/month, '
-              f'cancel anytime. <a href="{E(start_url())}">Start your free trial &rarr;</a></aside>\n') if promo else ''
-    head_cta = f'\n  <a class="btn small head-cta" href="{E(start_url())}">Start free trial</a>' if promo else ''
+    topbar = (f'<aside class="topbar" aria-label="Alert trial offer"><b>Alert trial: 14 days free</b>, no card needed. Then ${C["standard_price"]}/month, '
+              f'cancel anytime. <a href="{E(start_url())}">Start your alert trial &rarr;</a></aside>\n') if promo else ''
+    head_cta = f'\n  <a class="btn small head-cta" href="{E(start_url())}">Alert trial</a>' if promo else ''
     return f'''<!doctype html>
 <html lang="en">
 <head>
@@ -156,7 +157,7 @@ def layout(path, title, desc, body, jsonld=None, updated=None, noindex=False, og
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preload" href="/fonts/public-sans.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/style.css?v=20261025-rebuild2">
+<link rel="stylesheet" href="/style.css?v=20261028-preparation">
 <script src="/nav.js" defer></script>{ld}
 </head>
 <body>
@@ -166,7 +167,7 @@ def layout(path, title, desc, body, jsonld=None, updated=None, noindex=False, og
   <nav class="nav" aria-label="Main">{links}</nav>{head_cta}
   <details class="menu">
     <summary aria-label="Menu">{MENU_ICON}</summary>
-    <nav class="menu-panel" aria-label="Menu">{links}{f'<a href="{E(start_url())}">Start free trial</a>' if promo else ''}</nav>
+    <nav class="menu-panel" aria-label="Menu">{links}{f'<a href="{E(start_url())}">Alert trial</a>' if promo else ''}</nav>
   </details>
 </div></header>
 <main id="main">
@@ -176,11 +177,11 @@ def layout(path, title, desc, body, jsonld=None, updated=None, noindex=False, og
   <div class="foot-grid">
     <div class="brand">
       <a class="logo" href="/">{BELL}BidBell<span class="brand-dot" aria-hidden="true">.</span></a>
-      <p class="foot-about">Find opportunities, build a shortlist and prepare your next bid. Daily email plans currently cover cleaning services; public browsing coverage is shown in the workspace.</p>
+      <p class="foot-about">A source-linked workspace for preparing your next bid. Review requirements, build answers and export your work. The existing daily alert service is separate and currently covers cleaning services.</p>
       <p class="small">{E(C['mailing_address'])}<br><a href="mailto:{C['email']}">{C['email']}</a>{' &middot; ' + phone_link() if PHONE.strip() else ''}</p>
     </div>
     <nav aria-label="Product"><h2>Product</h2><ul>
-      <li><a href="/workspace/">Browse opportunities</a></li><li><a href="/prepare/">Bid checklist</a></li><li><a href="/#how">How it works</a></li><li><a href="/#pricing">Pricing</a></li><li><a href="/#faq">FAQ</a></li><li><a href="{E(start_url())}">Start free trial</a></li></ul></nav>
+      <li><a href="{WORKSPACE_URL}">Preparation workspace</a></li><li><a href="/workspace/">Browse notices</a></li><li><a href="/prepare/">Bid checklist</a></li><li><a href="/#how">How it works</a></li><li><a href="/#pricing">Pricing</a></li><li><a href="/#faq">FAQ</a></li><li><a href="{E(start_url())}">Alert trial</a></li></ul></nav>
     <nav aria-label="Cleaning notices by state"><h2>Cleaning by state</h2><ul>{state_links}<li><a href="/cleaning-bids/">All states &rarr;</a></li></ul></nav>
     <nav aria-label="Company"><h2>Company</h2><ul>
       <li><a href="/#about">About</a></li><li><a href="/terms/">Terms</a></li><li><a href="/privacy/">Privacy</a></li><li><a href="/refunds/">Refund policy</a></li><li><a href="/acceptable-use/">Acceptable use</a></li><li><a href="/disclaimer/">Disclaimer</a></li><li><a href="/email-policy/">Email policy</a></li><li><a href="https://www.facebook.com/profile.php?id=61595464021652" rel="noopener">BidBell on Facebook</a></li></ul></nav>
@@ -379,7 +380,7 @@ def start():
   <div class="cta-row">{btn}</div><p class="small muted">{note}</p>
 </div>'''
     body = f'''<div class="page-head"><div class="wrap">
-  <p class="crumbs"><a href="/">Home</a> / Start free trial</p>
+  <p class="crumbs"><a href="/">Home</a> / Alert trial</p>
   <p class="eyebrow">YOUR NEXT OPPORTUNITY STARTS HERE</p><h1>Your work. Your states.<br>Your morning shortlist.</h1>
   <p class="lead">Tell us about your business once. Alerts start from the next morning, usually around 6 AM your time. Quiet days include a short status update. No card needed.</p>
 </div></div>
@@ -405,7 +406,7 @@ def start():
   </aside>
 </div></div>'''
     thanks = f'''<div class="page-head"><div class="wrap">
-  <p class="crumbs"><a href="/">Home</a> / <a href="/start/">Start free trial</a> / Done</p>
+  <p class="crumbs"><a href="/">Home</a> / <a href="/start/">Alert trial</a> / Done</p>
   <h1>Check your submission.</h1>
   <p class="lead">Google Forms displays a confirmation when your answers are accepted. Visiting this page does not confirm your sign-up or start a trial. After your details are processed, look for a BidBell welcome email.</p>
   <div class="cta-row"><a class="btn" href="/#sample">See what an alert looks like</a><a class="btn ghost" href="/workspace/">Open your opportunity workspace</a></div>
@@ -566,7 +567,7 @@ def bid_pages():
 def legal_page(path, title, desc, inner):
     upd = date.fromisoformat(C['legal_updated'])
     body = (f'<div class="page-head"><div class="wrap"><p class="crumbs"><a href="/">Home</a> / {title}</p><h1>{title}</h1>'
-            f'<p class="muted flush">Last updated {long_date(upd)}</p></div></div>'
+            f'<p class="muted flush">Existing alert policy date: {long_date(upd)}</p></div></div>'
             f'<div class="wrap narrow legal page">{inner}</div>')
     write(path, layout(path, f'{title} | BidBell', desc, body, updated=upd), lastmod=upd)
 
@@ -579,10 +580,14 @@ def legal():
     sp, ap = C['standard_price'], C['annual_price']
 
     legal_page('terms/', 'Terms of Service', 'The terms that apply when you use BidBell.', f'''
+<section class="pilot-note"><h2>Preparation workspace pilot: separate from alerts</h2>
+<p>The <a href="{WORKSPACE_URL}">hosted preparation workspace</a> helps you organize uploaded documents, source-linked requirements, editable answers and internal cost estimates. It does not submit a bid for you. You review the original solicitation, eligibility, attachments, prices and every response before using or submitting the exported files.</p>
+<p>New preparation-product billing is not active. Opening a workspace account does not change an existing alert subscription. The alert trial, pricing, payment and cancellation provisions below describe the existing alert service separately. Any future paid preparation offer must show its own applicable access and payment information before purchase.</p>
+<p>For help with workspace access or a data-deletion request, contact {mail}. There is no instant account-deletion control in the pilot. Do not upload material you are not authorized to process or share with the providers described in the privacy information.</p></section>
 <p>These terms are an agreement between you (the business using BidBell, and the person accepting for it) and {seller}. {contact}. By starting a trial or subscription you accept them. Nothing in these terms takes away rights you have under a law that cannot be excluded by contract.</p>
 <h2>1. What BidBell is</h2>
 <p>BidBell provides contract opportunity alerts for building-service contractors. Current paid and trial alert coverage is limited to janitorial, carpet, window and exterior cleaning. HVAC maintenance and grounds coverage is being validated and is not included in current plans. Each morning we read new US federal contract notices published on SAM.gov, select the ones that match the trades, states and eligibility you give us, and email them to you. Where we can, we add information from USAspending.gov about the likely current or previous contract for the same work. Your alerts also carry reminders and updates for bids we sent you and, on Mondays, federal contracts in your states that end in 3 to 6 months. We send a daily email, including a short status update when there are no new matching notices. We also publish free public pages listing open federal cleaning notices by state. We are not a government service, a bidding agent, a law firm or a consultant.</p>
-<h2>2. Free trial</h2>
+<h2>2. Alert trial</h2>
 <p>New customers get a free 14-day trial. We do not ask for a card to start it. If you do not subscribe, your alerts stop at the end of the trial and nothing is charged.</p>
 <h2>3. Plans, payment and taxes</h2>
 <p>BidBell is operated by {E(C["owner_name"])}, a sole proprietor (not a registered company) trading as BidBell. Our US mailing address is {E(C["mailing_address"])}.</p>
@@ -612,6 +617,10 @@ def legal():
 
     legal_page('privacy/', 'Privacy Policy', 'What BidBell collects, why, who processes it, how long we keep it and your rights.', f'''
 <p>This policy explains how {seller}, handles personal information. Our contact details are at the end of this policy. We collect as little as we can, we do not sell it, and this website uses no tracking or advertising cookies.</p>
+<section class="pilot-note"><h2>Preparation workspace data</h2>
+<p>The separate workspace stores account details, password hashes, session records, uploaded solicitation text, company facts, requirements, answers, pricing estimates and activity records needed to operate your workspace. It is hosted on Render. Signed-in access uses a necessary session cookie; the public marketing pages and the signed-in workspace are different surfaces.</p>
+<p>When you explicitly use an enabled AI action, relevant source text or requirements and company facts are sent to OpenAI for that action. AI actions may be unavailable when configuration or usage limits do not permit them. Upload only material you are authorized to share, and avoid credentials, payment details and unnecessary personal records.</p>
+<p>Workspace records are not published as public website content. Contact {mail} for access, correction or deletion requests. Deletion is handled through support, not an instant in-app control; a request is not confirmation that every record or backup has already been removed. The alert-service collection and retention practices below apply to that separate service. No workspace-specific deletion deadline is promised here.</p></section>
 <h2>1. What we collect</h2>
 <ul>
 <li><strong>Trial and subscriber details</strong> you give us: first name, business email, business name and website, trades, states, eligibility (small business, HUBZone, SDVOSB, 8(a), WOSB) and whether you are registered in SAM.gov.</li>
@@ -643,7 +652,7 @@ def legal():
 <p><strong>California and other US states:</strong> you have the right to know, access, correct and delete your personal information, and not to be discriminated against for using these rights. We do not sell or share personal information for cross-context behavioral advertising, and we do not use it for profiling.</p>
 <p><strong>European Union and United Kingdom:</strong> you also have the rights to object, to restrict processing and to data portability, and you may complain to your local data protection authority.</p>
 <h2>6. Cookies and tracking</h2>
-<p>This website sets no cookies and uses no analytics or advertising pixels. The only third-party script is Paddle&rsquo;s checkout (Paddle.js), which loads only on our plan page (/subscribe/) so you can pay; Paddle may use cookies there for checkout and fraud prevention, under Paddle&rsquo;s own privacy notice. Our emails contain no tracking pixels.</p>
+<p>The public marketing website sets no cookies and uses no analytics or advertising pixels. The separate preparation workspace uses a necessary sign-in session cookie as described above. The only third-party script is Paddle&rsquo;s checkout (Paddle.js), which loads only on our plan page (/subscribe/) so you can pay; Paddle may use cookies there for checkout and fraud prevention, under Paddle&rsquo;s own privacy notice. Our emails contain no tracking pixels.</p>
 <h2>7. Security</h2>
 <p>We use providers with strong security, two-step verification on every account, and we keep customer data out of this public website. No system is perfectly secure; if a breach affects you, we will tell you as the law requires.</p>
 <h2>8. Children</h2>
@@ -677,6 +686,10 @@ def legal():
 <p>Our free public pages are built from public data; you may link to them. If you break this policy we may suspend or end your subscription under our <a href="/terms/">terms</a>.</p>''')
 
     legal_page('disclaimer/', 'Disclaimer', 'Important limits of BidBell information.', f'''
+<section class="pilot-note"><h2>Preparation support, not certified compliance</h2>
+<p>Source checks confirm that selected text appears in an uploaded document or saved company facts. They do not certify that your facts are true, that every requirement was captured, or that your response is legally compliant, eligible or competitive. Rules and AI can miss relevant instructions. Blank or scanned pages may have no extracted text.</p>
+<p>AI suggestions are factual starting points for review and editing, not a complete persuasive proposal. Readiness checks identify specific recorded gaps; a passing check is not a guarantee that the bid is complete. Cost estimates depend on your inputs and do not guarantee profit.</p>
+<p>BidBell does not automatically submit applications, sign declarations or guarantee awards. You remain responsible for the full official notice, amendments, required forms, signatures, deadlines and final submission. Preparation-pilot billing is not active and existing alert arrangements remain separate.</p></section>
 <h2>Not a government service</h2>
 <p>BidBell is a private service. It is not affiliated with, endorsed by or connected to SAM.gov, the General Services Administration, USAspending.gov or any government agency.</p>
 <h2>Data can change</h2>

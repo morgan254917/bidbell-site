@@ -29,15 +29,22 @@ class Site(unittest.TestCase):
   self.assertEqual(page.forms[0]['action'],cfg['form_post'])
   self.assertEqual({i['name'] for i in page.inputs if i.get('name')},set(cfg['form_entries'].values()))
   self.assertIn('Nationwide (all states)',[i.get('value') for i in page.inputs])
- def test_pricing_and_structured_data(self):
+ def test_preparation_and_alerts_are_distinct(self):
   text=(ROOT/'index.html').read_text(encoding='utf-8')
-  objects=[json.loads(x) for x in re.findall(r'<script type="application/ld\+json">(.*?)</script>',text,re.S)]
-  product=next(x for x in objects if x['@type']=='Product')
-  self.assertEqual([x['price'] for x in product['offers']],['39.00','390.00'])
-  self.assertIn('INTERACTIVE DEMONSTRATION',text)
-  self.assertIn('not a live bid feed',text)
-  self.assertNotIn('no extensions left',text)
-  self.assertIn('does not guarantee a new bid',text)
+  self.assertIn('https://bidbell-workspace.onrender.com/app',text)
+  self.assertIn('14-day pilot',text)
+  self.assertIn('No payment is collected for this pilot',text)
+  self.assertIn('$39',text)
+  self.assertIn('$390',text)
+  self.assertIn('Separate from the preparation workspace',text)
+  self.assertIn('does not sign certifications or submit applications',text)
+  for forbidden in ['guaranteed wins','AI-assisted features are not enabled','100% accurate']:
+   self.assertNotIn(forbidden,text)
+ def test_marketing_assets_are_self_hosted(self):
+  text=(ROOT/'home.js').read_text(encoding='utf-8')
+  self.assertIn('/three.module.min.js',text)
+  self.assertTrue((ROOT/'brand/vendor/three/three.module.min.js').is_file())
+  self.assertIn('prefers-reduced-motion',text)
  def test_rendered_copy_no_em_dash(self):
   pages=[p for p in ROOT.rglob('*.html') if 'desk' not in p.parts]
   self.assertGreaterEqual(len(pages),63)
