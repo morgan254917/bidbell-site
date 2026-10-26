@@ -32,8 +32,8 @@ class Site(unittest.TestCase):
  def test_preparation_and_alerts_are_distinct(self):
   text=(ROOT/'index.html').read_text(encoding='utf-8')
   self.assertIn('https://bidbell-workspace.onrender.com/app',text)
-  self.assertIn('14-day pilot',text)
-  self.assertIn('No payment is collected for this pilot',text)
+  self.assertIn('14-day free trial',text)
+  self.assertIn('No payment is currently collected for BidBell Prepare',text)
   self.assertIn('$39',text)
   self.assertIn('$390',text)
   self.assertIn('Separate from the preparation workspace',text)
@@ -43,7 +43,7 @@ class Site(unittest.TestCase):
  def test_marketing_assets_are_self_hosted(self):
   text=(ROOT/'home.js').read_text(encoding='utf-8')
   self.assertIn('/three.module.min.js',text)
-  self.assertTrue((ROOT/'brand/vendor/three/three.module.min.js').is_file())
+  self.assertTrue((ROOT/'three.module.min.js').is_file())
   self.assertIn('prefers-reduced-motion',text)
  def test_rendered_copy_no_em_dash(self):
   pages=[p for p in ROOT.rglob('*.html') if 'desk' not in p.parts]
