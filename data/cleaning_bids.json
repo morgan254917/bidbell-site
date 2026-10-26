@@ -1,19 +1,7 @@
 {
- "updated": "2026-10-25",
+ "updated": "2026-10-26",
  "source": "SAM.gov public Contract Opportunities data",
  "bids": [
-  {
-   "trade": "janitorial",
-   "title": "Southern Research Station - Bent Creek Janitorial Services",
-   "type": "Combined Synopsis/Solicitation",
-   "agency": "Agriculture, Department Of",
-   "city": "Asheville",
-   "state": "NC",
-   "due": "2026-10-26",
-   "set_aside": "Small Business Set Aside - Total",
-   "link": "https://sam.gov/workspace/contract/opp/b2f160174f7d442cade5fcbb3dd44ed8/view",
-   "sol": "1240BE27Q0006"
-  },
   {
    "trade": "janitorial",
    "title": "S--AMARILLO FIELD OFFICE JANITORIAL SERVICES",

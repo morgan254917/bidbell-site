@@ -1,36 +1,8 @@
 {
- "updated": "2026-10-25",
+ "updated": "2026-10-26",
  "source": "SAM.gov public Contract Opportunities data",
  "scope": "Selected federal public notices only. HVAC coverage is conservative title-based maintenance classification. Not complete market coverage.",
  "bids": [
-  {
-   "trade": "janitorial",
-   "category": "cleaning",
-   "title": "Southern Research Station - Bent Creek Janitorial Services",
-   "type": "Combined Synopsis/Solicitation",
-   "agency": "Agriculture, Department Of",
-   "city": "Asheville",
-   "state": "NC",
-   "due": "2026-10-26",
-   "due_at": "2026-10-26T17:00:00+00:00",
-   "set_aside": "Small Business Set Aside - Total",
-   "link": "https://sam.gov/workspace/contract/opp/b2f160174f7d442cade5fcbb3dd44ed8/view",
-   "sol": "1240BE27Q0006"
-  },
-  {
-   "trade": "grounds",
-   "category": "grounds",
-   "title": "Snow Removal and De-Icing Services, Great Plains Area Office - West, Rapid City, SD",
-   "type": "Combined Synopsis/Solicitation",
-   "agency": "Health And Human Services, Department Of",
-   "city": "Rapid City",
-   "state": "SD",
-   "due": "2026-10-26",
-   "due_at": "2026-10-26T17:00:00+00:00",
-   "set_aside": "Indian Small Business Economic Enterprise",
-   "link": "https://sam.gov/workspace/contract/opp/c6ddd108a5b147c3a112f676d0e4c432/view",
-   "sol": "75H70626Q00060"
-  },
   {
    "trade": "grounds",
    "category": "grounds",
