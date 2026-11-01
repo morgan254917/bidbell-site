@@ -71,6 +71,21 @@
     if (searchStatus) searchStatus.textContent = query ? visible + (visible === 1 ? ' state shown. Selected states stay visible.' : ' states shown. Selected states stay visible.') : '';
   });
 
+  // A customer cannot simultaneously claim a status and "None of these / not sure".
+  var exclusiveGroup = form.querySelector('fieldset[data-exclusive]');
+  if (exclusiveGroup) {
+    var eligibility = exclusiveGroup.querySelectorAll('input[type=checkbox]');
+    eligibility.forEach(function (choice) {
+      choice.addEventListener('change', function () {
+        if (!choice.checked) return;
+        var isNone = choice.value === exclusiveGroup.dataset.exclusive;
+        eligibility.forEach(function (other) {
+          if (other !== choice && (isNone || other.value === exclusiveGroup.dataset.exclusive)) other.checked = false;
+        });
+      });
+    });
+  }
+
   // A group's error goes away as soon as a choice is made in it.
   form.querySelectorAll('fieldset[data-need]').forEach(function (g) {
     g.addEventListener('change', function () {

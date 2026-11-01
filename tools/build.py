@@ -160,7 +160,7 @@ def layout(path, title, desc, body, jsonld=None, updated=None, noindex=False, og
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preload" href="/fonts/public-sans.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/style.css?v=20261028-preparation">
+<link rel="stylesheet" href="/style.css?v={"20261101-accessible-steps" if path == "start/" else "20261028-preparation"}">
 <link rel="stylesheet" href="/brand.css?v=20261101-one-product">
 <script src="/nav.js" defer></script>{ld}
 </head>
@@ -340,9 +340,9 @@ def signup_form():
     <div class="state-box" id="state-options">{states}</div>
     <p class="state-count" id="state-count" aria-live="polite"></p>
   </fieldset>
-  <fieldset data-need="1" data-label="at least one answer to &ldquo;Is your business any of these?&rdquo; (or &ldquo;None of these / not sure&rdquo;)" aria-describedby="h-certs">
+  <fieldset data-need="1" data-exclusive="None of these / not sure" data-label="at least one answer to &ldquo;Is your business any of these?&rdquo; (or &ldquo;None of these / not sure&rdquo;)" aria-describedby="h-certs">
     <legend>Is your business any of these?</legend>
-    <p class="hint" id="h-certs">Used to filter notices by stated set-aside. Select only current statuses; choose None of these / not sure if uncertain. Verify the full notice before bidding.</p>
+    <p class="hint" id="h-certs">Used to filter notices by stated set-aside. Select only current statuses; choose None of these / not sure if uncertain. That answer clears other statuses. Verify the full notice before bidding.</p>
     <p class="field-error" id="e-certs" role="alert" hidden></p>
     <div class="options cols-2">{''.join(opt('checkbox', f['certs'], v) for v in CERT_CHOICES)}</div>
   </fieldset>
@@ -357,7 +357,7 @@ def signup_form():
     <p class="small muted">No card needed. Your signup finishes on Google Forms. Look for its confirmation before closing.</p>
   </div>
 </form>
-<script src="/form.js?v=20261025-rebuild2" defer></script>'''
+<script src="/form.js?v=20261101-clear-signup" defer></script>'''
 
 
 def coverage_block():
@@ -395,10 +395,10 @@ def start():
     <div class="card">
       <p class="eyebrow">YOUR ALERT IS THE START</p><h2>From shortlist to response.</h2>
       <ol class="next-steps">
-        <li><div><b>Get your matching shortlist</b><span>After signup processing, look for your welcome email. Alerts normally arrive around 6 AM your time from the next morning, with a short update on quiet days.</span></div></li>
-        <li><div><b>Open the bid in BidBell</b><span>Create and verify your workspace account with the same email. Open an opportunity from your alert and keep that bid and its response together.</span></div></li>
-        <li><div><b>Reuse what your company knows</b><span>Add the bid documents, save company facts and reuse approved answers. Ask AI for a draft grounded in your sources, then check missing details and pricing.</span></div></li>
-        <li><div><b>Review, export and submit</b><span>Approve your response and export the package. You make the final submission through the buyer's official process. BidBell does not submit or sign for you.</span></div></li>
+        <li><span class="step-index" aria-hidden="true">1</span><div><b>Get your matching shortlist</b><span>After signup processing, look for your welcome email. Alerts normally arrive around 6 AM your time from the next morning, with a short update on quiet days.</span></div></li>
+        <li><span class="step-index" aria-hidden="true">2</span><div><b>Open the bid in BidBell</b><span>Create and verify your workspace account with the same email. Open an opportunity from your alert and keep that bid and its response together.</span></div></li>
+        <li><span class="step-index" aria-hidden="true">3</span><div><b>Reuse what your company knows</b><span>Add the bid documents, save company facts and reuse approved answers. Ask AI for a draft grounded in your sources, then check missing details and pricing.</span></div></li>
+        <li><span class="step-index" aria-hidden="true">4</span><div><b>Review, export and submit</b><span>Approve your response and export the package. You make the final submission through the buyer's official process. BidBell does not submit or sign for you.</span></div></li>
       </ol>
       <div class="trial-summary"><strong>One trial. One US${C['standard_price']}/month plan.</strong><p>Alerts and preparation are free for 14 days. We send a reminder before the end. Continue only if you choose to subscribe; nothing is charged automatically. Usage limits apply.</p></div>
     </div>

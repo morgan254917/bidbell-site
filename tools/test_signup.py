@@ -3,6 +3,23 @@ import json, runpy, subprocess, unittest
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 class Signup(unittest.TestCase):
+ def test_eligibility_none_cannot_conflict_with_current_statuses(self):
+  js=r'''
+const fs=require('fs'),vm=require('vm'),assert=require('assert');
+const choice=value=>({value,checked:false,addEventListener(name,fn){if(name==='change')this.change=fn}});
+const small=choice('Small business (by SBA size standards)'),women=choice('Women-owned (WOSB or EDWOSB)'),none=choice('None of these / not sure');
+const eligibility=[small,women,none];
+const group={dataset:{exclusive:none.value},querySelectorAll(){return eligibility}};
+const button={innerHTML:'Start'},form={querySelector(s){return s==='button[type=submit]'?button:s==='fieldset[data-exclusive]'?group:null},querySelectorAll(){return []},addEventListener(){}};
+vm.runInNewContext(fs.readFileSync(process.argv[1],'utf8'),{document:{getElementById(id){return id==='signup'?form:null}},window:{addEventListener(){}}});
+small.checked=true;women.checked=true;none.checked=true;none.change();assert.equal(small.checked,false);assert.equal(women.checked,false);
+small.checked=true;small.change();assert.equal(none.checked,false);
+women.checked=true;women.change();assert.equal(small.checked,true);assert.equal(women.checked,true);
+'''
+  import shutil
+  node=shutil.which('node') or r'C:\Program Files\nodejs\node.exe'
+  result=subprocess.run([node,'-e',js,str(ROOT/'tools/form.js')],capture_output=True,text=True)
+  self.assertEqual(result.returncode,0,result.stderr)
  def test_generated_fields_preserve_provider_contract(self):
   module=runpy.run_path(str(ROOT/'tools/build.py'),run_name='build_test')
   form=module['signup_form']();config=module['C']
