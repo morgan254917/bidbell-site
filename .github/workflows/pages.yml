@@ -1,7 +1,7 @@
 name: Publish verified BidBell website
 on:
-  push:
-    branches: [main]
+  # Manual fallback only. Render's free static-site builder checks every main update.
+  # GitHub Pages currently rejects new versions because of a stale provider lock.
   workflow_dispatch: {}
 permissions:
   contents: read
