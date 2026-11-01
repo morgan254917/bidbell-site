@@ -29,14 +29,15 @@ class Site(unittest.TestCase):
   self.assertEqual(page.forms[0]['action'],cfg['form_post'])
   self.assertEqual({i['name'] for i in page.inputs if i.get('name')},set(cfg['form_entries'].values()))
   self.assertIn('Nationwide (all states)',[i.get('value') for i in page.inputs])
- def test_preparation_and_alerts_are_distinct(self):
+ def test_one_subscription_and_original_trial_dates(self):
   text=(ROOT/'index.html').read_text(encoding='utf-8')
   self.assertIn('https://bidbell-workspace.onrender.com/app',text)
-  self.assertIn('14-day free trial',text)
-  self.assertIn('No payment is currently collected for BidBell Prepare',text)
+  self.assertIn('14 days free',text)
+  self.assertIn('No second preparation subscription',text)
   self.assertIn('$39',text)
-  self.assertIn('$390',text)
-  self.assertIn('Separate from the preparation workspace',text)
+  self.assertIn('Existing trials keep their original end date',text)
+  self.assertIn('same email',text)
+  self.assertNotIn('Separate from the preparation workspace',text)
   self.assertIn('does not sign certifications or submit applications',text)
   for forbidden in ['guaranteed wins','AI-assisted features are not enabled','100% accurate']:
    self.assertNotIn(forbidden,text)

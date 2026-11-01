@@ -24,12 +24,15 @@ PHONE = '(413) 255-7289'
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 T = os.path.join(ROOT, 'tools')
-C = json.load(open(os.path.join(T, 'site.json')))
-DATA = json.load(open(os.path.join(ROOT, 'data', 'cleaning_bids.json')))
+with open(os.path.join(T, 'site.json'), encoding='utf-8') as source:
+    C = json.load(source)
+with open(os.path.join(ROOT, 'data', 'cleaning_bids.json'), encoding='utf-8') as source:
+    DATA = json.load(source)
 # Paddle checkout settings for /subscribe/: {"env": "sandbox" or "production", "client_token", "price_monthly",
 # "price_yearly"}. The client-side token is public by design (it only opens checkouts); never put a Paddle API key here.
 # While client_token or a price id is empty, /subscribe/ shows "Payments open soon" and loads no Paddle script.
-PADDLE = json.load(open(os.path.join(T, 'paddle.json')))
+with open(os.path.join(T, 'paddle.json'), encoding='utf-8') as source:
+    PADDLE = json.load(source)
 PADDLE_READY = all(str(PADDLE.get(k) or '').strip() for k in ('client_token', 'price_monthly', 'price_yearly'))
 if PADDLE.get('env') not in ('sandbox', 'production'):
     raise SystemExit('tools/paddle.json: "env" must be "sandbox" or "production"')
@@ -109,7 +112,7 @@ def checks(items):
 
 
 WORKSPACE_URL = 'https://bidbell-workspace.onrender.com/app'
-NAV_LINKS = [(WORKSPACE_URL, 'Preparation workspace'), ('/workspace/', 'Browse notices'), ('/#how', 'How it works'),
+NAV_LINKS = [(WORKSPACE_URL, 'Your BidBell workspace'), ('/workspace/', 'Browse notices'), ('/#how', 'How it works'),
              ('/start/', 'Alert trial'), ('/#faq', 'FAQ')]
 MENU_ICON = ('<svg class="i-open" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" '
              'stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>'
@@ -130,9 +133,9 @@ def layout(path, title, desc, body, jsonld=None, updated=None, noindex=False, og
     canonical = '' if is_404 else f'<link rel="canonical" href="{url}">\n'
     og_url = '' if is_404 else f'<meta property="og:url" content="{url}">\n'
     links = ''.join(f'<a href="{h}">{t}</a>' for h, t in NAV_LINKS)
-    topbar = (f'<aside class="topbar" aria-label="Alert trial offer"><b>Alert trial: 14 days free</b>, no card needed. Then ${C["standard_price"]}/month, '
+    topbar = (f'<aside class="topbar" aria-label="Alert trial offer"><b>Alerts + preparation: 14 days free</b>, no card needed. Then ${C["standard_price"]}/month, '
               f'cancel anytime. <a href="{E(start_url())}">Start your alert trial &rarr;</a></aside>\n') if promo else ''
-    head_cta = f'\n  <a class="btn small head-cta" href="{E(start_url())}">Alert trial</a>' if promo else ''
+    head_cta = f'\n  <a class="btn small head-cta" href="{E(start_url())}">Start free</a>' if promo else ''
     return f'''<!doctype html>
 <html lang="en">
 <head>
@@ -167,7 +170,7 @@ def layout(path, title, desc, body, jsonld=None, updated=None, noindex=False, og
   <nav class="nav" aria-label="Main">{links}</nav>{head_cta}
   <details class="menu">
     <summary aria-label="Menu">{MENU_ICON}</summary>
-    <nav class="menu-panel" aria-label="Menu">{links}{f'<a href="{E(start_url())}">Alert trial</a>' if promo else ''}</nav>
+    <nav class="menu-panel" aria-label="Menu">{links}{f'<a href="{E(start_url())}">Start free</a>' if promo else ''}</nav>
   </details>
 </div></header>
 <main id="main">
@@ -177,11 +180,11 @@ def layout(path, title, desc, body, jsonld=None, updated=None, noindex=False, og
   <div class="foot-grid">
     <div class="brand">
       <a class="logo" href="/">{BELL}BidBell<span class="brand-dot" aria-hidden="true">.</span></a>
-      <p class="foot-about">A source-linked workspace for preparing your next bid. Review requirements, build answers and export your work. The existing daily alert service is separate and currently covers cleaning services.</p>
+      <p class="foot-about">Daily cleaning bid alerts and a workspace to prepare your response. One BidBell plan, from opportunity to final review.</p>
       <p class="small">{E(C['mailing_address'])}<br><a href="mailto:{C['email']}">{C['email']}</a>{' &middot; ' + phone_link() if PHONE.strip() else ''}</p>
     </div>
     <nav aria-label="Product"><h2>Product</h2><ul>
-      <li><a href="{WORKSPACE_URL}">Preparation workspace</a></li><li><a href="/workspace/">Browse notices</a></li><li><a href="/prepare/">Bid checklist</a></li><li><a href="/#how">How it works</a></li><li><a href="/#pricing">Pricing</a></li><li><a href="/#faq">FAQ</a></li><li><a href="{E(start_url())}">Alert trial</a></li></ul></nav>
+      <li><a href="{WORKSPACE_URL}">Your BidBell workspace</a></li><li><a href="/workspace/">Browse notices</a></li><li><a href="/prepare/">Bid checklist</a></li><li><a href="/#how">How it works</a></li><li><a href="/#pricing">Pricing</a></li><li><a href="/#faq">FAQ</a></li><li><a href="{E(start_url())}">Start free</a></li></ul></nav>
     <nav aria-label="Cleaning notices by state"><h2>Cleaning by state</h2><ul>{state_links}<li><a href="/cleaning-bids/">All states &rarr;</a></li></ul></nav>
     <nav aria-label="Company"><h2>Company</h2><ul>
       <li><a href="/#about">About</a></li><li><a href="/terms/">Terms</a></li><li><a href="/privacy/">Privacy</a></li><li><a href="/refunds/">Refund policy</a></li><li><a href="/acceptable-use/">Acceptable use</a></li><li><a href="/disclaimer/">Disclaimer</a></li><li><a href="/email-policy/">Email policy</a></li><li><a href="https://www.facebook.com/profile.php?id=61595464021652" rel="noopener">BidBell on Facebook</a></li></ul></nav>
@@ -381,8 +384,8 @@ def start():
 </div>'''
     body = f'''<div class="page-head"><div class="wrap">
   <p class="crumbs"><a href="/">Home</a> / Alert trial</p>
-  <p class="eyebrow">YOUR NEXT OPPORTUNITY STARTS HERE</p><h1>Your work. Your states.<br>Your morning shortlist.</h1>
-  <p class="lead">Tell us about your business once. Alerts start from the next morning, usually around 6 AM your time. Quiet days include a short status update. No card needed.</p>
+  <p class="eyebrow">YOUR NEXT OPPORTUNITY STARTS HERE</p><h1>Your daily shortlist.<br>Your next response.</h1>
+  <p class="lead">Set up your cleaning bid alerts first. Then use the same email to create and verify your BidBell workspace account. Your 14-day trial covers both alerts and bid preparation. No card needed.</p>
 </div></div>
 <div class="wrap page">{coverage_block()}<div class="signup-grid">
   {action}
@@ -390,10 +393,10 @@ def start():
     <div class="card">
       <h2>What happens next</h2>
       <ol class="next-steps">
-        <li><div><b>A welcome email</b><span>Confirming your details, usually within a few minutes.</span></div></li>
+        <li><div><b>One signup, two useful steps</b><span>Look for your welcome email after processing. Create and verify your workspace account with the same email to use your original trial dates.</span></div></li>
         <li><div><b>Your alerts start</b><span>From the next morning, usually around 6 AM your time, including a short status update on quiet days.</span></div></li>
         <li><div><b>Day 12: your summary</b><span>How many bids we sent you, and links to keep your alerts: ${C['standard_price']}/month or ${C['annual_price']}/year.</span></div></li>
-        <li><div><b>Or do nothing</b><span>Your alerts stop after 14 days. Nothing is charged.</span></div></li>
+        <li><div><b>Or do nothing</b><span>Your trial of alerts and preparation ends after 14 days. Nothing is charged automatically; saved work remains accessible.</span></div></li>
       </ol>
     </div>
     <div class="card">
@@ -406,10 +409,10 @@ def start():
   </aside>
 </div></div>'''
     thanks = f'''<div class="page-head"><div class="wrap">
-  <p class="crumbs"><a href="/">Home</a> / <a href="/start/">Alert trial</a> / Done</p>
+  <p class="crumbs"><a href="/">Home</a> / <a href="/start/">Start free</a> / Done</p>
   <h1>Check your submission.</h1>
   <p class="lead">Google Forms displays a confirmation when your answers are accepted. Visiting this page does not confirm your sign-up or start a trial. After your details are processed, look for a BidBell welcome email.</p>
-  <div class="cta-row"><a class="btn" href="/#sample">See what an alert looks like</a><a class="btn ghost" href="/workspace/">Open your opportunity workspace</a></div>
+  <div class="cta-row"><a class="btn" href="/#sample">See what an alert looks like</a><a class="btn ghost" href="https://bidbell-workspace.onrender.com/app">Create your BidBell workspace account</a></div>
   <p class="small muted">No welcome email within an hour? Check your spam folder, then write to <a href="mailto:{C['email']}">{C['email']}</a> so we can make sure your sign-up reached us. Something wrong, or want to change your states? Email us at the same address.</p>
 </div></div>'''
     write('start/thanks/', layout('start/thanks/', 'Sign-up next steps | BidBell', 'How to check your BidBell sign-up.', thanks, noindex=True, promo=False), sitemap=False)
@@ -460,7 +463,7 @@ def subscribe():
     body = f'''<div class="page-head"><div class="wrap">
   <p class="crumbs"><a href="/">Home</a> / Choose your plan</p>
   <h1>Choose your plan</h1>
-  <p class="lead">Keep your BidBell contract alerts coming. Pick monthly or yearly for the supported services below.</p>
+  <p class="lead">Keep your daily alerts and bid preparation together. Both are included. Use the same email for your alert preferences, workspace and Paddle payment.</p>
 </div></div>
 <div class="wrap page">
   <h2 class="sr-only">Plans</h2>
@@ -474,13 +477,13 @@ def subscribe():
 </div>{scripts}'''
     thanks = f'''<div class="page-head"><div class="wrap">
   <p class="crumbs"><a href="/">Home</a> / Subscription</p>
-  <h1>Thank you. Your payment went through.</h1>
-  <p class="lead">Your BidBell plan is active. Your alerts carry on, or start, with your next morning email, usually around 6 AM your time. You receive a daily email, including a short status update on quiet days. Paddle, which processes our orders, emails you the receipt, and we send you a short confirmation.</p>
+  <h1>Check your subscription status.</h1>
+  <p class="lead">Paddle emails a receipt when payment succeeds. Open Account and billing in your BidBell workspace with the same email to confirm and link your subscription. This page alone does not confirm payment or access. If you have not set up your alert preferences, complete the free signup first.</p>
   <div class="cta-row"><a class="btn" href="/">Back to BidBell</a><a class="btn ghost" href="/refunds/">Refund policy</a></div>
   <p class="small muted">Questions about your plan, or want to cancel? Email {mail}{phone}, or reply to any BidBell email.</p>
 </div></div>'''
-    write('subscribe/thanks/', layout('subscribe/thanks/', 'Subscription active | BidBell',
-                                      'Your BidBell subscription is active.', thanks, noindex=True, promo=False), sitemap=False)
+    write('subscribe/thanks/', layout('subscribe/thanks/', 'Subscription next steps | BidBell',
+                                      'Confirm and link your BidBell subscription.', thanks, noindex=True, promo=False), sitemap=False)
     write('subscribe/', layout('subscribe/', 'Choose your plan | BidBell',
                                f'Choose a BidBell plan: ${sp}/month or ${ap}/year, renews until you cancel, 30-day money-back guarantee.',
                                body, noindex=True, csp=CSP_PADDLE if PADDLE_READY else CSP, promo=False), sitemap=False)
@@ -580,10 +583,9 @@ def legal():
     sp, ap = C['standard_price'], C['annual_price']
 
     legal_page('terms/', 'Terms of Service', 'The terms that apply when you use BidBell.', f'''
-<section class="pilot-note"><h2>BidBell Prepare: separate from alerts</h2>
-<p>The <a href="{WORKSPACE_URL}">hosted preparation workspace</a> helps you organize uploaded documents, source-linked requirements, editable answers and internal cost estimates. It does not submit a bid for you. You review the original solicitation, eligibility, attachments, prices and every response before using or submitting the exported files.</p>
-<p>New preparation-product billing is not active. Opening a workspace account does not change an existing alert subscription. The alert trial, pricing, payment and cancellation provisions below describe the existing alert service separately. Any future paid preparation offer must show its own applicable access and payment information before purchase.</p>
-<p>For help with workspace access or a data-deletion request, contact {mail}. There is no instant account-deletion control in the workspace. Do not upload material you are not authorized to process or share with the providers described in the privacy information.</p></section>
+<section class="pilot-note"><h2>One BidBell subscription</h2>
+<p>BidBell includes supported daily bid alerts and access to the bid preparation workspace in the existing US$39/month subscription. Existing annual subscriptions retain their current terms. New no-card trials cover both for 14 days; existing trials keep their original end date. Use and verify the same email as your alert subscription to link access. Workspace registration does not start a second trial.</p>
+<p>The workspace helps organize documents, requirements, company facts, answers and pricing. AI suggestions require your review and are subject to usage limits. You remain responsible for official notices, amendments, eligibility, complete forms and final submission. BidBell does not promise completeness, compliance or an award.</p></section>
 <p>These terms are an agreement between you (the business using BidBell, and the person accepting for it) and {seller}. {contact}. By starting a trial or subscription you accept them. Nothing in these terms takes away rights you have under a law that cannot be excluded by contract.</p>
 <h2>1. What BidBell is</h2>
 <p>BidBell provides contract opportunity alerts for building-service contractors. Current paid and trial alert coverage is limited to janitorial, carpet, window and exterior cleaning. HVAC maintenance and grounds coverage is being validated and is not included in current plans. Each morning we read new US federal contract notices published on SAM.gov, select the ones that match the trades, states and eligibility you give us, and email them to you. Where we can, we add information from USAspending.gov about the likely current or previous contract for the same work. Your alerts also carry reminders and updates for bids we sent you and, on Mondays, federal contracts in your states that end in 3 to 6 months. We send a daily email, including a short status update when there are no new matching notices. We also publish free public pages listing open federal cleaning notices by state. We are not a government service, a bidding agent, a law firm or a consultant.</p>
@@ -618,9 +620,9 @@ def legal():
     legal_page('privacy/', 'Privacy Policy', 'What BidBell collects, why, who processes it, how long we keep it and your rights.', f'''
 <p>This policy explains how {seller}, handles personal information. Our contact details are at the end of this policy. We collect as little as we can, we do not sell it, and this website uses no tracking or advertising cookies.</p>
 <section class="pilot-note"><h2>Preparation workspace data</h2>
-<p>The separate workspace stores account details, password hashes, session records, uploaded solicitation text, company facts, requirements, answers, pricing estimates and activity records needed to operate your workspace. It is hosted on Render. Signed-in access uses a necessary session cookie; the public marketing pages and the signed-in workspace are different surfaces.</p>
+<p>The BidBell workspace stores account details, password hashes, session records, uploaded solicitation text, company facts, requirements, answers, pricing estimates and activity records needed to operate your workspace. It is hosted on Render. Signed-in access uses a necessary session cookie; the public marketing pages and the signed-in workspace are different surfaces.</p>
 <p>When you explicitly use an enabled AI action, relevant source text or requirements and company facts are sent to OpenAI for that action. AI actions may be unavailable when configuration or usage limits do not permit them. Upload only material you are authorized to share, and avoid credentials, payment details and unnecessary personal records.</p>
-<p>Workspace records are not published as public website content. Contact {mail} for access, correction or deletion requests. Deletion is handled through support, not an instant in-app control; a request is not confirmation that every record or backup has already been removed. The alert-service collection and retention practices below apply to that separate service. No workspace-specific deletion deadline is promised here.</p></section>
+<p>Workspace records are not published as public website content. Contact {mail} for access, correction or deletion requests. Deletion is handled through support, not an instant in-app control; a request is not confirmation that every record or backup has already been removed. The alert collection and retention practices below also apply to alerts within your BidBell plan. No workspace-specific deletion deadline is promised here.</p></section>
 <h2>1. What we collect</h2>
 <ul>
 <li><strong>Trial and subscriber details</strong> you give us: first name, business email, business name and website, trades, states, eligibility (small business, HUBZone, SDVOSB, 8(a), WOSB) and whether you are registered in SAM.gov.</li>
@@ -652,7 +654,7 @@ def legal():
 <p><strong>California and other US states:</strong> you have the right to know, access, correct and delete your personal information, and not to be discriminated against for using these rights. We do not sell or share personal information for cross-context behavioral advertising, and we do not use it for profiling.</p>
 <p><strong>European Union and United Kingdom:</strong> you also have the rights to object, to restrict processing and to data portability, and you may complain to your local data protection authority.</p>
 <h2>6. Cookies and tracking</h2>
-<p>The public marketing website sets no cookies and uses no analytics or advertising pixels. The separate preparation workspace uses a necessary sign-in session cookie as described above. The only third-party script is Paddle&rsquo;s checkout (Paddle.js), which loads only on our plan page (/subscribe/) so you can pay; Paddle may use cookies there for checkout and fraud prevention, under Paddle&rsquo;s own privacy notice. Our emails contain no tracking pixels.</p>
+<p>The public marketing website sets no cookies and uses no analytics or advertising pixels. The signed-in preparation workspace uses a necessary sign-in session cookie as described above. The only third-party script is Paddle&rsquo;s checkout (Paddle.js), which loads only on our plan page (/subscribe/) so you can pay; Paddle may use cookies there for checkout and fraud prevention, under Paddle&rsquo;s own privacy notice. Our emails contain no tracking pixels.</p>
 <h2>7. Security</h2>
 <p>We use providers with strong security, two-step verification on every account, and we keep customer data out of this public website. No system is perfectly secure; if a breach affects you, we will tell you as the law requires.</p>
 <h2>8. Children</h2>
@@ -663,7 +665,7 @@ def legal():
 <p>For privacy questions or requests, email {mail} or write to {E(C["owner_name"])}, BidBell, at our US mailing address: {E(C["mailing_address"])}. We may store and access your information outside the United States.{phone}</p>''')
 
     legal_page('refunds/', 'Refund Policy', 'BidBell refund policy: a 30-day money-back guarantee on every payment, and how to cancel.', f'''
-<p>New customers can try BidBell free for 14 days, with no card needed, so you can judge the alerts before you pay.</p>
+<p>New customers can try BidBell free for 14 days, with no card needed, so you can try alerts and bid preparation before you pay.</p>
 <h2>30-day money-back guarantee</h2>
 <p>If you are not happy with BidBell, we will refund any payment in full, on the monthly or the yearly plan, if you ask within 30 days of that payment.</p>
 <h2>How to ask for a refund</h2>
@@ -689,7 +691,7 @@ def legal():
 <section class="pilot-note"><h2>Preparation support, not certified compliance</h2>
 <p>Source checks confirm that selected text appears in an uploaded document or saved company facts. They do not certify that your facts are true, that every requirement was captured, or that your response is legally compliant, eligible or competitive. Rules and AI can miss relevant instructions. Blank or scanned pages may have no extracted text.</p>
 <p>AI suggestions are factual starting points for review and editing, not a complete persuasive proposal. Readiness checks identify specific recorded gaps; a passing check is not a guarantee that the bid is complete. Cost estimates depend on your inputs and do not guarantee profit.</p>
-<p>BidBell does not automatically submit applications, sign declarations or guarantee awards. You remain responsible for the full official notice, amendments, required forms, signatures, deadlines and final submission. Paid preparation billing is not active and existing alert arrangements remain separate.</p></section>
+<p>BidBell does not automatically submit applications, sign declarations or guarantee awards. You remain responsible for the full official notice, amendments, required forms, signatures, deadlines and final submission. Bid preparation is included in the existing alert subscription. Existing trial end dates and annual subscription terms are preserved.</p></section>
 <h2>Not a government service</h2>
 <p>BidBell is a private service. It is not affiliated with, endorsed by or connected to SAM.gov, the General Services Administration, USAspending.gov or any government agency.</p>
 <h2>Data can change</h2>
