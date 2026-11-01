@@ -20,19 +20,19 @@ def fetch(path, base=BASE):
 
 def main():
     expected = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
+    def committed(path):
+        return subprocess.check_output(['git', 'show', expected + ':' + path], cwd=ROOT)
     _, body = fetch('/release.json?check=' + expected)
     assert json.loads(body)['commit'] == expected, 'Canonical domain is not serving the current checked release'
     print('PASS canonical HTTPS and exact deployed commit')
     for path in PATHS:
         _, body = fetch(path + '?check=' + expected)
-        local = ROOT / path.lstrip('/')
-        if path.endswith('/'):
-            local /= 'index.html'
-        assert hashlib.sha256(body).digest() == hashlib.sha256(local.read_bytes()).digest(), f'Unexpected public content: {path}'
+        source = path.lstrip('/') + ('index.html' if path.endswith('/') else '')
+        assert hashlib.sha256(body).digest() == hashlib.sha256(committed(source)).digest(), f'Unexpected public content: {path}'
         print('PASS content:', path)
     destination, body = fetch('/', base='https://www.getbidbell.com')
     assert destination == BASE + '/', 'www must redirect to the canonical domain'
-    assert body == (ROOT / 'index.html').read_bytes(), 'www redirected to an outdated release'
+    assert body == committed('index.html'), 'www redirected to an outdated release'
     print('PASS www HTTPS and canonical redirect')
     for path in ['/tools/paddle.json', '/.git/config', '/desk/']:
         try:
