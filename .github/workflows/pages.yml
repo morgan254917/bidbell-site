@@ -1,0 +1,52 @@
+name: Publish verified BidBell website
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+permissions:
+  contents: read
+concurrency:
+  group: pages
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Build and verify the customer journey
+        run: |
+          python3 tools/build.py
+          python3 -m unittest discover -s tools -p 'test_*.py'
+          node --test tools/test_checkout.cjs
+      - name: Prepare the public site
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import shutil
+          target=Path('_site')
+          target.mkdir()
+          for source in Path('.').iterdir():
+              if source.name in {'.git','.github','tools','__pycache__','_site'}:
+                  continue
+              if source.is_dir():
+                  shutil.copytree(source,target/source.name)
+              else:
+                  shutil.copy2(source,target/source.name)
+          PY
+      - uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4
+        with:
+          path: _site
+  deploy:
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5
+        id: deployment
