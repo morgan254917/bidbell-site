@@ -14,7 +14,7 @@ PUBLIC_SUFFIXES = {'.html', '.css', '.js', '.mjs', '.json', '.png', '.jpg',
 def public_asset(path):
     rel = path.relative_to(ROOT)
     return (not path.is_symlink()
-            and not any((part.startswith('.') and part != '.well-known') or part in {'tools', 'tests', '__pycache__', '_site'} for part in rel.parts)
+            and not any((part.startswith('.') and part != '.well-known') or part in {'tools', 'tests', 'desk', '__pycache__', '_site'} for part in rel.parts)
             and '.test.' not in path.name
             and path.suffix.lower() in PUBLIC_SUFFIXES)
 

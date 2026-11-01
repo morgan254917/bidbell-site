@@ -6,15 +6,16 @@ BidBell helps building-service contractors find opportunities, keep a shortlist 
 - Opportunity workspace: https://getbidbell.com/workspace/
 - Bid preparation checklist: https://getbidbell.com/prepare/
 - Cleaning notices by state: https://getbidbell.com/cleaning-bids/
-- Current daily cleaning alerts: 14 days free, then $39/month or $390/year at https://getbidbell.com/start/
+- Alerts and bid preparation: one 14-day no-card trial, then US$39/month by choice at https://getbidbell.com/start/
+- Account and preparation workspace: https://bidbell-workspace.onrender.com/app
 
-The current paid alert plan covers janitorial, carpet, window and exterior cleaning. Adding a public-data category does not automatically expand paid coverage. Daily email includes a short status update on quiet days. Existing subscribers and billing remain separate from the free workspace.
+The current paid alert plan covers janitorial, carpet, window and exterior cleaning. Adding a public-data category does not automatically expand paid coverage. Daily email includes a short status update on quiet days. The signed-in preparation workspace is included in the existing alerts subscription. Link the same verified email. Original trial dates and legacy annual terms remain unchanged. Public notice browsing and the manual checklist are supporting tools, not a second subscription.
 
 The public workspace reads a dated federal building-services snapshot, with trade, state and text filters. Users can keep a shortlist, choose a stage, record a next action and export a text copy. The preparation checklist works with any manually entered bid. Neither tool certifies eligibility, writes a complete proposal or submits a bid.
 
 ## Data and privacy
 
-This is a public static website served by GitHub Pages. Never commit credentials, private customer records, recipient lists or internal research to this repository.
+This is a public static website published through the existing Render account using its free static-site service. GitHub Pages is retained as a manual fallback while its deployment lock is unresolved. Never commit credentials, private customer records, recipient lists or internal research to this repository.
 
 The workspace and preparation checklist use browser localStorage only after an explicit Save action. Those records do not have a cloud account or cross-device synchronization. Later edits require another save. Both pages offer export and deletion. People sharing the browser profile may access its saved records.
 
@@ -40,7 +41,9 @@ The workspace fetches public data from this website. Signup sends answers to the
 
 ## Build and verify
 
-Run `python tools/build.py`, then `python tools/test_site.py`.
+Run `python tools/prepare_static.py`. It builds the site, runs all website and checkout checks, and copies only public assets into `_site/`. Render uses this command and publishes `_site/` after each main-branch update. Build failure prevents publication. `release.json` identifies the exact deployed commit.
+
+The production domain remains getbidbell.com. The staging address is https://bidbell-website.onrender.com. Domain cutover is complete only after DNS, HTTPS and live content are verified. Preserve all mail records when changing website routing.
 
 Run browser-tool unit tests with `node --test workspace/core.test.mjs prepare/plan.test.mjs`.
 
