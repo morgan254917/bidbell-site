@@ -42,7 +42,7 @@
 /* A procedural WebGL bell, with the document composition as a permanent fallback. */
 (async () => {
   const host = document.getElementById('document-scene');
-  if (!host || !window.WebGLRenderingContext) return;
+  if (!host || host.dataset.scene === 'workflow' || !window.WebGLRenderingContext) return;
   let renderer;
   try {
     const THREE = await import('/three.module.min.js');

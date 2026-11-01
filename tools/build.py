@@ -367,7 +367,7 @@ def coverage_block():
 def start():
     form = signup_form()
     if form:
-        action = f'<div class="card form-card">{form}</div>'
+        action = f'<div class="card form-card"><div class="signup-form-intro"><span class="eyebrow">START WITH THE RIGHT OPPORTUNITIES</span><h2>What work fits your business?</h2><p>These preferences shape your daily alerts. Next, use this same email to open your BidBell workspace and build your response.</p></div>{form}</div>'
     else:
         if C['form_url']:
             btn = f'<a class="btn" href="{E(C["form_url"])}" rel="noopener noreferrer">Open the 2-minute sign-up form {ICON["arrow"]}</a>'
@@ -383,24 +383,24 @@ def start():
   <ol class="plain-list"><li>Your first name and business email</li><li>Your business name and website</li><li>Your trades: janitorial, carpet, window or exterior cleaning</li><li>Your states: up to 10, or nationwide</li><li>Your eligibility: small business, HUBZone, SDVOSB, 8(a), WOSB, or none</li><li>Whether you are registered in SAM.gov</li></ol>
   <div class="cta-row">{btn}</div><p class="small muted">{note}</p>
 </div>'''
-    body = f'''<div class="page-head"><div class="wrap">
+    body = f'''<div class="page-head signup-head"><div class="wrap">
   <p class="crumbs"><a href="/">Home</a> / Start your BidBell trial</p>
-  <p class="eyebrow">FIND THE WORK. BUILD AND SEND YOUR BID.</p><h1>14 days.<br>One connected workflow.</h1>
-  <p class="lead">Find cleaning work, reuse company details and build your application with source-linked AI in one BidBell plan. Tell us what fits your business, then verify the same email in your workspace. No card needed.</p>
-  <div class="journey-strip" aria-label="Your BidBell workflow"><span>01 Find a matching bid</span><span>02 Reuse your details</span><span>03 Draft with AI</span><span>04 Review and send</span></div>
+  <p class="eyebrow">YOUR FREE 14 DAYS START HERE</p><h1>Your next cleaning bid.<br>A faster start.</h1>
+  <p class="lead">Get matching daily alerts, keep your company information ready and build a stronger response with source-linked AI. Tell us what fits your business, then verify the same email in your workspace. One BidBell plan. No card needed.</p>
+  <div class="journey-strip" aria-label="Your BidBell workflow"><span>01 Find a matching bid</span><span>02 Reuse your details</span><span>03 Draft with AI</span><span>04 Review and send</span><span>05 Track the result</span></div>
 </div></div>
-<div class="wrap page">{coverage_block()}<div class="signup-grid">
+<div class="wrap page signup-page">{coverage_block()}<div class="signup-grid">
   {action}
   <aside class="aside">
     <div class="card">
-      <p class="eyebrow">YOUR ALERT IS THE START</p><h2>From shortlist to response.</h2>
+      <p class="eyebrow">WHAT HAPPENS NEXT</p><h2>One place to move the bid forward.</h2>
       <ol class="next-steps">
         <li><span class="step-index" aria-hidden="true">1</span><div><b>Get your matching shortlist</b><span>After signup processing, look for your welcome email. Alerts normally arrive around 6 AM your time from the next morning, with a short update on quiet days.</span></div></li>
         <li><span class="step-index" aria-hidden="true">2</span><div><b>Open the bid in BidBell</b><span>Create and verify your workspace account with the same email. Open an opportunity from your alert and keep that bid and its response together.</span></div></li>
         <li><span class="step-index" aria-hidden="true">3</span><div><b>Reuse what your company knows</b><span>Add the buyer's documents, reuse saved company facts and original files, and draft answers with source-linked AI. Complete supported fillable PDF text fields from reviewed facts, then check missing details and pricing.</span></div></li>
-        <li><span class="step-index" aria-hidden="true">4</span><div><b>Review and send your bid</b><span>Review the recipient, message, price and files. Confirm send in BidBell when the buyer explicitly accepts a supported email bid. For portal-only bids, follow the guided handoff. You approve every submission; BidBell does not sign declarations.</span></div></li>
+        <li><span class="step-index" aria-hidden="true">4</span><div><b>Review and send your bid</b><span>Check the buyer’s submission recipients, message, price and files, then confirm a supported email send in BidBell. Portal bids continue through the buyer’s portal. Keep the delivery record and record the buyer’s response. You approve each send; BidBell does not sign declarations.</span></div></li>
       </ol>
-      <div class="trial-summary"><strong>One trial. One US${C['standard_price']}/month plan.</strong><p>Alerts and preparation are free for 14 days. We send a reminder before the end. Continue only if you choose to subscribe; nothing is charged automatically. Usage limits apply.</p></div>
+      <div class="trial-summary"><strong>One trial. One US${C['standard_price']}/month plan.</strong><p>Your trial includes matching alerts and the application workspace for 14 days. We send a reminder before the end. Continue only if you choose to subscribe; nothing is charged automatically. Usage limits apply.</p></div>
     </div>
     <div class="card">
       <h2>Already with BidBell?</h2><p><a href="https://bidbell-workspace.onrender.com/app#account">Open Account and billing</a> with your alert email to connect existing access. Your original trial dates and existing annual terms stay the same. Reply to an alert to update your preferences; no second signup is needed.</p>

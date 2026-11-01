@@ -39,7 +39,7 @@ class Site(unittest.TestCase):
   self.assertIn('same email',text)
   self.assertNotIn('Separate from the preparation workspace',text)
   self.assertIn("does not sign declarations or automatically apply everywhere",text)
-  self.assertIn("original buyer instructions specify a single submission recipient",text)
+  self.assertIn("original buyer instructions explicitly specify the submission recipients",text)
   self.assertIn("Mail-server acceptance does not prove buyer receipt",text)
   self.assertIn("uncertain delivery is not automatically retried",text)
   for forbidden in ['guaranteed wins','AI-assisted features are not enabled','100% accurate']:
