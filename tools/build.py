@@ -88,7 +88,7 @@ CSP_PADDLE = ("default-src 'none'; img-src 'self' https://*.paddle.com; "
               "base-uri 'none'; form-action 'none'; upgrade-insecure-requests")
 
 
-BELL = '<svg aria-hidden="true" focusable="false" viewBox="0 0 64 64"><rect width="64" height="64" rx="16" fill="#141728"/><path d="M18 43V28a14 14 0 0 1 28 0v15l5 5H13l5-5Z" fill="#8870da"/><path d="M27 54h10M32 10v5" stroke="#bdb0ff" stroke-width="4" stroke-linecap="round"/></svg>'
+BELL = '<svg aria-hidden="true" focusable="false" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M6 23h20l-3-5v-6a7 7 0 0 0-14 0v6Z"/><path d="M13 27h6M16 3V1"/></svg>'
 
 
 def start_url():
@@ -113,7 +113,7 @@ def checks(items):
 
 WORKSPACE_URL = 'https://bidbell-workspace.onrender.com/app'
 NAV_LINKS = [(WORKSPACE_URL, 'Your BidBell workspace'), ('/workspace/', 'Browse notices'), ('/#how', 'How it works'),
-             ('/start/', 'Alert trial'), ('/#faq', 'FAQ')]
+             ('/start/', 'Start free'), ('/#faq', 'FAQ')]
 MENU_ICON = ('<svg class="i-open" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" '
              'stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>'
              '<svg class="i-close" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" '
@@ -133,8 +133,8 @@ def layout(path, title, desc, body, jsonld=None, updated=None, noindex=False, og
     canonical = '' if is_404 else f'<link rel="canonical" href="{url}">\n'
     og_url = '' if is_404 else f'<meta property="og:url" content="{url}">\n'
     links = ''.join(f'<a href="{h}">{t}</a>' for h, t in NAV_LINKS)
-    topbar = (f'<aside class="topbar" aria-label="Alert trial offer"><b>Alerts + preparation: 14 days free</b>, no card needed. Then ${C["standard_price"]}/month, '
-              f'cancel anytime. <a href="{E(start_url())}">Start your alert trial &rarr;</a></aside>\n') if promo else ''
+    topbar = (f'<aside class="topbar" aria-label="BidBell trial offer"><b>Alerts + preparation: 14 days free</b>, no card needed. Then ${C["standard_price"]}/month, '
+              f'cancel anytime. <a href="{E(start_url())}">Try the complete workflow &rarr;</a></aside>\n') if promo else ''
     head_cta = f'\n  <a class="btn small head-cta" href="{E(start_url())}">Start free</a>' if promo else ''
     return f'''<!doctype html>
 <html lang="en">
@@ -153,7 +153,7 @@ def layout(path, title, desc, body, jsonld=None, updated=None, noindex=False, og
 {og_url}<meta property="og:image" content="{BASE}/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="BidBell: contract opportunities for building-service contractors. Review opportunities, deadlines and notice changes.">
+<meta property="og:image:alt" content="BidBell: daily cleaning bid alerts and AI-assisted bid preparation in one plan.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#141728">
 <link rel="icon" href="/favicon.ico" sizes="32x32">
@@ -161,6 +161,7 @@ def layout(path, title, desc, body, jsonld=None, updated=None, noindex=False, og
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preload" href="/fonts/public-sans.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/style.css?v=20261028-preparation">
+<link rel="stylesheet" href="/brand.css?v=20261101-one-product">
 <script src="/nav.js" defer></script>{ld}
 </head>
 <body>
@@ -236,9 +237,9 @@ def bid_table(bids, caption):
 def cta_box(heading='Get the right bids every morning instead'):
     return f'''<div class="cta-band">
   <h2>{heading}</h2>
-  <p>This page is a free weekly snapshot. BidBell subscribers get a shortlist matched to their trades, states and stated set-asides, by email each morning, usually around 6 AM their time. Quiet days include a short status update.</p>
+  <p>This page is a free weekly snapshot. Your BidBell plan combines a daily shortlist matched to your business with a workspace to prepare the response. Open a matching alert, add the bid documents, reuse company facts and approved answers, then review an AI draft and export your package. You control the final submission.</p>
   <div class="cta-row"><a class="btn light" href="{E(start_url())}">Start 14 days free {ICON['arrow']}</a></div>
-  {checks(['No card required', f"${C['standard_price']}/month after, or ${C['annual_price']}/year", 'Cancel anytime'])}
+  {checks(['14 days free, no card', f"US${C['standard_price']}/month for alerts + preparation", 'Cancel anytime'])}
 </div>'''
 
 
@@ -383,28 +384,30 @@ def start():
   <div class="cta-row">{btn}</div><p class="small muted">{note}</p>
 </div>'''
     body = f'''<div class="page-head"><div class="wrap">
-  <p class="crumbs"><a href="/">Home</a> / Alert trial</p>
-  <p class="eyebrow">YOUR NEXT OPPORTUNITY STARTS HERE</p><h1>Your daily shortlist.<br>Your next response.</h1>
-  <p class="lead">Set up your cleaning bid alerts first. Then use the same email to create and verify your BidBell workspace account. Your 14-day trial covers both alerts and bid preparation. No card needed.</p>
+  <p class="crumbs"><a href="/">Home</a> / Start your BidBell trial</p>
+  <p class="eyebrow">FIND THE BID. BUILD THE RESPONSE.</p><h1>14 days.<br>One connected workflow.</h1>
+  <p class="lead">Daily cleaning bid alerts, saved company details and AI-assisted bid preparation in one BidBell plan. Tell us what fits your business, then verify the same email in your workspace. No card needed.</p>
+  <div class="journey-strip" aria-label="Your BidBell workflow"><span>01 Find a matching bid</span><span>02 Reuse your details</span><span>03 Draft with AI</span><span>04 Review and export</span></div>
 </div></div>
 <div class="wrap page">{coverage_block()}<div class="signup-grid">
   {action}
   <aside class="aside">
     <div class="card">
-      <h2>What happens next</h2>
+      <p class="eyebrow">YOUR ALERT IS THE START</p><h2>From shortlist to response.</h2>
       <ol class="next-steps">
-        <li><div><b>One signup, two useful steps</b><span>Look for your welcome email after processing. Create and verify your workspace account with the same email to use your original trial dates.</span></div></li>
-        <li><div><b>Your alerts start</b><span>From the next morning, usually around 6 AM your time, including a short status update on quiet days.</span></div></li>
-        <li><div><b>Day 12: your summary</b><span>How many bids we sent you, and links to keep your alerts: ${C['standard_price']}/month or ${C['annual_price']}/year.</span></div></li>
-        <li><div><b>Or do nothing</b><span>Your trial of alerts and preparation ends after 14 days. Nothing is charged automatically; saved work remains accessible.</span></div></li>
+        <li><div><b>Get your matching shortlist</b><span>After signup processing, look for your welcome email. Alerts normally arrive around 6 AM your time from the next morning, with a short update on quiet days.</span></div></li>
+        <li><div><b>Open the bid in BidBell</b><span>Create and verify your workspace account with the same email. Open an opportunity from your alert and keep that bid and its response together.</span></div></li>
+        <li><div><b>Reuse what your company knows</b><span>Add the bid documents, save company facts and reuse approved answers. Ask AI for a draft grounded in your sources, then check missing details and pricing.</span></div></li>
+        <li><div><b>Review, export and submit</b><span>Approve your response and export the package. You make the final submission through the buyer's official process. BidBell does not submit or sign for you.</span></div></li>
       </ol>
+      <div class="trial-summary"><strong>One trial. One US${C['standard_price']}/month plan.</strong><p>Alerts and preparation are free for 14 days. We send a reminder before the end. Continue only if you choose to subscribe; nothing is charged automatically. Usage limits apply.</p></div>
     </div>
     <div class="card">
-      <h2>Already receiving alerts?</h2><p>Reply to an existing alert to update your trades, states or current certifications. Include one notice that did not fit and why. You do not need to start another trial.</p>
+      <h2>Already with BidBell?</h2><p><a href="https://bidbell-workspace.onrender.com/app#account">Open Account and billing</a> with your alert email to connect existing access. Your original trial dates and existing annual terms stay the same. Reply to an alert to update your preferences; no second signup is needed.</p>
     </div>
     <div class="card">
-      <h2>We never ask for</h2>
-      <p>Passwords, card numbers, tax IDs or any government ID numbers. See how we handle your details in our <a href="/privacy/">privacy policy</a>.</p>
+      <h2>Keep private details private</h2>
+      <p>Never send passwords, card numbers, tax IDs or government ID numbers by email. Set your workspace password only on BidBell's account page. See our <a href="/privacy/">privacy policy</a> for how we handle your details.</p>
     </div>
   </aside>
 </div></div>'''
@@ -417,7 +420,7 @@ def start():
 </div></div>'''
     write('start/thanks/', layout('start/thanks/', 'Sign-up next steps | BidBell', 'How to check your BidBell sign-up.', thanks, noindex=True, promo=False), sitemap=False)
     write('start/', layout('start/', 'Start your free 14 days | BidBell',
-                           'Try BidBell contract alerts for building-service contractors. Available daily alerts cover janitorial, carpet, window and exterior cleaning. No card needed.', body,
+                           'Try daily cleaning bid alerts and AI-assisted bid preparation together for 14 days. One BidBell plan, US$39/month if you continue. No card needed.', body,
                            promo=False))
 
 
@@ -581,7 +584,7 @@ def legal():
 <p>These terms are an agreement between you (the business using BidBell, and the person accepting for it) and {seller}. {contact}. By starting a trial or subscription you accept them. Nothing in these terms takes away rights you have under a law that cannot be excluded by contract.</p>
 <h2>1. What BidBell is</h2>
 <p>BidBell provides contract opportunity alerts for building-service contractors. Current paid and trial alert coverage is limited to janitorial, carpet, window and exterior cleaning. HVAC maintenance and grounds coverage is being validated and is not included in current plans. Each morning we read new US federal contract notices published on SAM.gov, select the ones that match the trades, states and eligibility you give us, and email them to you. Where we can, we add information from USAspending.gov about the likely current or previous contract for the same work. Your alerts also carry reminders and updates for bids we sent you and, on Mondays, federal contracts in your states that end in 3 to 6 months. We send a daily email, including a short status update when there are no new matching notices. We also publish free public pages listing open federal cleaning notices by state. We are not a government service, a bidding agent, a law firm or a consultant.</p>
-<h2>2. Alert trial</h2>
+<h2>2. Free BidBell trial</h2>
 <p>New customers get a free 14-day trial. We do not ask for a card to start it. If you do not subscribe, your alerts stop at the end of the trial and nothing is charged.</p>
 <h2>3. Plans, payment and taxes</h2>
 <p>BidBell is operated by {E(C["owner_name"])}, a sole proprietor (not a registered company) trading as BidBell. Our US mailing address is {E(C["mailing_address"])}.</p>

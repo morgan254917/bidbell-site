@@ -57,4 +57,15 @@ class Site(unittest.TestCase):
   pages=[p for p in ROOT.rglob('*.html') if 'desk' not in p.parts]
   self.assertGreaterEqual(len(pages),63)
   for page in pages:self.assertNotIn(chr(0x2014),page.read_text(encoding='utf-8'),str(page))
+ def test_signup_explains_the_complete_shared_trial(self):
+  text=(ROOT/'start/index.html').read_text(encoding='utf-8')
+  for phrase in ['Open the bid in BidBell','Reuse what your company knows','Review, export and submit','One trial. One US$39/month plan.','same email','original trial dates']:
+   self.assertIn(phrase,text)
+  for old in ['keep your alerts:','$390/year','One signup, two useful steps']:
+   self.assertNotIn(old,text)
+ def test_every_current_public_page_uses_the_shared_identity(self):
+  for page in ROOT.rglob('*.html'):
+   if 'desk' in page.parts:continue
+   self.assertIn('/brand.css?v=20261101-one-product',page.read_text(encoding='utf-8'),str(page))
+  self.assertTrue((ROOT/'brand-icon.png').is_file())
 if __name__=='__main__':unittest.main()

@@ -1,0 +1,17 @@
+/* One BidBell identity across website and workspace. */
+@font-face{font-family:"Public Sans";src:url("fonts/public-sans.woff2") format("woff2");font-weight:100 900;font-style:normal;font-display:swap}
+:root{--ink:#191b30;--navy:#191b30;--navy-2:#343044;--muted:#60616d;--text:#4e4e5e;--line:#deddd7;--line-2:#c9c5d0;--cream:#faf8f3;--bg:#faf8f3;--paper:#faf8f3;--tint:#f1edf6;--tint-2:#e5dff7;--purple:#63527e;--red:#63527e;--red-dark:#4f4065;--lavender:#e5dff7;--coral:#d8664e;--sans:"Public Sans",Arial,Helvetica,sans-serif}
+body{font-family:var(--sans);background:var(--cream);color:var(--ink)}
+.logo,.wordmark,a.brand,span.brand{display:inline-flex;align-items:center;gap:8px;font-family:var(--sans);font-weight:800;letter-spacing:-1.2px}
+.logo svg,.wordmark svg,.brand svg{width:30px;height:34px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.brand-dot,.wordmark>span,.brand>span{color:var(--coral)}
+.site-head,.sidebar,.topbar,.site-header{background:var(--cream)}
+.site-head{border-color:var(--line)}
+.site-foot{background:var(--ink)}
+.journey-strip{display:flex;flex-wrap:wrap;gap:12px;margin:28px 0 4px}.journey-strip span{padding:11px 15px;border:1px solid var(--line);border-radius:30px;background:#fffdfa;font-size:13px;font-weight:600}
+.signup-grid .aside>.card:first-child{background:var(--tint);color:var(--ink);border:1px solid var(--line);box-shadow:none}.signup-grid .aside>.card:first-child h2,.signup-grid .aside>.card:first-child b,.signup-grid .aside>.card:first-child span{color:var(--ink)}
+.trial-summary{margin-top:25px;border-top:1px solid var(--line);padding-top:22px}.trial-summary p{font-size:14px;margin:9px 0 0;color:var(--muted)}
+.next-steps li::before{background:var(--lavender)}
+@media(max-width:600px){.journey-strip{gap:8px}.journey-strip span{font-size:11px;padding:9px 11px}.logo,.wordmark,a.brand,span.brand{font-size:25px}}
+
+.btn:not(.ghost):not(.light){background:var(--ink);border-color:var(--ink);color:#fff}.btn:not(.ghost):not(.light):hover{background:var(--navy-2)}.state-count{background:var(--lavender)}.state-search,.state-box,.option{background:#fffdfa;border-color:var(--line)}

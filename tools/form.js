@@ -68,7 +68,7 @@
       label.hidden = !matches;
       if (matches && cb !== all) visible++;
     });
-    if (searchStatus) searchStatus.textContent = query ? visible + ' states shown. Selected states stay visible.' : '';
+    if (searchStatus) searchStatus.textContent = query ? visible + (visible === 1 ? ' state shown. Selected states stay visible.' : ' states shown. Selected states stay visible.') : '';
   });
 
   // A group's error goes away as soon as a choice is made in it.
