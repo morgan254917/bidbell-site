@@ -1,6 +1,7 @@
 """Verify the canonical public release from an independent network, without accounts or purchases."""
 from pathlib import Path
 import hashlib
+import io
 import json
 import subprocess
 import urllib.error
@@ -10,6 +11,33 @@ ROOT = Path(__file__).resolve().parent.parent
 BASE = 'https://getbidbell.com'
 PATHS = ['/', '/start/', '/subscribe/', '/terms/', '/privacy/', '/workspace/', '/prepare/',
          '/brand.css', '/brand-icon.png', '/social/brand.jpg', '/.well-known/security.txt']
+
+
+def asset_matches(body, expected, source):
+    if hashlib.sha256(body).digest() == hashlib.sha256(expected).digest():
+        return True
+    if Path(source).suffix.lower() not in {'.png', '.jpg', '.jpeg'}:
+        return False
+    # Cloudflare Polish can recompress images without changing the displayed pixels.
+    # This operator-only check still rejects a changed logo, format or dimensions.
+    try:
+        from PIL import Image, ImageChops, ImageStat
+    except ImportError as error:
+        raise RuntimeError('Install Pillow in the verification environment to check CDN image transformations.') from error
+    try:
+        with Image.open(io.BytesIO(body)) as live, Image.open(io.BytesIO(expected)) as original:
+            if live.format != original.format or live.size != original.size:
+                return False
+            if live.convert('RGBA').tobytes() == original.convert('RGBA').tobytes():
+                return True
+            # JPEG CDN recompression is lossy. Bound the difference tightly on all
+            # three 0..255 channels; PNG logos still require identical pixels.
+            if live.format == 'JPEG':
+                difference = ImageStat.Stat(ImageChops.difference(live.convert('RGB'), original.convert('RGB')))
+                return max(difference.rms) <= 4 and max(difference.mean) <= 1
+            return False
+    except (OSError, ValueError):
+        return False
 
 
 def fetch(path, base=BASE):
@@ -28,7 +56,7 @@ def main():
     for path in PATHS:
         _, body = fetch(path + '?check=' + expected)
         source = path.lstrip('/') + ('index.html' if path.endswith('/') else '')
-        assert hashlib.sha256(body).digest() == hashlib.sha256(committed(source)).digest(), f'Unexpected public content: {path}'
+        assert asset_matches(body, committed(source), source), f'Unexpected public content: {path}'
         print('PASS content:', path)
     destination, body = fetch('/', base='https://www.getbidbell.com')
     assert destination == BASE + '/', 'www must redirect to the canonical domain'
