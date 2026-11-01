@@ -423,25 +423,15 @@ def start():
 
 # ------------------------------------------------------------------ subscribe (trial customers choose a plan)
 def subscribe():
-    """/subscribe/?plan=monthly|yearly&c=<customer id>: linked from the trial emails; not in the sitemap, noindex.
-    checkout.js highlights the plan from ?plan= and opens Paddle's overlay checkout; tools/paddle.json holds the settings."""
-    sp, ap = C['standard_price'], C['annual_price']
+    """Verified-account entry and landing page for server-created Paddle transactions."""
+    sp = C['standard_price']
     mail = f'<a href="mailto:{C["email"]}">{C["email"]}</a>'
     agree = 'By continuing you agree to the <a href="/terms/">Terms</a> and the <a href="/refunds/">Refund Policy</a>.'
 
-    def card(key, name, price, per, renews, items, badge=''):
-        button = (f'<p class="small muted terms-line">{agree}</p>'
-                  f'<button class="btn{"" if key == "monthly" else " ghost"}" type="button" data-checkout="{key}">'
-                  f'Subscribe for ${price}/{per}</button>') if PADDLE_READY else ''
-        lis = ''.join(f'<li>{ICON["check"]}<span>{x}</span></li>' for x in items)
-        return (f'<div class="plan{" best" if key == "monthly" else ""}" data-plan="{key}">{badge}<h3>{name}</h3>'
-                f'<p class="price">${price}<span> /{per}</span></p><p class="desc">{renews}</p><ul>{lis}</ul>{button}</div>')
-
-    plans = (card('monthly', 'Monthly', sp, 'month', 'Renews every month until you cancel.',
-                  ['30-day money-back guarantee', 'Cancel anytime']) +
-             card('yearly', 'Yearly', ap, 'year', 'Renews every year until you cancel.',
-                  [f'${sp * 12 - ap} less than paying monthly', '30-day money-back guarantee', 'Cancel anytime'],
-                  '<span class="badge">2 months free</span>'))
+    plans = (f'<div class="plan best"><h3>One BidBell plan</h3><p class="price">US${sp}<span> /month</span></p>'
+             '<p class="desc">Matching alerts and bid preparation together. Renews monthly only after you choose to subscribe.</p>'
+             '<p><a class="btn" href="https://bidbell-workspace.onrender.com/app#account">Sign in and continue</a></p>'
+             '<p class="small">Your verified account checks alert enrollment and existing subscriptions before creating checkout.</p></div>')
     if PADDLE_READY:
         cfg = {'env': PADDLE['env'], 'client_token': PADDLE['client_token'].strip(),
                'prices': {'monthly': PADDLE['price_monthly'].strip(), 'yearly': PADDLE['price_yearly'].strip()},
@@ -463,13 +453,15 @@ def subscribe():
     body = f'''<div class="page-head"><div class="wrap">
   <p class="crumbs"><a href="/">Home</a> / Choose your plan</p>
   <h1>Choose your plan</h1>
-  <p class="lead">Keep your daily alerts and bid preparation together. Both are included. Use the same email for your alert preferences, workspace and Paddle payment.</p>
+  <p class="lead">Keep your daily alerts and bid preparation together. Use the same email for your alert preferences, workspace and payment.</p>
 </div></div>
 <div class="wrap page">
   <h2 class="sr-only">Plans</h2>
   {coverage_block()}
   {alert}
+  <div class="note"><p><strong>New to BidBell?</strong> <a href="/start/">Set up your alert preferences</a> first, then create and verify your workspace account with the same email. Your 14-day no-card trial covers both. No payment is taken automatically at its end.</p></div>
   <div class="plans">{plans}</div>
+  <div class="note"><p><strong>Already subscribed?</strong> Connect your existing subscription in Account and billing before considering another checkout. Existing annual plans keep their current terms. Do not buy a second subscription.</p></div>
   <div class="subscribe-foot">
     {foot}
     <p class="small muted">Questions? Email {mail}{phone}.</p>
@@ -479,13 +471,13 @@ def subscribe():
   <p class="crumbs"><a href="/">Home</a> / Subscription</p>
   <h1>Check your subscription status.</h1>
   <p class="lead">Paddle emails a receipt when payment succeeds. Open Account and billing in your BidBell workspace with the same email to confirm and link your subscription. This page alone does not confirm payment or access. If you have not set up your alert preferences, complete the free signup first.</p>
-  <div class="cta-row"><a class="btn" href="/">Back to BidBell</a><a class="btn ghost" href="/refunds/">Refund policy</a></div>
+  <div class="cta-row"><a class="btn" href="https://bidbell-workspace.onrender.com/app#account">Open Account and billing</a><a class="btn ghost" href="/refunds/">Refund policy</a></div>
   <p class="small muted">Questions about your plan, or want to cancel? Email {mail}{phone}, or reply to any BidBell email.</p>
 </div></div>'''
     write('subscribe/thanks/', layout('subscribe/thanks/', 'Subscription next steps | BidBell',
                                       'Confirm and link your BidBell subscription.', thanks, noindex=True, promo=False), sitemap=False)
     write('subscribe/', layout('subscribe/', 'Choose your plan | BidBell',
-                               f'Choose a BidBell plan: ${sp}/month or ${ap}/year, renews until you cancel, 30-day money-back guarantee.',
+                               f'Alerts and bid preparation together for US${sp}/month. Verify your existing account before checkout.',
                                body, noindex=True, csp=CSP_PADDLE if PADDLE_READY else CSP, promo=False), sitemap=False)
 
 

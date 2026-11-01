@@ -34,8 +34,13 @@ jobs:
         id: build
         if: ${{ !cancelled() }}   # also when the download failed: expired notices still drop off (the run stays red)
         run: python3 tools/build.py
+      - name: Verify customer entry and checkout
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: |
+          python3 -m unittest discover -s tools -p 'test_*.py'
+          node --test tools/test_checkout.cjs
       - name: Publish
-        if: ${{ !cancelled() && steps.build.outcome == 'success' }}   # never publish a half-built site
+        if: ${{ success() }}   # publish only after build and customer checks pass
         run: |
           git config user.name "bidbell-bot"; git config user.email "41898282+github-actions[bot]@users.noreply.github.com"   # GitHub's Actions address ("bot@users..." is a stranger's account)
           git add -A

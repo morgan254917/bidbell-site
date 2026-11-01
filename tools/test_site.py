@@ -46,6 +46,13 @@ class Site(unittest.TestCase):
   self.assertIn('/three.module.min.js',text)
   self.assertTrue((ROOT/'three.module.min.js').is_file())
   self.assertIn('prefers-reduced-motion',text)
+ def test_public_purchase_entry_requires_the_verified_account_flow(self):
+  text=(ROOT/'subscribe/index.html').read_text(encoding='utf-8')
+  self.assertIn('https://bidbell-workspace.onrender.com/app#account',text)
+  self.assertIn('Set up your alert preferences',text)
+  self.assertIn('Existing annual plans keep their current terms',text)
+  self.assertNotIn('data-checkout=',text)
+  self.assertIn('cdn.paddle.com/paddle/v2/paddle.js',text)
  def test_rendered_copy_no_em_dash(self):
   pages=[p for p in ROOT.rglob('*.html') if 'desk' not in p.parts]
   self.assertGreaterEqual(len(pages),63)
