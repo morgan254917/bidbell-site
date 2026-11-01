@@ -38,7 +38,10 @@ class Site(unittest.TestCase):
   self.assertIn('Existing trials keep their original end date',text)
   self.assertIn('same email',text)
   self.assertNotIn('Separate from the preparation workspace',text)
-  self.assertIn('does not sign certifications or submit applications',text)
+  self.assertIn("does not sign declarations or automatically apply everywhere",text)
+  self.assertIn("original buyer instructions specify a single submission recipient",text)
+  self.assertIn("Mail-server acceptance does not prove buyer receipt",text)
+  self.assertIn("uncertain delivery is not automatically retried",text)
   for forbidden in ['guaranteed wins','AI-assisted features are not enabled','100% accurate']:
    self.assertNotIn(forbidden,text)
  def test_marketing_assets_are_self_hosted(self):
@@ -59,7 +62,7 @@ class Site(unittest.TestCase):
   for page in pages:self.assertNotIn(chr(0x2014),page.read_text(encoding='utf-8'),str(page))
  def test_signup_explains_the_complete_shared_trial(self):
   text=(ROOT/'start/index.html').read_text(encoding='utf-8')
-  for phrase in ['Open the bid in BidBell','Reuse what your company knows','Review, export and submit','One trial. One US$39/month plan.','same email','original trial dates']:
+  for phrase in ['Open the bid in BidBell','Reuse what your company knows','Review and send your bid','One trial. One US$39/month plan.','same email','original trial dates']:
    self.assertIn(phrase,text)
   for old in ['keep your alerts:','$390/year','One signup, two useful steps']:
    self.assertNotIn(old,text)

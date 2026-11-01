@@ -1,6 +1,6 @@
 # BidBell
 
-BidBell helps building-service contractors find opportunities, keep a shortlist and prepare a bid. The brand is broader than any individual feed. Show actual coverage beside each service rather than implying every trade is available everywhere.
+BidBell helps cleaning companies find work, build applications with reusable company details and documents, and review and send supported email bids. Portal-only bids use a guided handoff to the buyer's portal. Broader public notice previews remain available. The brand is broader than any individual feed. Show actual coverage beside each service rather than implying every trade is available everywhere.
 
 - Website: https://getbidbell.com/
 - Opportunity workspace: https://getbidbell.com/workspace/
@@ -9,7 +9,7 @@ BidBell helps building-service contractors find opportunities, keep a shortlist 
 - Alerts and bid preparation: one 14-day no-card trial, then US$39/month by choice at https://getbidbell.com/start/
 - Account and preparation workspace: https://bidbell-workspace.onrender.com/app
 
-The current paid alert plan covers janitorial, carpet, window and exterior cleaning. Adding a public-data category does not automatically expand paid coverage. Daily email includes a short status update on quiet days. The signed-in preparation workspace is included in the existing alerts subscription. Link the same verified email. Original trial dates and legacy annual terms remain unchanged. Public notice browsing and the manual checklist are supporting tools, not a second subscription.
+The current paid alert plan covers janitorial, carpet, window and exterior cleaning. Adding a public-data category does not automatically expand paid coverage. Daily email includes a short status update on quiet days. The signed-in workspace is included in the existing alerts subscription. Supported email submissions require original buyer instructions specifying a single recipient, current-notice and deadline validation, exact message and file review, and final customer confirmation. Mail-server acceptance is distinct from buyer receipt. Standard supported fillable PDF text fields use explicitly reviewed saved facts; other buyer forms still require customer completion. Link the same verified email. Original trial dates and legacy annual terms remain unchanged. Public notice browsing and the manual checklist are supporting tools, not a second subscription.
 
 The public workspace reads a dated federal building-services snapshot, with trade, state and text filters. Users can keep a shortlist, choose a stage, record a next action and export a text copy. The preparation checklist works with any manually entered bid. Neither tool certifies eligibility, writes a complete proposal or submits a bid.
 

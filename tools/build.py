@@ -237,7 +237,7 @@ def bid_table(bids, caption):
 def cta_box(heading='Get the right bids every morning instead'):
     return f'''<div class="cta-band">
   <h2>{heading}</h2>
-  <p>This page is a free weekly snapshot. Your BidBell plan combines a daily shortlist matched to your business with a workspace to prepare the response. Open a matching alert, add the bid documents, reuse company facts and approved answers, then review an AI draft and export your package. You control the final submission.</p>
+  <p>This page is a free weekly snapshot. Your BidBell plan combines a daily shortlist matched to your business with a workspace to prepare the response. Open a matching alert, add the bid documents, reuse company facts and approved answers, then review your message and files. Send supported email bids after your final confirmation, or continue through the buyer's required portal.</p>
   <div class="cta-row"><a class="btn light" href="{E(start_url())}">Start 14 days free {ICON['arrow']}</a></div>
   {checks(['14 days free, no card', f"US${C['standard_price']}/month for alerts + preparation", 'Cancel anytime'])}
 </div>'''
@@ -385,9 +385,9 @@ def start():
 </div>'''
     body = f'''<div class="page-head"><div class="wrap">
   <p class="crumbs"><a href="/">Home</a> / Start your BidBell trial</p>
-  <p class="eyebrow">FIND THE BID. BUILD THE RESPONSE.</p><h1>14 days.<br>One connected workflow.</h1>
-  <p class="lead">Daily cleaning bid alerts, saved company details and AI-assisted bid preparation in one BidBell plan. Tell us what fits your business, then verify the same email in your workspace. No card needed.</p>
-  <div class="journey-strip" aria-label="Your BidBell workflow"><span>01 Find a matching bid</span><span>02 Reuse your details</span><span>03 Draft with AI</span><span>04 Review and export</span></div>
+  <p class="eyebrow">FIND THE WORK. BUILD AND SEND YOUR BID.</p><h1>14 days.<br>One connected workflow.</h1>
+  <p class="lead">Find cleaning work, reuse company details and build your application with source-linked AI in one BidBell plan. Tell us what fits your business, then verify the same email in your workspace. No card needed.</p>
+  <div class="journey-strip" aria-label="Your BidBell workflow"><span>01 Find a matching bid</span><span>02 Reuse your details</span><span>03 Draft with AI</span><span>04 Review and send</span></div>
 </div></div>
 <div class="wrap page">{coverage_block()}<div class="signup-grid">
   {action}
@@ -397,8 +397,8 @@ def start():
       <ol class="next-steps">
         <li><span class="step-index" aria-hidden="true">1</span><div><b>Get your matching shortlist</b><span>After signup processing, look for your welcome email. Alerts normally arrive around 6 AM your time from the next morning, with a short update on quiet days.</span></div></li>
         <li><span class="step-index" aria-hidden="true">2</span><div><b>Open the bid in BidBell</b><span>Create and verify your workspace account with the same email. Open an opportunity from your alert and keep that bid and its response together.</span></div></li>
-        <li><span class="step-index" aria-hidden="true">3</span><div><b>Reuse what your company knows</b><span>Add the bid documents, save company facts and reuse approved answers. Ask AI for a draft grounded in your sources, then check missing details and pricing.</span></div></li>
-        <li><span class="step-index" aria-hidden="true">4</span><div><b>Review, export and submit</b><span>Approve your response and export the package. You make the final submission through the buyer's official process. BidBell does not submit or sign for you.</span></div></li>
+        <li><span class="step-index" aria-hidden="true">3</span><div><b>Reuse what your company knows</b><span>Add the buyer's documents, reuse saved company facts and original files, and draft answers with source-linked AI. Complete supported fillable PDF text fields from reviewed facts, then check missing details and pricing.</span></div></li>
+        <li><span class="step-index" aria-hidden="true">4</span><div><b>Review and send your bid</b><span>Review the recipient, message, price and files. Confirm send in BidBell when the buyer explicitly accepts a supported email bid. For portal-only bids, follow the guided handoff. You approve every submission; BidBell does not sign declarations.</span></div></li>
       </ol>
       <div class="trial-summary"><strong>One trial. One US${C['standard_price']}/month plan.</strong><p>Alerts and preparation are free for 14 days. We send a reminder before the end. Continue only if you choose to subscribe; nothing is charged automatically. Usage limits apply.</p></div>
     </div>
@@ -432,7 +432,7 @@ def subscribe():
     agree = 'By continuing you agree to the <a href="/terms/">Terms</a> and the <a href="/refunds/">Refund Policy</a>.'
 
     plans = (f'<div class="plan best"><h3>One BidBell plan</h3><p class="price">US${sp}<span> /month</span></p>'
-             '<p class="desc">Matching alerts and bid preparation together. Renews monthly only after you choose to subscribe.</p>'
+             '<p class="desc">Daily cleaning alerts, saved company details, supported forms and reviewed email bids together. Renews monthly only after you choose to subscribe.</p>'
              '<p><a class="btn" href="https://bidbell-workspace.onrender.com/app#account">Sign in and continue</a></p>'
              '<p class="small">Your verified account checks alert enrollment and existing subscriptions before creating checkout.</p></div>')
     if PADDLE_READY:
@@ -456,7 +456,7 @@ def subscribe():
     body = f'''<div class="page-head"><div class="wrap">
   <p class="crumbs"><a href="/">Home</a> / Choose your plan</p>
   <h1>Choose your plan</h1>
-  <p class="lead">Keep your daily alerts and bid preparation together. Use the same email for your alert preferences, workspace and payment.</p>
+  <p class="lead">Find the work. Build and send your bid. Keep daily alerts, reusable company details and supported email applications in one plan. Use the same email for your alert preferences, workspace and payment.</p>
 </div></div>
 <div class="wrap page">
   <h2 class="sr-only">Plans</h2>
@@ -580,7 +580,7 @@ def legal():
     legal_page('terms/', 'Terms of Service', 'The terms that apply when you use BidBell.', f'''
 <section class="pilot-note"><h2>One BidBell subscription</h2>
 <p>BidBell includes supported daily bid alerts and access to the bid preparation workspace in the existing US$39/month subscription. Existing annual subscriptions retain their current terms. New no-card trials cover both for 14 days; existing trials keep their original end date. Use and verify the same email as your alert subscription to link access. Workspace registration does not start a second trial.</p>
-<p>The workspace helps organize documents, requirements, company facts, answers and pricing. AI suggestions require your review and are subject to usage limits. You remain responsible for official notices, amendments, eligibility, complete forms and final submission. BidBell does not promise completeness, compliance or an award.</p></section>
+<p>The workspace helps organize documents, requirements, company facts, answers and pricing. It retains original files saved for reuse and submission and can fill supported standard PDF text fields from explicitly reviewed facts. Document size and account storage limits apply and are shown in the workspace. Supported email submission requires original buyer instructions specifying all supported submission recipients, a current-notice and deadline check, and your review and final confirmation of the exact message and files. Portal-only submissions continue in the buyer's portal. Mail-server acceptance is not proof of buyer receipt; uncertain delivery is not automatically retried. BidBell does not sign declarations. AI suggestions require your review and are subject to usage limits. You remain responsible for official notices, amendments, eligibility, complete forms and final submission. BidBell does not promise completeness, compliance or an award.</p></section>
 <p>These terms are an agreement between you (the business using BidBell, and the person accepting for it) and {seller}. {contact}. By starting a trial or subscription you accept them. Nothing in these terms takes away rights you have under a law that cannot be excluded by contract.</p>
 <h2>1. What BidBell is</h2>
 <p>BidBell provides contract opportunity alerts for building-service contractors. Current paid and trial alert coverage is limited to janitorial, carpet, window and exterior cleaning. HVAC maintenance and grounds coverage is being validated and is not included in current plans. Each morning we read new US federal contract notices published on SAM.gov, select the ones that match the trades, states and eligibility you give us, and email them to you. Where we can, we add information from USAspending.gov about the likely current or previous contract for the same work. Your alerts also carry reminders and updates for bids we sent you and, on Mondays, federal contracts in your states that end in 3 to 6 months. We send a daily email, including a short status update when there are no new matching notices. We also publish free public pages listing open federal cleaning notices by state. We are not a government service, a bidding agent, a law firm or a consultant.</p>
@@ -615,9 +615,9 @@ def legal():
     legal_page('privacy/', 'Privacy Policy', 'What BidBell collects, why, who processes it, how long we keep it and your rights.', f'''
 <p>This policy explains how {seller}, handles personal information. Our contact details are at the end of this policy. We collect as little as we can, we do not sell it, and this website uses no tracking or advertising cookies.</p>
 <section class="pilot-note"><h2>Preparation workspace data</h2>
-<p>The BidBell workspace stores account details, password hashes, session records, uploaded solicitation text, company facts, requirements, answers, pricing estimates and activity records needed to operate your workspace. It is hosted on Render. Signed-in access uses a necessary session cookie; the public marketing pages and the signed-in workspace are different surfaces.</p>
+<p>The BidBell workspace stores account details, password hashes, session records, original files you save for reuse or submission, extracted solicitation and company text, company facts, requirements, answers, pricing estimates, completed supported forms, submission messages and delivery activity records needed to operate your workspace. It is hosted on Render. Signed-in access uses a necessary session cookie; the public marketing pages and the signed-in workspace are different surfaces.</p>
 <p>When you explicitly use an enabled AI action, relevant source text or requirements and company facts are sent to OpenAI for that action. AI actions may be unavailable when configuration or usage limits do not permit them. Upload only material you are authorized to share, and avoid credentials, payment details and unnecessary personal records.</p>
-<p>Workspace records are not published as public website content. Contact {mail} for access, correction or deletion requests. Deletion is handled through support, not an instant in-app control; a request is not confirmation that every record or backup has already been removed. The alert collection and retention practices below also apply to alerts within your BidBell plan. No workspace-specific deletion deadline is promised here.</p></section>
+<p>When you confirm a supported email bid, the exact reviewed message and selected files are sent to the buyer submission address you reviewed, using BidBell's Google Workspace email service. Submission history records the send and delivery status; mail-server acceptance does not confirm buyer receipt. Workspace records are not published as public website content. Contact {mail} for access, correction or deletion requests. Deletion is handled through support, not an instant in-app control; a request is not confirmation that every record or backup has already been removed. The alert collection and retention practices below also apply to alerts within your BidBell plan. No workspace-specific deletion deadline is promised here.</p></section>
 <h2>1. What we collect</h2>
 <ul>
 <li><strong>Trial and subscriber details</strong> you give us: first name, business email, business name and website, trades, states, eligibility (small business, HUBZone, SDVOSB, 8(a), WOSB) and whether you are registered in SAM.gov.</li>
@@ -687,7 +687,7 @@ def legal():
 <section class="pilot-note"><h2>Preparation support, not certified compliance</h2>
 <p>Source checks confirm that selected text appears in an uploaded document or saved company facts. They do not certify that your facts are true, that every requirement was captured, or that your response is legally compliant, eligible or competitive. Rules and AI can miss relevant instructions. Blank or scanned pages may have no extracted text.</p>
 <p>AI suggestions are factual starting points for review and editing, not a complete persuasive proposal. Readiness checks identify specific recorded gaps; a passing check is not a guarantee that the bid is complete. Cost estimates depend on your inputs and do not guarantee profit.</p>
-<p>BidBell does not automatically submit applications, sign declarations or guarantee awards. You remain responsible for the full official notice, amendments, required forms, signatures, deadlines and final submission. Bid preparation is included in the existing alert subscription. Existing trial end dates and annual subscription terms are preserved.</p></section>
+<p>BidBell sends supported email bids only after your explicit final confirmation and the required source, recipient and deadline checks. It does not automatically apply to buyer portals, sign declarations or guarantee awards. You must check completed forms; only supported standard fillable PDF text fields can be completed from reviewed facts. Mail-server acceptance does not prove buyer receipt. You remain responsible for the full official notice, amendments, required forms, signatures, deadlines and final submission. Bid preparation is included in the existing alert subscription. Existing trial end dates and annual subscription terms are preserved.</p></section>
 <h2>Not a government service</h2>
 <p>BidBell is a private service. It is not affiliated with, endorsed by or connected to SAM.gov, the General Services Administration, USAspending.gov or any government agency.</p>
 <h2>Data can change</h2>
