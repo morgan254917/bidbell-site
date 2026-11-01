@@ -1,42 +1,18 @@
 {
- "updated": "2026-10-26",
+ "updated": "2026-11-01",
  "source": "SAM.gov public Contract Opportunities data",
  "bids": [
   {
    "trade": "janitorial",
-   "title": "S--AMARILLO FIELD OFFICE JANITORIAL SERVICES",
-   "type": "Sources Sought",
-   "agency": "Interior, Department Of The",
-   "city": "Amarillo",
-   "state": "TX",
-   "due": "2026-10-28",
-   "set_aside": "Small Business Set Aside - Total",
-   "link": "https://sam.gov/workspace/contract/opp/55310392f07642a7840173a58e854adb/view",
-   "sol": "140LL027Q0008"
-  },
-  {
-   "trade": "janitorial",
-   "title": "NTX Fisher House Housekeeping Service",
+   "title": "CURTAIN CLEANING AND INSTALLATION",
    "type": "Solicitation",
-   "agency": "Veterans Affairs, Department Of",
-   "city": "",
-   "state": "TX",
-   "due": "2026-10-28",
-   "set_aside": "Service-Disabled Veteran-Owned Small Business (SDVOSB) Set-Aside (FAR 19.14)",
-   "link": "https://sam.gov/workspace/contract/opp/01d606c2cc054b23995308edec34302f/view",
-   "sol": "36C25727Q0019"
-  },
-  {
-   "trade": "janitorial",
-   "title": "JBMDL, NJ Lakehurst Custodial Services - 2027-2032",
-   "type": "Sources Sought",
    "agency": "Dept Of Defense",
-   "city": "Joint Base Mdl",
-   "state": "NJ",
-   "due": "2026-10-30",
-   "set_aside": "Small Business Set Aside - Total",
-   "link": "https://sam.gov/workspace/contract/opp/ed5ce028def240be8844339e4c5ec025/view",
-   "sol": "FA448427CUSTODIAL"
+   "city": "Washington",
+   "state": "DC",
+   "due": "2026-11-02",
+   "set_aside": "",
+   "link": "https://sam.gov/workspace/contract/opp/c487968d90024ed0ab83697410c06dbc/view",
+   "sol": "M0026427Q0005"
   },
   {
    "trade": "janitorial",
@@ -52,6 +28,18 @@
   },
   {
    "trade": "janitorial",
+   "title": "Sources Sought - Custodial and Day Porter Services, DeCA Headquarters (Fort Lee, VA)",
+   "type": "Sources Sought",
+   "agency": "Dept Of Defense",
+   "city": "Fort Lee",
+   "state": "VA",
+   "due": "2026-11-03",
+   "set_aside": "8(a) Set-Aside (FAR 19.8)",
+   "link": "https://sam.gov/workspace/contract/opp/f4dcdc1463c3483d882f6291e05f19f6/view",
+   "sol": "SS1839284"
+  },
+  {
+   "trade": "janitorial",
    "title": "Janitorial Services, DeQueen Project Office",
    "type": "Combined Synopsis/Solicitation",
    "agency": "Dept Of Defense",
@@ -64,6 +52,30 @@
   },
   {
    "trade": "janitorial",
+   "title": "Fort Bliss Custodial Service Contract",
+   "type": "Solicitation",
+   "agency": "Dept Of Defense",
+   "city": "Fort Bliss",
+   "state": "TX",
+   "due": "2026-11-04",
+   "set_aside": "8(a) Set-Aside (FAR 19.8)",
+   "link": "https://sam.gov/workspace/contract/opp/2b7d671a19d14cdc92821515f6ae0f1c/view",
+   "sol": "W911SG25RA004"
+  },
+  {
+   "trade": "window",
+   "title": "Clean cooking exhaust",
+   "type": "Solicitation",
+   "agency": "Dept Of Defense",
+   "city": "Goldsboro",
+   "state": "NC",
+   "due": "2026-11-05",
+   "set_aside": "Small Business Set Aside - Total",
+   "link": "https://sam.gov/workspace/contract/opp/3c5f1bcf60914ef5b0758e80dee82634/view",
+   "sol": "FA480926Q0039"
+  },
+  {
+   "trade": "janitorial",
    "title": "146 DFAC Janitorial Service",
    "type": "Presolicitation",
    "agency": "Dept Of Defense",
@@ -73,6 +85,54 @@
    "set_aside": "",
    "link": "https://sam.gov/workspace/contract/opp/90497777f1f741638a8f31e86f1cad84/view",
    "sol": "W50S7527QX001"
+  },
+  {
+   "trade": "janitorial",
+   "title": "Janitorial Services Needed for the Eleven Point Ranger District- Mark Twain N.F.",
+   "type": "Combined Synopsis/Solicitation",
+   "agency": "Agriculture, Department Of",
+   "city": "Doniphan",
+   "state": "MO",
+   "due": "2026-11-09",
+   "set_aside": "Small Business Set Aside - Total",
+   "link": "https://sam.gov/workspace/contract/opp/563929f5f9114ece81a26c9f3faadd3a/view",
+   "sol": "12444527Q0007"
+  },
+  {
+   "trade": "janitorial",
+   "title": "JANITORIAL SERVICE - Kentucky Area",
+   "type": "Solicitation",
+   "agency": "Agriculture, Department Of",
+   "city": "Frankfort",
+   "state": "KY",
+   "due": "2026-11-09",
+   "set_aside": "Small Business Set Aside - Total",
+   "link": "https://sam.gov/workspace/contract/opp/32b74c5596ea40cb85478c61d74083f2/view",
+   "sol": "12639527Q0005"
+  },
+  {
+   "trade": "window",
+   "title": "Snow and Ice Removal Services - Brockton, MA (MA006)",
+   "type": "Combined Synopsis/Solicitation",
+   "agency": "Dept Of Defense",
+   "city": "Brockton",
+   "state": "MA",
+   "due": "2026-11-10",
+   "set_aside": "Small Business Set Aside - Total",
+   "link": "https://sam.gov/workspace/contract/opp/35819beb757c40698c2f62bafbdfbf9d/view",
+   "sol": "W15QKN-27-R-A011"
+  },
+  {
+   "trade": "window",
+   "title": "JBMHH Kitchen Exhaust Hood & Dryer Duct",
+   "type": "Sources Sought",
+   "agency": "Dept Of Defense",
+   "city": "Fort Belvoir",
+   "state": "VA",
+   "due": "2026-11-12",
+   "set_aside": "Small Business Set Aside - Total",
+   "link": "https://sam.gov/workspace/contract/opp/b1be7d5a2d0740a2bd5d76d555ae134e/view",
+   "sol": "W91QV127R0077"
   },
   {
    "trade": "janitorial",
@@ -100,6 +160,30 @@
   },
   {
    "trade": "janitorial",
+   "title": "SOURCES SOUGHT: N40080-27-R-XXXX 8(a) BASEWIDE JANITORIAL SERVICES FOR MARINE CORPS BASE (MCB) QUANTICO, VIRGINIA",
+   "type": "Sources Sought",
+   "agency": "Dept Of Defense",
+   "city": "Quantico",
+   "state": "VA",
+   "due": "2026-11-16",
+   "set_aside": "8(a) Set-Aside (FAR 19.8)",
+   "link": "https://sam.gov/workspace/contract/opp/a2badf39d2574984a80c99ec15091ffc/view",
+   "sol": "N4008027RXXXX"
+  },
+  {
+   "trade": "janitorial",
+   "title": "Janitorial Services for the Blackduck Ranger District on the Chippewa National Forest",
+   "type": "Combined Synopsis/Solicitation",
+   "agency": "Agriculture, Department Of",
+   "city": "Blackduck",
+   "state": "MN",
+   "due": "2026-11-16",
+   "set_aside": "",
+   "link": "https://sam.gov/workspace/contract/opp/a5ce73817796471f9350afc9667bffd4/view",
+   "sol": "12444627Q0008"
+  },
+  {
+   "trade": "janitorial",
    "title": "S201--VANIHCS Window Cleaning - Engineering Service Fort Wayne and Marion Campuses",
    "type": "Combined Synopsis/Solicitation",
    "agency": "Veterans Affairs, Department Of",
@@ -109,6 +193,18 @@
    "set_aside": "Service-Disabled Veteran-Owned Small Business (SDVOSB) Set-Aside (FAR 19.14)",
    "link": "https://sam.gov/workspace/contract/opp/6908ff7a8ee54ccaa6ab40b0fe6665aa/view",
    "sol": "36C25027Q0016"
+  },
+  {
+   "trade": "janitorial",
+   "title": "SOURCES SOUGHT NOTICE FOR SECURED JANITORIAL SERVICES AT MARINE CORPS BASE (MCB) QUANTICO, VA",
+   "type": "Sources Sought",
+   "agency": "Dept Of Defense",
+   "city": "Quantico",
+   "state": "VA",
+   "due": "2026-11-20",
+   "set_aside": "8(a) Set-Aside (FAR 19.8)",
+   "link": "https://sam.gov/workspace/contract/opp/f7501dc4741b447f86ee3e27c3a718de/view",
+   "sol": "N4008027RMCBQ"
   },
   {
    "trade": "window",
@@ -123,6 +219,18 @@
    "sol": "W91247-27-Q-A001"
   },
   {
+   "trade": "janitorial",
+   "title": "Window Cleaning and Maintenance",
+   "type": "Combined Synopsis/Solicitation",
+   "agency": "Justice, Department Of",
+   "city": "Clarksburg",
+   "state": "WV",
+   "due": "2026-11-24",
+   "set_aside": "Small Business Set Aside - Total",
+   "link": "https://sam.gov/workspace/contract/opp/e11dc80cc2494d43813ebb13c58e50b6/view",
+   "sol": "15F06727Q0000010"
+  },
+  {
    "trade": "window",
    "title": "Vent Hood Services",
    "type": "Solicitation",
@@ -133,6 +241,30 @@
    "set_aside": "Small Business Set Aside - Total",
    "link": "https://sam.gov/workspace/contract/opp/4eabd9cf67a9464d9b39e7155bd67625/view",
    "sol": "FA483027Q0004"
+  },
+  {
+   "trade": "window",
+   "title": "MOB AG Wash",
+   "type": "Sources Sought",
+   "agency": "Dept Of Defense",
+   "city": "Fort Irwin",
+   "state": "CA",
+   "due": "2026-11-30",
+   "set_aside": "No Set aside used",
+   "link": "https://sam.gov/workspace/contract/opp/d486c39024fa45f6b29e6e83721d6b59/view",
+   "sol": "W912LA-27-Q-0010"
+  },
+  {
+   "trade": "janitorial",
+   "title": "Market Survey for Janitorial Services at FAA Facilities in King Salmon, Alaska",
+   "type": "Presolicitation",
+   "agency": "Transportation, Department Of",
+   "city": "King Salmon",
+   "state": "AK",
+   "due": "2026-12-01",
+   "set_aside": "",
+   "link": "https://sam.gov/workspace/contract/opp/907fa7b41fea4549a49a3624212beaf7/view",
+   "sol": "697DCK-27-R-00038"
   }
  ]
 }

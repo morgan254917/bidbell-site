@@ -44,6 +44,13 @@ def parse_dt(s):
 def category(row):
     code, title = col(row, 'NaicsCode'), col(row, 'Title')
     if code in TRADES:
+        # Cleaning NAICS can be misfiled: an object is not a cleaning scope.
+        supplies = re.search(r'\b(?:supplies|equipment\s+(?:purchase|procurement|supply))\b|\b(?:purchase|procurement|supply)\s+of\s+(?:(?:cleaning|janitorial|custodial)\s+)?equipment\b', title, re.I)
+        action = re.search(r'\b(?:clean(?:ing|ers?)?|wash(?:ing)?|janitor\w*|custod\w*|housekeep\w*|saniti[sz]\w*|disinfect\w*|sweep\w*|polish\w*|buff\w*|strip(?:ping)?|wax(?:ing)?|care)\b', title, re.I)
+        other_scope = re.search(r'\b(?:replacement|replace|installation|install|construction|renovation|tinting)\b', title, re.I)
+        objects = re.search(r'\bwindows?\b|\bcarpets?\b|upholster|\brugs?\b|\bfloors?\b|\bdoors?\b', title, re.I)
+        if supplies or ((other_scope or objects) and not action):
+            return None
         return TRADES[code], 'cleaning'
     if code == '561730':
         return 'grounds', 'grounds'
@@ -56,6 +63,16 @@ def category(row):
 
 def cancelled(row):
     return bool(re.search(r'\b(?:cancelled|canceled|cancellation|withdrawn)\b', col(row, 'Title'), re.I))
+
+
+def foreign_performance(row):
+    """Exclude explicit foreign work, without interpreting buyer/contact addresses."""
+    if col(row, 'PopCountry').upper() not in ('', 'USA', 'US'):
+        return True
+    title = col(row, 'Title')
+    foreign_site = re.search(r'\b(?:germany|europe(?:an)?|hungary|colombia|bogot[aá]|japan|korea|italy|egypt(?:ian)?|chinhae|daegu|kunsan|yongsan|camp humphreys|okinawa|bahrain|kuwait|qatar|djibouti|kosovo|romania|netherlands|belgium|united kingdom|singapore|honduras|guantanamo|embassy|consulate)\b', title, re.I)
+    base = re.search(r'\b(?:air\s+base|air\s+station|military\s+base|army\s+garrison|naval\s+(?:base|station))\b', title, re.I)
+    return bool(foreign_site and base)
 
 
 def collect(raw, now, min_rows=MIN_ROWS):
@@ -88,7 +105,7 @@ def collect(raw, now, min_rows=MIN_ROWS):
         if not due or due < now + timedelta(days=1):
             continue
         state = col(row, 'PopState').upper()
-        if col(row, 'PopCountry').upper() not in ('', 'USA', 'US') or state not in STATES:
+        if foreign_performance(row) or state not in STATES:
             continue
         trade, group = classified
         link = col(row, 'Link')

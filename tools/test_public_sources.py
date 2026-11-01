@@ -8,6 +8,33 @@ def row(**kw):
 def collect(rows):
  out=io.StringIO();w=csv.DictWriter(out,fieldnames=list(rows[0]));w.writeheader();w.writerows(rows);return M['collect'](out.getvalue(),NOW,1)
 class PublicSources(unittest.TestCase):
+ def test_cleaning_scope_rejects_hardware_and_supplies_but_keeps_explicit_cleaning(self):
+  excluded=['Eddyville Quarters Window Replacement','MT BFTC Carpet Replacement Conference Room',
+            'Bureau of Building Broom Hall Windows & Doors Delta State University',
+            'Window Tinting and Film','Carpet Installation','Janitorial Supplies',
+            'Cleaning Equipment Purchase','Purchase of Cleaning Equipment','Windows and Doors, Washington']
+  accepted=['Window Cleaning Services','Carpet Cleaning','Floor Care','Custodial Services',
+            'Curtain Cleaning and Installation','Post-construction cleaning']
+  for code in ['561720','561740','561790']:
+   for title in excluded+accepted:
+    with self.subTest(code=code,title=title):
+     self.assertEqual(M['category'](row(NaicsCode=code,Title=title)) is not None,title in accepted)
+  rows=[row(**{'Sol#':str(i),'Title':title}) for i,title in enumerate(excluded+accepted)]
+  self.assertEqual({b['title'] for b in collect(rows)[0]['bids']},set(accepted))
+ def test_explicit_foreign_base_is_not_relocated_to_domestic_office_state(self):
+  control=row(Description='',PopCity='Austin')
+  foreign=row(**{'Sol#':'FOREIGN','Title':'Custodial Services at Aviano Air Base, Italy',
+                 'PopState':'FL','PopCountry':'USA','PopCity':'Aviano','Description':''})
+  domestic=row(**{'Sol#':'DOMESTIC','Title':'Custodial Services in Miami, FL',
+                  'PopState':'FL','PopCity':'Miami',
+                  'Description':'Contact our office in Italy. Supplies may be manufactured in Germany.'})
+  self.assertTrue(M['foreign_performance'](foreign))
+  self.assertFalse(M['foreign_performance'](domestic))
+  self.assertTrue(M['foreign_performance'](row(PopCountry='ITA')))
+  cleaning,services,_=collect([control,foreign,domestic])
+  for payload in [cleaning,services]:
+   self.assertNotIn('FOREIGN',{b['sol'] for b in payload['bids']})
+   self.assertEqual(next(b['state'] for b in payload['bids'] if b['sol']=='DOMESTIC'),'FL')
  def test_newer_reclassified_award_suppresses_old_cleaning(self):
   old=row(**{'Sol#':'OLD'});new=row(**{'Sol#':'OLD','NaicsCode':'238220','Type':'Award Notice','PostedDate':'2026-10-25T10:00:00Z','ResponseDeadLine':''})
   for rows in [[old,new,row()],[new,old,row()]]:self.assertEqual([b['sol'] for b in collect(rows)[0]['bids']],['CLEAN1'])
