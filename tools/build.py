@@ -150,7 +150,7 @@ def layout(path, title, desc, body, jsonld=None, updated=None, noindex=False, og
 <meta property="og:site_name" content="BidBell">
 <meta property="og:title" content="{E(title)}">
 <meta property="og:description" content="{E(desc)}">
-{og_url}<meta property="og:image" content="{BASE}/og.png">
+{og_url}<meta property="og:image" content="{BASE}/og.png?v=20261101-unified">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="BidBell: daily cleaning bid alerts and AI-assisted bid preparation in one plan.">
