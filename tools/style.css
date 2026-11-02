@@ -41,6 +41,8 @@ a:hover{color:var(--red)}
 .nav a{color:var(--text);text-decoration:none}
 .nav a:hover{color:var(--ink)}
 .head-cta{margin-left:1rem}
+/* Keep the logo, trial action and menu inside narrow phone viewports. */
+@media (max-width:22.5rem){.site-head .wrap{gap:.5rem}.site-head .head-cta{padding:.7rem .75rem;font-size:.9rem}.site-head .menu{flex-shrink:0}}
 @media (max-width:52rem){.nav{display:none}.head-cta{margin-left:0}}
 /* phone menu (details/summary: works without JavaScript; nav.js closes it after a tap) */
 .site-head .menu{display:none;position:relative;border:0;padding:0}
