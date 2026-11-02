@@ -181,11 +181,11 @@ def layout(path, title, desc, body, jsonld=None, updated=None, noindex=False, og
   <div class="foot-grid">
     <div class="brand">
       <a class="logo" href="/">{BELL}BidBell<span class="brand-dot" aria-hidden="true">.</span></a>
-      <p class="foot-about">Daily cleaning bid alerts and a workspace to prepare your response. One BidBell plan, from opportunity to final review.</p>
+      <p class="foot-about">Find cleaning opportunities, build stronger applications with AI and send supported email bids. One BidBell plan, from daily alert to delivery record.</p>
       <p class="small">{E(C['mailing_address'])}<br><a href="mailto:{C['email']}">{C['email']}</a>{' &middot; ' + phone_link() if PHONE.strip() else ''}</p>
     </div>
     <nav aria-label="Product"><h2>Product</h2><ul>
-      <li><a href="{WORKSPACE_URL}">Your BidBell workspace</a></li><li><a href="/workspace/">Browse notices</a></li><li><a href="/prepare/">Bid checklist</a></li><li><a href="/#how">How it works</a></li><li><a href="/#pricing">Pricing</a></li><li><a href="/#faq">FAQ</a></li><li><a href="{E(start_url())}">Start free</a></li></ul></nav>
+      <li><a href="{WORKSPACE_URL}">Your BidBell workspace</a></li><li><a href="{WORKSPACE_URL}#opportunities/open">Still-open bids</a></li><li><a href="{WORKSPACE_URL}#calendar">Bid calendar</a></li><li><a href="/workspace/">Public notice preview</a></li><li><a href="/prepare/">Public checklist preview</a></li><li><a href="/#how">How it works</a></li><li><a href="/#pricing">Pricing</a></li><li><a href="/#faq">FAQ</a></li><li><a href="{E(start_url())}">Start free</a></li></ul></nav>
     <nav aria-label="Cleaning notices by state"><h2>Cleaning by state</h2><ul>{state_links}<li><a href="/cleaning-bids/">All states &rarr;</a></li></ul></nav>
     <nav aria-label="Company"><h2>Company</h2><ul>
       <li><a href="/#about">About</a></li><li><a href="/terms/">Terms</a></li><li><a href="/privacy/">Privacy</a></li><li><a href="/refunds/">Refund policy</a></li><li><a href="/acceptable-use/">Acceptable use</a></li><li><a href="/disclaimer/">Disclaimer</a></li><li><a href="/email-policy/">Email policy</a></li><li><a href="https://www.facebook.com/profile.php?id=61595464021652" rel="noopener">BidBell on Facebook</a></li></ul></nav>
@@ -398,7 +398,7 @@ def start():
         <li><span class="step-index" aria-hidden="true">1</span><div><b>Get your matching shortlist</b><span>After signup processing, look for your welcome email. Alerts normally arrive around 6 AM your time from the next morning, with a short update on quiet days.</span></div></li>
         <li><span class="step-index" aria-hidden="true">2</span><div><b>Open the bid in BidBell</b><span>Create and verify your workspace account with the same email. Open an opportunity from your alert and keep that bid and its response together.</span></div></li>
         <li><span class="step-index" aria-hidden="true">3</span><div><b>Reuse what your company knows</b><span>Add the buyer's documents, reuse saved company facts and original files, and draft answers with source-linked AI. Complete supported fillable PDF text fields from reviewed facts, then check missing details and pricing. Answer drafts autosave privately; review and choose Save answer to add them to your response.</span></div></li>
-        <li><span class="step-index" aria-hidden="true">4</span><div><b>Review and send your bid</b><span>Check the buyer’s submission recipients, message, price and files, then confirm a supported email send in BidBell. Portal bids continue through the buyer’s portal. Keep the delivery record and record the buyer’s response. You approve each send; BidBell does not sign declarations.</span></div></li>
+        <li><span class="step-index" aria-hidden="true">4</span><div><b>Review and send your bid</b><span>Check the buyer’s submission recipients, message, price and files, then confirm a supported email send in BidBell. Portal bids continue through the buyer’s portal. Keep the delivery record and emailed receipt together. Record the buyer’s response when you receive it. You approve each send; BidBell does not sign declarations.</span></div></li>
       </ol>
       <div class="trial-summary"><strong>One trial. One US${C['standard_price']}/month plan.</strong><p>Your trial includes matching alerts and the application workspace for 14 days. We send a reminder before the end. Continue only if you choose to subscribe; nothing is charged automatically. Usage limits apply.</p></div>
     </div>
