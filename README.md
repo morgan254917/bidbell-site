@@ -17,7 +17,7 @@ The public workspace reads a dated federal building-services snapshot, with trad
 
 This is a public static website published through the existing Render account using its free static-site service. GitHub Pages is retained as a manual fallback while its deployment lock is unresolved. Never commit credentials, private customer records, recipient lists or internal research to this repository.
 
-The workspace and preparation checklist use browser localStorage only after an explicit Save action. Those records do not have a cloud account or cross-device synchronization. Later edits require another save. Both pages offer export and deletion. People sharing the browser profile may access its saved records.
+The public notice browser at `/workspace/` and public checklist at `/prepare/` use browser localStorage only after an explicit Save action. Those public-preview records do not have a cloud account or cross-device synchronization. Later edits require another save. Both pages offer export and deletion. People sharing the browser profile may access their saved records. In your signed-in BidBell account at `bidbell-workspace.onrender.com/app`, private working answer drafts autosave for recovery after an interruption. Customers still review and choose Save answer to add text to their response. Other account forms still need their own Save action.
 
 The workspace fetches public data from this website. Signup sends answers to the configured Google Form. The plan page loads Paddle for checkout when configured. The site adds no advertising or analytics tracking. Do not describe it as having no browser storage or only a signup form.
 
