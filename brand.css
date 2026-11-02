@@ -5,7 +5,9 @@ body{font-family:var(--sans);background:var(--cream);color:var(--ink)}
 .logo,.wordmark,a.brand,span.brand{display:inline-flex;align-items:center;gap:8px;font-family:var(--sans);font-weight:800;letter-spacing:-1.2px}
 .logo svg,.wordmark svg,.brand svg{width:30px;height:34px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
 .brand-dot,.wordmark>span,.brand>span{color:var(--coral)}
-.site-head,.sidebar,.topbar,.site-header{background:var(--cream)}
+.site-head,.sidebar,.site-header{background:var(--cream)}
+/* The announcement uses white text; preserve its contrasting dark surface. */
+.topbar{background:var(--ink)}
 .site-head{border-color:var(--line)}
 .site-foot{background:var(--ink)}
 .journey-strip{display:flex;flex-wrap:wrap;gap:12px;margin:28px 0 4px}.journey-strip span{padding:11px 15px;border:1px solid var(--line);border-radius:30px;background:#fffdfa;font-size:13px;font-weight:600}
