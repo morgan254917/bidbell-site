@@ -41,7 +41,11 @@ The workspace fetches public data from this website. Signup sends answers to the
 
 ## Build and verify
 
-Run `python tools/prepare_static.py`. It builds the site, runs all website and checkout checks, and copies only public assets into `_site/`. Render uses this command and publishes `_site/` after each main-branch update. Build failure prevents publication. `release.json` identifies the exact deployed commit.
+Run `python tools/prepare_static.py`. It builds the site, runs all website and checkout checks, and copies only public assets into `_site/`. Render uses this command and publishes `_site/` after each main-branch update. Build failure prevents publication. `release.json` identifies the exact deployed commit and the UTC `build_date` used to generate its pages.
+
+Staging captures one UTC build date before generating pages and passes it through `BUILD_DATE`, including builds that cross midnight. The normal builder and daily workflow still use the current UTC day to remove expired opportunities. Legal policy dates remain explicitly configured. Committed generated-page snapshots can predate a later deployment of the same source. To verify that deployment, `tools/check_live_site.py` checks the expected commit, bounds its declared date between that commit and the current UTC day, exports the trusted Git source into an isolated temporary directory and rebuilds at that exact date. It compares every public customer HTML route against those exact expected bytes. Authored pages are preserved, image checks remain unchanged, and changed prices or copy fail verification.
+
+Text checkouts and generated writes explicitly use LF line endings. The trusted Git export disables host `core.autocrlf` conversion. This preserves authored Git bytes and makes generated HTML identical on Windows and Render/Linux without normalizing verification responses.
 
 The production domain remains getbidbell.com. The staging address is https://bidbell-website.onrender.com. Domain cutover is complete only after DNS, HTTPS and live content are verified. Preserve all mail records when changing website routing.
 
