@@ -82,6 +82,13 @@ class ContractCalendar(unittest.TestCase):
         source['at']='2026-11-04T00:00:00+00:00'
         with self.assertRaises(ValueError):sanitize_snapshot(source,now=NOW)
 
+    def test_numeric_award_link_is_rejected_without_crashing_snapshot(self):
+        source={'at':'2026-11-01T13:22:47+00:00','contracts':[{'award_id':'A','description':'Cleaning',
+                'state':'TX','naics':'561720','end':'2027-01-01','amount':2500,'link':42}]}
+        try:result=sanitize_snapshot(source,now=NOW)
+        except (AttributeError,TypeError) as error:self.fail('Invalid public source link crashed the snapshot: '+str(error))
+        self.assertEqual(result.get('contracts'),[])
+
     def test_failed_or_oversized_refresh_preserves_last_good_file(self):
         with tempfile.TemporaryDirectory() as folder:
             path=Path(folder)/'contract-calendar.json';path.write_text('last good')

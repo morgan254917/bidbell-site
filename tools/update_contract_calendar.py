@@ -42,6 +42,7 @@ def _public_contract(row,today):
     end=_date(row.get('end'));start=_date(row.get('start'))
     state=str(row.get('state') or '').upper();description=_text(row.get('description'),500)
     link=row.get('link','');naics=str(row.get('naics') or '')
+    if not isinstance(link,str) or len(link)>450 or any(ord(character)<33 for character in link):return None
     try:
         url=urllib.parse.urlsplit(link);amount=float(row.get('amount') or 0)
         valid=(url.scheme=='https' and url.hostname=='www.usaspending.gov' and not url.username and not url.password
