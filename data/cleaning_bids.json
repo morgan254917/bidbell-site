@@ -4,18 +4,6 @@
  "bids": [
   {
    "trade": "janitorial",
-   "title": "S201--Janitorial Services for NH CBOCs",
-   "type": "Combined Synopsis/Solicitation",
-   "agency": "Veterans Affairs, Department Of",
-   "city": "Manchester",
-   "state": "NH",
-   "due": "2026-11-03",
-   "set_aside": "Service-Disabled Veteran-Owned Small Business (SDVOSB) Set-Aside (FAR 19.14)",
-   "link": "https://sam.gov/workspace/contract/opp/9683c9f3509746c7ae7ef6a8c381c131/view",
-   "sol": "36C24127Q0022"
-  },
-  {
-   "trade": "janitorial",
    "title": "Sources Sought - Custodial and Day Porter Services, DeCA Headquarters (Fort Lee, VA)",
    "type": "Sources Sought",
    "agency": "Dept Of Defense",

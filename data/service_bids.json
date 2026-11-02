@@ -4,20 +4,6 @@
  "scope": "Selected federal public notices only. HVAC coverage is conservative title-based maintenance classification. Not complete market coverage.",
  "bids": [
   {
-   "trade": "janitorial",
-   "category": "cleaning",
-   "title": "S201--Janitorial Services for NH CBOCs",
-   "type": "Combined Synopsis/Solicitation",
-   "agency": "Veterans Affairs, Department Of",
-   "city": "Manchester",
-   "state": "NH",
-   "due": "2026-11-03",
-   "due_at": "2026-11-03T15:00:00+00:00",
-   "set_aside": "Service-Disabled Veteran-Owned Small Business (SDVOSB) Set-Aside (FAR 19.14)",
-   "link": "https://sam.gov/workspace/contract/opp/9683c9f3509746c7ae7ef6a8c381c131/view",
-   "sol": "36C24127Q0022"
-  },
-  {
    "trade": "grounds",
    "category": "grounds",
    "title": "Snow Removal and De-Icing Services, Great Plains Area Office - West, Rapid City, SD",
