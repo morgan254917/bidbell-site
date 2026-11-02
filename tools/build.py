@@ -14,7 +14,7 @@ Legal review notes are kept in the private repository (bidbell-morgan/legal/), n
 everything in this public repository, tools/ included, is served on getbidbell.com.
 """
 import html, json, os, re, shutil
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 
 # ---------------------------------------------------------------- SUPPORT PHONE: SET IT HERE
 # Put the US support number between the quotes, e.g. PHONE = '(501) 555-0123', then run python3 tools/build.py.
@@ -40,7 +40,7 @@ if PADDLE_READY and not PADDLE['client_token'].strip().startswith('test_' if PAD
     print(f'warning: tools/paddle.json: a {PADDLE["env"]} client token normally starts with '
           f'{"test_" if PADDLE["env"] == "sandbox" else "live_"}')
 BASE = 'https://' + C['domain']
-TODAY = date.fromisoformat(os.environ.get('BUILD_DATE', date.today().isoformat()))
+TODAY = date.fromisoformat(os.environ.get('BUILD_DATE', datetime.now(timezone.utc).date().isoformat()))
 E = html.escape
 PAGES = []          # (path, lastmod) for sitemap
 
@@ -205,7 +205,7 @@ def write(path, content, lastmod=None, sitemap=True):
     os.makedirs(os.path.dirname(full), exist_ok=True)
     # Keep raw notice evidence untouched; normalize punctuation only in rendered pages.
     content = content.replace(chr(8212), ' - ').replace('&mdash;', ' - ').replace('&#8212;', ' - ').replace('&#x2014;', ' - ')
-    open(full, 'w', encoding='utf-8').write(content)
+    open(full, 'w', encoding='utf-8', newline='\n').write(content)
     if sitemap:
         PAGES.append((path, (lastmod or TODAY).isoformat()))
 
@@ -726,20 +726,20 @@ def extras():
           noindex=True), sitemap=False)
     exp = date(TODAY.year + 1, TODAY.month, 1) if TODAY.month > 1 else date(TODAY.year, 12, 1)
     os.makedirs(os.path.join(ROOT, '.well-known'), exist_ok=True)
-    open(os.path.join(ROOT, '.well-known', 'security.txt'), 'w').write(
+    open(os.path.join(ROOT, '.well-known', 'security.txt'), 'w', encoding='utf-8', newline='\n').write(
         f'Contact: mailto:{C["email"]}\nExpires: {exp.isoformat()}T00:00:00.000Z\nPreferred-Languages: en\n'
         f'Canonical: {BASE}/.well-known/security.txt\n')
-    open(os.path.join(ROOT, 'robots.txt'), 'w').write(f'User-agent: *\nAllow: /\n\nSitemap: {BASE}/sitemap.xml\n')
+    open(os.path.join(ROOT, 'robots.txt'), 'w', encoding='utf-8', newline='\n').write(f'User-agent: *\nAllow: /\n\nSitemap: {BASE}/sitemap.xml\n')
     urls = ''.join(f'<url><loc>{BASE}/{p}</loc><lastmod>{m}</lastmod></url>' for p, m in PAGES)
-    open(os.path.join(ROOT, 'sitemap.xml'), 'w').write(
+    open(os.path.join(ROOT, 'sitemap.xml'), 'w', encoding='utf-8', newline='\n').write(
         f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{urls}</urlset>\n')
-    open(os.path.join(ROOT, 'CNAME'), 'w').write(C['domain'] + '\n')
-    open(os.path.join(ROOT, '.nojekyll'), 'w').write('')
+    open(os.path.join(ROOT, 'CNAME'), 'w', encoding='utf-8', newline='\n').write(C['domain'] + '\n')
+    open(os.path.join(ROOT, '.nojekyll'), 'w', encoding='utf-8', newline='\n').write('')
     shutil.copy(os.path.join(T, 'style.css'), os.path.join(ROOT, 'style.css'))
     shutil.copy(os.path.join(T, 'form.js'), os.path.join(ROOT, 'form.js'))
     shutil.copy(os.path.join(T, 'checkout.js'), os.path.join(ROOT, 'checkout.js'))
     shutil.copy(os.path.join(T, 'nav.js'), os.path.join(ROOT, 'nav.js'))
-    open(os.path.join(ROOT, 'favicon.svg'), 'w').write(
+    open(os.path.join(ROOT, 'favicon.svg'), 'w', encoding='utf-8', newline='\n').write(
         BELL.replace('aria-hidden="true" focusable="false"', 'xmlns="http://www.w3.org/2000/svg"').replace('currentColor', '#C8102E'))
 
 
