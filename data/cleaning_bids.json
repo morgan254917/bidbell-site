@@ -1,19 +1,7 @@
 {
- "updated": "2026-11-01",
+ "updated": "2026-11-02",
  "source": "SAM.gov public Contract Opportunities data",
  "bids": [
-  {
-   "trade": "janitorial",
-   "title": "CURTAIN CLEANING AND INSTALLATION",
-   "type": "Solicitation",
-   "agency": "Dept Of Defense",
-   "city": "Washington",
-   "state": "DC",
-   "due": "2026-11-02",
-   "set_aside": "",
-   "link": "https://sam.gov/workspace/contract/opp/c487968d90024ed0ab83697410c06dbc/view",
-   "sol": "M0026427Q0005"
-  },
   {
    "trade": "janitorial",
    "title": "S201--Janitorial Services for NH CBOCs",
