@@ -47,3 +47,22 @@ jobs:
           git commit -m "Cleaning bids $(date -u +%F)" || { echo "no changes"; exit 0; }
           for i in 1 2 3 4 5; do git pull -q --rebase && git push -q && exit 0; sleep $((i * 10)); done
           echo "::error::could not publish"; exit 1
+      - name: Refresh public contract-ending forecasts
+        if: success() && ((github.event_name == 'workflow_dispatch' && inputs.refresh) || github.event.schedule == '7 7 * * 1')
+        run: |
+          # Independent public USAspending data, not customer or open-bid data.
+          # Failure keeps the prior feed and leaves the earlier expiry rebuild published.
+          test -z "$(git status --porcelain)" || { echo "::error::Unexpected working changes before calendar refresh"; exit 1; }
+          python3 tools/update_contract_calendar.py
+          python3 -m unittest discover -s tools -p test_contract_calendar.py -q
+          python3 - <<'PY'
+          import subprocess
+          paths=subprocess.check_output(['git','status','--porcelain','--untracked-files=all'],text=True).splitlines()
+          if any(line[3:]!='data/contract-calendar.json' for line in paths):
+              raise SystemExit('Calendar publication refuses unrelated changed paths')
+          PY
+          git add -- data/contract-calendar.json
+          git diff --cached --quiet && { echo "Calendar unchanged"; exit 0; }
+          git commit -m "Refresh public contract-ending forecasts"
+          for i in 1 2 3 4 5; do git pull -q --rebase && git push -q && exit 0; sleep $((i * 10)); done
+          echo "::error::could not publish public calendar"; exit 1

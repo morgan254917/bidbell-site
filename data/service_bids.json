@@ -1,22 +1,8 @@
 {
- "updated": "2026-11-01",
+ "updated": "2026-11-02",
  "source": "SAM.gov public Contract Opportunities data",
  "scope": "Selected federal public notices only. HVAC coverage is conservative title-based maintenance classification. Not complete market coverage.",
  "bids": [
-  {
-   "trade": "janitorial",
-   "category": "cleaning",
-   "title": "CURTAIN CLEANING AND INSTALLATION",
-   "type": "Solicitation",
-   "agency": "Dept Of Defense",
-   "city": "Washington",
-   "state": "DC",
-   "due": "2026-11-02",
-   "due_at": "2026-11-02T21:00:00+00:00",
-   "set_aside": "",
-   "link": "https://sam.gov/workspace/contract/opp/c487968d90024ed0ab83697410c06dbc/view",
-   "sol": "M0026427Q0005"
-  },
   {
    "trade": "janitorial",
    "category": "cleaning",
