@@ -223,7 +223,7 @@ clean_title = lambda t: re.sub(r'\s+l\s+', ', ', re.sub(r'^[A-Z0-9]{1,4}--\s*', 
 def bid_table(bids, caption):
     rows = []
     for b in bids:
-        where = ', '.join(x for x in (b['city'], STATES.get(b['state'], b['state'])) if x)
+        where = ', '.join(x for x in (b['city'].strip(), STATES.get(b['state'], b['state'])) if x and x != '0')
         rows.append(f'<tr><td class="c-notice" data-label="Notice">{ext(b["link"], E(clean_title(b["title"])))}<br><span class="small muted">{E(agency_name(b["agency"]))}'
                     f'{" &middot; <span class=nowrap>Ref " + E(b["sol"]) + "</span>" if b["sol"] else ""}</span></td>'
                     f'<td data-label="Work site">{E(where)}</td><td class="nowrap" data-label="Respond by">{nice(b["due"])}</td>'
