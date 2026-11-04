@@ -41,7 +41,9 @@ The workspace fetches public data from this website. Signup sends answers to the
 
 ## Build and verify
 
-Run `python tools/prepare_static.py`. It builds the site, runs all website and checkout checks, and copies only public assets into `_site/`. Render uses this command and publishes `_site/` after each main-branch update. Build failure prevents publication. `release.json` identifies the exact deployed commit and the UTC `build_date` used to generate its pages.
+Run `python tools/prepare_static.py`. It builds the site, runs the Python, checkout, notice browser and preparation checklist tests, and stages only public assets in `_site/`. Render publishes this directory after a successful main-branch build. GitHub runs the same command for pull requests. The Pages fallback can upload and publish only when manually run from `main`.
+
+`release.json` identifies the exact deployed commit and the UTC `build_date` used to generate its pages. For a website rollback, open the static site's Deploys page in Render and choose **Rollback** on the previous successful deployment. Confirm the expected revision at `https://getbidbell.com/release.json` and run the live verification below. The dashboard disables automatic deployments on rollback. Reenable them in Settings after fixing and verifying the underlying change.
 
 Staging captures one UTC build date before generating pages and passes it through `BUILD_DATE`, including builds that cross midnight. The normal builder and daily workflow still use the current UTC day to remove expired opportunities. Legal policy dates remain explicitly configured. Committed generated-page snapshots can predate a later deployment of the same source. To verify that deployment, `tools/check_live_site.py` checks the expected commit, bounds its declared date between that commit and the current UTC day, exports the trusted Git source into an isolated temporary directory and rebuilds at that exact date. It compares every public customer HTML route against those exact expected bytes. Authored pages are preserved, image checks remain unchanged, and changed prices or copy fail verification.
 
@@ -57,4 +59,4 @@ Rebuilding existing data does not refresh its source date. Check source freshnes
 
 The local `desk/` experiment is not part of this release and must be excluded from deployments. Internal plans and private notes stay outside the public repository.
 
-Live verification: run `python tools/check_live_site.py`. HTML, scripts and styles must match the committed bytes. For CDN-transformed images, install Pillow in the operator verification environment: PNG pixels and dimensions must match exactly; JPEG recompression is allowed only within tight pixel-difference bounds. This optional verifier dependency is not required by the static site or customer app. Its four image-integrity checks run when Pillow is available.
+Run the **Verify live BidBell website** workflow from `main` to compare the live release against its committed content. For a local check, install `Pillow==13.0.0` in the verification environment and run `python tools/check_live_site.py`. HTML, scripts and styles must match the committed bytes. PNG pixels and dimensions must match exactly. JPEG recompression is allowed within the verifier's pixel-difference bounds. The static site and customer app run without Pillow.

@@ -1,12 +1,14 @@
-name: Publish verified BidBell website
+name: Verify BidBell website and publish manual fallback
 on:
-  # Manual fallback only. Render's free static-site builder checks every main update.
+  pull_request:
+    branches: [main]
+  # Publishing is manual. Render's free static-site builder checks every main update.
   # GitHub Pages currently rejects new versions because of a stale provider lock.
   workflow_dispatch: {}
 permissions:
   contents: read
 concurrency:
-  group: pages
+  group: ${{ github.event_name == 'workflow_dispatch' && 'pages' || format('website-pr-{0}', github.event.pull_request.number) }}
   cancel-in-progress: false
 jobs:
   build:
@@ -14,31 +16,19 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-      - name: Build and verify the customer journey
-        run: |
-          python3 tools/build.py
-          python3 -m unittest discover -s tools -p 'test_*.py'
-          node --test tools/test_checkout.cjs
-      - name: Prepare the public site
-        run: |
-          python3 - <<'PY'
-          from pathlib import Path
-          import shutil
-          target=Path('_site')
-          target.mkdir()
-          for source in Path('.').iterdir():
-              if source.name in {'.git','.github','tools','__pycache__','_site'}:
-                  continue
-              if source.is_dir():
-                  shutil.copytree(source,target/source.name)
-              else:
-                  shutil.copy2(source,target/source.name)
-          PY
-      - uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4
+        with:
+          persist-credentials: false
+      - name: Build, test and stage the public site
+        run: python3 tools/prepare_static.py
+      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
         with:
           path: _site
+          # The shared public staging check admits .well-known and excludes other hidden paths.
+          include-hidden-files: true
   deploy:
     needs: build
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
     timeout-minutes: 12
     permissions:
