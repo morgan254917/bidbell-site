@@ -53,7 +53,8 @@ def main():
     subprocess.run([sys.executable, 'tools/build.py'], cwd=ROOT, env=environment, check=True)
     subprocess.run([sys.executable, '-m', 'unittest', 'discover', '-s', 'tools', '-p', 'test_*.py'],
                    cwd=ROOT, env=environment, check=True)
-    subprocess.run(['node', '--test', 'tools/test_checkout.cjs'], cwd=ROOT, check=True)
+    subprocess.run(['node', '--test', 'tools/test_checkout.cjs', 'workspace/core.test.mjs',
+                    'prepare/plan.test.mjs'], cwd=ROOT, check=True)
     commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
     stage_public_assets(commit, build_date)
 

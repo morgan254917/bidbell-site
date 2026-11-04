@@ -9,5 +9,11 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Install image verification dependency
+        run: |
+          python3 -m venv "$RUNNER_TEMP/site-verify"
+          "$RUNNER_TEMP/site-verify/bin/python" -m pip install --only-binary=:all: Pillow==13.0.0
       - name: Verify canonical HTTPS, current content and excluded paths
-        run: python3 tools/check_live_site.py
+        run: '"$RUNNER_TEMP/site-verify/bin/python" tools/check_live_site.py'
