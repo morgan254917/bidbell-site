@@ -3,6 +3,10 @@ const fs=require('node:fs'),path=require('node:path'),assert=require('node:asser
 const {chromium}=require(process.env.BIDBELL_PLAYWRIGHT_MODULE||'@playwright/test');
 (async()=>{
  const output=path.resolve(process.argv[2]);fs.mkdirSync(output,{recursive:true});
+ const site=path.resolve('_site');
+ const walk=directory=>fs.readdirSync(directory,{withFileTypes:true}).flatMap(entry=>entry.isDirectory()?walk(path.join(directory,entry.name)):[path.join(directory,entry.name)]);
+ const previewPages=new Set(['/','/construction-bids/','/cleaning-bids/','/start/','/subscribe/','/workspace/','/prepare/']);
+ const routes=[...new Set([...previewPages,...walk(site).filter(file=>file.endsWith('.html')).map(file=>'/'+path.relative(site,file).replaceAll('\\','/').replace(/index\.html$/,''))])];
  const browser=await chromium.launch({headless:true}),results=[];
  try{
   for(const width of [375,1440]){
@@ -12,7 +16,7 @@ const {chromium}=require(process.env.BIDBELL_PLAYWRIGHT_MODULE||'@playwright/tes
    const before=cp.execFileSync('git',['show','09408ba:index.html'],{encoding:'utf8'});
    await page.setContent(before,{waitUntil:'networkidle'});
    await page.screenshot({path:path.join(output,`homepage-before-${width}.png`),fullPage:true});
-   for(const route of ['/','/construction-bids/','/cleaning-bids/','/start/','/subscribe/','/workspace/','/prepare/']){
+   for(const route of routes.filter(route=>!process.argv[3]||route===process.argv[3])){
     await page.goto('http://127.0.0.1:8861'+route,{waitUntil:'networkidle'});
     const data=await page.evaluate(()=>({text:document.body.innerText,width:innerWidth,scroll:document.documentElement.scrollWidth,forms:[...document.forms].map(f=>f.action),links:[...document.querySelectorAll('a[href]')].map(a=>a.href),scriptSources:[...document.scripts].map(s=>s.src)}));
     assert(data.text.includes('Staging preview'),route+' missing staging label');
@@ -30,10 +34,12 @@ const {chromium}=require(process.env.BIDBELL_PLAYWRIGHT_MODULE||'@playwright/tes
      await menu.click();await page.getByRole('link',{name:'Industries',exact:true}).click();assert.equal(await menu.getAttribute('aria-expanded'),'false');
      await menu.click();await page.mouse.click(15,900);assert.equal(await menu.getAttribute('aria-expanded'),'false');
     }
-    await page.evaluate(()=>window.scrollTo(0,0));
-    const imageName=(route==='/'?'homepage-after':route.replaceAll('/','')+'-after')+`-${width}`;
-    await page.screenshot({path:path.join(output,imageName+'.png'),fullPage:true});
-    await page.screenshot({path:path.join(output,imageName+'-viewport.png')});
+    if(previewPages.has(route)){
+     await page.evaluate(()=>window.scrollTo(0,0));
+     const imageName=(route==='/'?'homepage-after':route.replaceAll('/','')+'-after')+`-${width}`;
+     await page.screenshot({path:path.join(output,imageName+'.png'),fullPage:true});
+     await page.screenshot({path:path.join(output,imageName+'-viewport.png')});
+    }
     results.push({route,width,textCharacters:data.text.length,horizontalOverflow:false,productionActions:false});
    }
    await page.close();

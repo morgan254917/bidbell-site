@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-06T20:57:00.123620+00:00",
+  "updated": "2026-11-06T21:00:48.539521+00:00",
   "scope": "Staging construction pilot. Public sources and actual freshness shown; verify buyer instructions and eligibility.",
   "bids": [
     {
@@ -5522,41 +5522,6 @@
       "content_hash": "e38ad1001391ae155303e816161750de9f3fe815c8e573e965f680272179ea93"
     },
     {
-      "id": "1158b6ab237234311627d13f",
-      "key": "DEPTOFDEFENSE|W912ER26RA016",
-      "industry": "construction",
-      "category": "construction",
-      "trades": [
-        "building-renovation"
-      ],
-      "naics": "236220",
-      "title": "Apache Alert Mission Complex",
-      "agency": "DEPT OF DEFENSE",
-      "city": "",
-      "state": "",
-      "due": "2027-01-08T12:00:00-04:00",
-      "due_at": "2027-01-08T12:00:00-04:00",
-      "due_precision": "time",
-      "link": "https://sam.gov/opp/3887e4a641064aba8624e6294cffd04f/view",
-      "source_url": "https://sam.gov/opp/3887e4a641064aba8624e6294cffd04f/view",
-      "type": "Solicitation",
-      "sol": "W912ER26RA016",
-      "set_aside": "",
-      "source": "SAM.gov",
-      "source_id": "sam",
-      "verified_at": "2026-11-06T18:44:13.834191+00:00",
-      "verification_status": "fresh_snapshot",
-      "geography_basis": "source_place_of_performance",
-      "procurement_status": "open",
-      "posted": "2026-10-23T10:48:57+00:00",
-      "description": "This solicitation pertains to a Full and Open Firm Fixed-Price Contract for design-bid-build construction services in support of the U.S. Army Corps of Engineers (USACE) Southwestern Middle East District (SWM) Apache Alert Mission Complex for the Kuwait Air Force (KAF) at Ali Al Salem Airbase, Kuwait.",
-      "visits": [],
-      "classification_basis": "source_naics_and_title",
-      "question_deadline": "",
-      "addenda": [],
-      "content_hash": "7c5021c943152204c8c7b8023566f380f56b392e468d7b43731ff027e06baf27"
-    },
-    {
       "id": "1158b830556b20c6d2d1cfc9",
       "key": "DEPTOFDEFENSE|W911SA27BA002",
       "industry": "construction",
@@ -7212,41 +7177,6 @@
       "question_deadline": "",
       "addenda": [],
       "content_hash": "f336ba85cecb07727c225f2fd75354c70cce9d72fccfce755e02e565f6d1f59f"
-    },
-    {
-      "id": "37d1a3a83477bd004144d1a2",
-      "key": "DEPTOFDEFENSE|N0017326Q5317",
-      "industry": "construction",
-      "category": "construction",
-      "trades": [
-        "roofing"
-      ],
-      "naics": "238160",
-      "title": "N0017327Q5317- Roof Membrane Replacement and Waterproofing",
-      "agency": "DEPT OF DEFENSE",
-      "city": "Washington",
-      "state": "DC",
-      "due": "2026-11-06T16:00:00-05:00",
-      "due_at": "2026-11-06T16:00:00-05:00",
-      "due_precision": "time",
-      "link": "https://sam.gov/opp/19ba9ccb1c194c83b0bd95bb0c02c84f/view",
-      "source_url": "https://sam.gov/opp/19ba9ccb1c194c83b0bd95bb0c02c84f/view",
-      "type": "Combined Synopsis/Solicitation",
-      "sol": "N0017326Q5317",
-      "set_aside": "",
-      "source": "SAM.gov",
-      "source_id": "sam",
-      "verified_at": "2026-11-06T18:44:13.834191+00:00",
-      "verification_status": "fresh_snapshot",
-      "geography_basis": "source_place_of_performance",
-      "procurement_status": "open",
-      "posted": "2026-10-27T20:19:45+00:00",
-      "description": "COMBINED SYNOPSIS/SOLICITATION FOR COMMERCIAL ITEMS This is a combined synopsis/solicitation for commercial items prepared in accordance with the format in Federal Acquisition Regulation (FAR) subpart 12.6, \"Streamlined Procedures for Evaluation and Solicitation for Commercial Items,\" as supplemented with additional information included in this notice. This announcement constitutes the only solicitation; quotations are being requested, and a written solicitation document will not be issued. This solicitation is a Request for Quotations (RFQ). The solicitation document and incorporated provisions and clauses are those in effect through Federal Acquisition Circular (FAC) 2025-04 Effective: 16JULY25 This is a full and open competitive announcement in accordance with 19.502-2 (a) on a Firm-Firm Fixed-Price (FFP) basis. The associated North American Industrial Classification System (NAICS) code for this procurement is 238160 The associated Federal Supply Code (FSC) / Product Service Code (PSC) procurement is Z2JZ The Naval Research Laboratory (NRL), located in Washington, DC, is seeking to purchase Roof Membrane Replacement and Waterproofing – 700 SF Existing Roof All interested companies shall provide quotations for the following: x See specification attachment Supplies: BRAND NAME OR EQUAL. Items must be brand name or equal in accordance with FAR 52.211-6. Software/Hardware/Services: This procurement is for new equipment ONLY, unless otherwise specifically stated. No remanufactured or \"gray market\" items are acceptable. All equipment must be covered by the manufacturer's warranty. • Vendor shall be an Original Equipment Manufacturer (OEM), an OEM authorized dealer, an authorized distributor, or an authorized reseller for the proposed equipment/system such that OEM warranty and service are provided and maintained by the OEM. All software licensing, warranty, and service associated with the equipment/system shall be in accordance with the OEM terms and conditions • Offerors are required to submit documentation from the manufacturer stating that they are an authorized distributor for the specific items being procured. Note: Maintenance Renewals - The performance period for maintenance renewals, (software licenses, services, etc.), must begin on or after the date of contract award. The performance period cannot be back dated. If reinstatement fees are required, they must be listed on separate line items. Delivery Address: ____X___ U.S. Naval Research Laboratory 4555 Overlook Avenue, S.W. Bldg. 49 – Shipping/Receiving Code 3400 Washington, DC 20375 **FOB DESTINATION IS THE PREFERRED METHOD** SUBMISSION INSTRUCTIONS: All Quoters shall submit 1 (one) copy of their technical and price quote. Include your company DUNS Number and Cage Code on your quote. All quotations shall be sent via e-mail. GOVERNMENT POINT OF CONTACT Purchasing Agent Name: Kayrelly Aguirre-Arroba Email: [public contact omitted] Tel: 202-875-9394 Please reference this combined synopsis/solicitation number N0017327Q5317 on your correspondence and in the \"Subject\" line of your email. ALL QUESTIONS REGARDING THE SOLICITATION SHALL BE SUBMITTED VIA EMAIL. System for Award Management (SAM). The government intends to award a purchase order as a result of this combined synopsis/solicitation that will include the terms and conditions set forth herein. Award may be made without discussions or negotiations, therefore prospective contractors shall have an active registration in the System for Award Management (SAM) database (www.sam.gov) in accordance with Federal Acquisition Regulation (FAR) Part 4.1102 and Part 52.204-7 when submitting a response to this solicitation. The Government will award a contract resulting from this solicitation to the responsible offeror whose offer conforming to the solicitation will be most advantageous to the Government, price and other factors considered. The following factors shall be used to evaluate offers: Lowest Price Technically Acceptable - Offers will be ranked lowest to highest according to price. A price analysis will be conducted to determine whether the lowest price will result from a single award or multiple awards. Based on the price analysis, the lowest price offer or multiple offers, will be forwarded to the requiring activity for technical evaluation (offer(s), in accordance with the specifications, will be deemed either technically acceptable or technically unacceptable). If the lowest price offer or offers is found technically acceptable and the pricing determined fair and reasonable by the Contracting Officer, evaluation will be deemed complete and award will be made based on the lowest price offer(s). If the lowest price offer is determined technically unacceptable, another analysis will be conducted amongst the remaining offers to determine if a single or multiple awards will provide the lowest price. The lowest price offer(s) will be sent for technical evaluation. This process is repeated in order of price until an offer or combination of offers is deemed technically acceptable and price is determined fair and reasonable. Options. When applicable, the Government will evaluate offers for award purposes by adding the total price for all options to the total price for the basic requirement. The Government may determine that an offer is unacceptable if the option prices are significantly unbalanced. Evaluation of options shall not obligate the Government to exercise the option(s). Terms and Conditions. To facilitate the award process, all quotes must include a statement regarding the terms and conditions herein as follows: \"The terms and conditions in the solicitation are acceptable to be included in the award document without modification, deletion, or addition.\" OR \"The terms and conditions in the solicitation are acceptable to be included in the award document with the exception, deletion, or addition of the following:\" Exceptions. Quoter shall list exception(s) and rationale for the exception(s). Submission shall be received not later than the response date listed above. Late submissions shall be treated in accordance with the solicitation provision at FAR 52.212-1(f). E-mailed submissions are accepted and are the preferred form of submission. Receipt will be verified by the date/time stamp on fax or e-mail.",
-      "visits": [],
-      "classification_basis": "source_naics_and_title",
-      "question_deadline": "",
-      "addenda": [],
-      "content_hash": "92f3dbb18a976dc1735dab6f381a41b293d66c7946752fa6a4ff564073ecccf4"
     },
     {
       "id": "388d45891cfc3a4ad4cd0810",
