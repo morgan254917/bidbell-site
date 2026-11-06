@@ -112,7 +112,7 @@ def checks(items):
 
 
 WORKSPACE_URL = 'https://bidbell-workspace.onrender.com/app'
-NAV_LINKS = [(WORKSPACE_URL, 'Your BidBell workspace'), ('/workspace/', 'Browse notices'), ('/#how', 'How it works'),
+NAV_LINKS = [(WORKSPACE_URL, 'Your BidBell workspace'), ('/workspace/', 'Browse notices'), ('/construction-bids/', 'Construction'), ('/#how', 'How it works'),
              ('/start/', 'Start free'), ('/#faq', 'FAQ')]
 MENU_ICON = ('<svg class="i-open" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" '
              'stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>'
@@ -132,7 +132,7 @@ def layout(path, title, desc, body, jsonld=None, updated=None, noindex=False, og
     is_404 = path == '404.html'
     canonical = '' if is_404 else f'<link rel="canonical" href="{url}">\n'
     og_url = '' if is_404 else f'<meta property="og:url" content="{url}">\n'
-    links = ''.join(f'<a href="{h}">{t}</a>' for h, t in NAV_LINKS)
+    links = ''.join(f'<a href="{h}"' + (' aria-current="page"' if h == '/' + path else '') + f'>{t}</a>' for h, t in NAV_LINKS)
     topbar = (f'<aside class="topbar" aria-label="BidBell trial offer"><b>Alerts + preparation: 14 days free</b>, no card needed. Then ${C["standard_price"]}/month, '
               f'cancel anytime. <a href="{E(start_url())}">Try the complete workflow &rarr;</a></aside>\n') if promo else ''
     head_cta = f'\n  <a class="btn small head-cta" href="{E(start_url())}">Start free</a>' if promo else ''
@@ -153,7 +153,7 @@ def layout(path, title, desc, body, jsonld=None, updated=None, noindex=False, og
 {og_url}<meta property="og:image" content="{BASE}/og.png?v=20261101-unified">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="BidBell: daily cleaning bid alerts and AI-assisted bid preparation in one plan.">
+<meta property="og:image:alt" content="BidBell: relevant opportunities and AI-assisted bidding in one plan.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#141728">
 <link rel="icon" href="/favicon.ico" sizes="32x32">
@@ -181,7 +181,7 @@ def layout(path, title, desc, body, jsonld=None, updated=None, noindex=False, og
   <div class="foot-grid">
     <div class="brand">
       <a class="logo" href="/">{BELL}BidBell<span class="brand-dot" aria-hidden="true">.</span></a>
-      <p class="foot-about">Find cleaning opportunities, build stronger applications with AI and send supported email bids. One BidBell plan, from daily alert to delivery record.</p>
+      <p class="foot-about">Find relevant opportunities, reuse company information and build stronger applications with AI. One BidBell plan, from daily alert to delivery record.</p>
       <p class="small">{E(C['mailing_address'])}<br><a href="mailto:{C['email']}">{C['email']}</a>{' &middot; ' + phone_link() if PHONE.strip() else ''}</p>
     </div>
     <nav aria-label="Product"><h2>Product</h2><ul>
@@ -361,6 +361,8 @@ def signup_form():
 
 
 def coverage_block():
+    if os.environ.get('BIDBELL_STAGING') == '1':
+        return '<section class="card coverage-status"><p class="eyebrow">ONE BIDBELL. YOUR INDUSTRY.</p><h2>Start with the work your team can deliver.</h2><p>Choose cleaning or construction, then save your trade, territory and company information in the same workspace.</p><p>Coverage is source-specific. This staged expansion has not been published.</p></section>'
     return '<section class="card coverage-status" aria-labelledby="coverage-heading"><p class="eyebrow">BUILDING-SERVICE CONTRACTORS</p><h2 id="coverage-heading">Choose coverage that is ready for your trade.</h2><p><strong>Available daily alerts:</strong> janitorial, carpet, window and exterior cleaning.</p><p><strong>Coverage being validated:</strong> HVAC maintenance and landscaping / grounds maintenance. These trades are not included in the current trial or paid plans.</p><p><a href="mailto:hello@getbidbell.com?subject=Expanded%20trade%20coverage">Tell us your trade and service area</a> to ask about future coverage.</p></section>'
 
 
@@ -385,7 +387,7 @@ def start():
 </div>'''
     body = f'''<div class="page-head signup-head"><div class="wrap">
   <p class="crumbs"><a href="/">Home</a> / Start your BidBell trial</p>
-  <p class="eyebrow">YOUR FREE 14 DAYS START HERE</p><h1>Your next cleaning bid.<br>A faster start.</h1>
+  <p class="eyebrow">YOUR FREE 14 DAYS START HERE</p><h1>Your next opportunity.<br>A faster start.</h1>
   <p class="lead">Get matching daily alerts, keep your company information ready and build a stronger response with source-linked AI. Tell us what fits your business, then verify the same email in your workspace. One BidBell plan. No card needed.</p>
   <div class="journey-strip" aria-label="Your BidBell workflow"><span>01 Find a matching bid</span><span>02 Reuse your details</span><span>03 Draft with AI</span><span>04 Review and send</span><span>05 Track the result</span></div>
 </div></div>
@@ -418,9 +420,18 @@ def start():
   <div class="cta-row"><a class="btn" href="/#sample">See what an alert looks like</a><a class="btn ghost" href="https://bidbell-workspace.onrender.com/app">Create your BidBell workspace account</a></div>
   <p class="small muted">No welcome email within an hour? Check your spam folder, then write to <a href="mailto:{C['email']}">{C['email']}</a> so we can make sure your sign-up reached us. Something wrong, or want to change your states? Email us at the same address.</p>
 </div></div>'''
+    if os.environ.get('BIDBELL_STAGING') == '1':
+        body = re.sub(r'<ol class="next-steps">.*?</ol>', '''<ol class="next-steps">
+        <li><span class="step-index" aria-hidden="true">1</span><div><b>Choose your industry</b><span>Create and verify one BidBell account. Select your trade and service area.</span></div></li>
+        <li><span class="step-index" aria-hidden="true">2</span><div><b>Find suitable work</b><span>Open matching opportunities and check the buyer's scope, deadlines and eligibility.</span></div></li>
+        <li><span class="step-index" aria-hidden="true">3</span><div><b>Reuse your information</b><span>Save company details and documents. Review AI-assisted answers, missing items and your price.</span></div></li>
+        <li><span class="step-index" aria-hidden="true">4</span><div><b>Review, submit and track</b><span>Approve the exact package. Use supported email delivery or the buyer's portal. Keep delivery evidence and buyer confirmation distinct.</span></div></li>
+      </ol>''', body, count=1, flags=re.S)
+        body = body.replace('Tell us what fits your business, then verify the same email in your workspace.', 'Choose your industry, create one account and save what fits your business.')
+        thanks = '<div class="wrap page"><h1>Continue in your BidBell account.</h1><p>This preview uses one local account. Complete email verification and choose your industry, trade and service area there. No production signup or welcome email is sent.</p><a class="btn" href="'+WORKSPACE_URL+'#company">Open company profile</a></div>'
     write('start/thanks/', layout('start/thanks/', 'Sign-up next steps | BidBell', 'How to check your BidBell sign-up.', thanks, noindex=True, promo=False), sitemap=False)
     write('start/', layout('start/', 'Start your free 14 days | BidBell',
-                           'Try daily cleaning bid alerts and AI-assisted bid preparation together for 14 days. One BidBell plan, US$39/month if you continue. No card needed.', body,
+                           'Try matching bid alerts and AI-assisted bidding together for 14 days. One BidBell plan, US$39/month if you continue. No card needed.', body,
                            promo=False))
 
 
@@ -432,7 +443,7 @@ def subscribe():
     agree = 'By continuing you agree to the <a href="/terms/">Terms</a> and the <a href="/refunds/">Refund Policy</a>.'
 
     plans = (f'<div class="plan best"><h3>One BidBell plan</h3><p class="price">US${sp}<span> /month</span></p>'
-             '<p class="desc">Daily cleaning alerts, saved company details, supported forms and reviewed email bids together. Renews monthly only after you choose to subscribe.</p>'
+             '<p class="desc">Relevant alerts, saved company details, supported forms and reviewed email bids together. Renews monthly only after you choose to subscribe.</p>'
              '<p><a class="btn" href="https://bidbell-workspace.onrender.com/app#account">Sign in and continue</a></p>'
              '<p class="small">Your verified account checks alert enrollment and existing subscriptions before creating checkout.</p></div>')
     if PADDLE_READY:
@@ -743,8 +754,77 @@ def extras():
         BELL.replace('aria-hidden="true" focusable="false"', 'xmlns="http://www.w3.org/2000/svg"').replace('currentColor', '#C8102E'))
 
 
+def construction_title(value):
+    value = clean_title(value)
+    if value.isupper():
+        acronyms = {'HVAC', 'RFP', 'RFQ', 'NYC', 'DOT', 'VA', 'ADA', 'LED', 'US', 'USA', 'ID', 'ITB'}
+        value = ' '.join(word if word in acronyms or any(c.isdigit() for c in word) else word.title() for word in value.split())
+        value = fix_case(value)
+    return value
+
+
+def construction_deadline(bid):
+    try:
+        value = datetime.fromisoformat(str(bid.get('due_at') or bid.get('due')).replace('Z', '+00:00'))
+    except (ValueError, TypeError):
+        return 'Check the buyer notice'
+    label = nice(value.date().isoformat())
+    if bid.get('due_precision') == 'date' or len(str(bid.get('due_at') or bid.get('due'))) <= 10:
+        return label + ' (time not provided)'
+    offset = value.strftime('%z')
+    zone = '(UTC' + offset[:3] + ':' + offset[3:] + ')' if offset else '(confirm source time zone)'
+    return label + value.strftime(' at %H:%M ') + zone
+
+
+def construction_page():
+    """Industry entry uses the same authenticated application, with dated public evidence."""
+    path = os.path.join(ROOT, 'data', 'construction_bids.json')
+    catalog = json.load(open(path, encoding='utf-8')) if os.path.isfile(path) else {'bids': [], 'updated': None}
+    current = []
+    now = datetime.now(timezone.utc)
+    for bid in catalog.get('bids', []):
+        if bid.get('procurement_status', 'open') != 'open':
+            continue
+        due = bid.get('due_at') or bid.get('due')
+        try:
+            parsed = datetime.fromisoformat(str(due).replace('Z', '+00:00'))
+            if parsed.tzinfo is None:
+                parsed = parsed.replace(hour=23, minute=59, tzinfo=timezone.utc)
+            if parsed <= now:
+                continue
+        except (ValueError, TypeError):
+            continue
+        current.append(bid)
+    trades = ['Commercial building & renovation', 'Electrical', 'HVAC & plumbing', 'Roofing', 'Flooring', 'Painting', 'Concrete']
+    cards = ''.join('<li>'+E(t)+'</li>' for t in trades)
+    rows = []
+    labels = dict(zip(['building-renovation','electrical','hvac-plumbing','roofing','flooring','painting','concrete'], trades))
+    selected = []
+    ordered = sorted(current, key=lambda bid: str(bid.get('due_at') or bid.get('due')))
+    for _ in range(2):
+        for trade in labels:
+            candidate = next((bid for bid in ordered if bid not in selected and trade in bid.get('trades', [])), None)
+            if candidate and len(selected) < 12:
+                selected.append(candidate)
+    for bid in selected:
+        identity = str(bid.get('id', ''))
+        application = WORKSPACE_URL + '#opportunity/' + identity if re.fullmatch(r'[a-f0-9]{24}', identity) else WORKSPACE_URL + '?industry=construction#opportunities/open'
+        source = str(bid.get('link') or bid.get('url') or '')
+        if not source.startswith('https://'):
+            continue
+        row_trades = ', '.join(labels[t] for t in bid.get('trades', []) if t in labels)
+        verified = str(bid.get('verified_at') or '')
+        checked = nice(verified[:10]) if re.match(r'^\d{4}-\d{2}-\d{2}', verified) else 'See source inventory'
+        rows.append('<article class="card"><p class="eyebrow">'+E(bid.get('source', 'Official public source'))+'</p><h3>'+E(construction_title(bid.get('title', 'Construction opportunity')))+'</h3><p>'+E(agency_name(bid.get('agency', '')))+' · '+E(STATES.get(bid.get('state'), bid.get('state')) or 'Check work location')+'</p><p><b>Trade:</b> '+E(row_trades)+'</p><p><b>Deadline:</b> '+E(construction_deadline(bid))+'</p><p class="small muted">Source checked '+E(checked)+'. Review the current buyer notice.</p><div class="cta-row"><a class="btn" href="'+E(application)+'">Open in BidBell</a><a class="btn ghost" href="'+E(source)+'" rel="noopener">Read buyer notice</a></div></article>')
+    results = ''.join(rows) if rows else '<div class="note"><p>No verified, currently open construction records have been added to this preview yet. The collection evidence will appear here after validation. No sample opportunity is presented as real.</p></div>'
+    raw_stamp = str(catalog.get('updated') or '')
+    stamp = E(nice(raw_stamp[:10]) + ' UTC' if re.match(r'^\d{4}-\d{2}-\d{2}',raw_stamp) else 'Not yet collected')
+    body = '''<div class="page-head"><div class="wrap"><p class="crumbs"><a href="/">Home</a> / Construction</p><p class="eyebrow">LESS PAPERWORK. A STRONGER NEXT BID.</p><h1>Construction &amp; building trades.<br>Keep the next bid moving.</h1><p class="lead">Find suitable work, reuse your company information and prepare a clear response in the same BidBell workspace. Your final review stays in the journey.</p><div class="cta-row"><a class="btn" href="/start/">Choose your construction trade</a><a class="btn ghost" href="'''+WORKSPACE_URL+'''?industry=construction#opportunities/open">Open your workspace</a></div></div></div><div class="wrap page"><section class="card"><h2>Built around the work your team can deliver.</h2><ul class="plain-list">'''+cards+'''</ul><p>Match by trade and service area. Check licenses, insurance, bonding, project experience, mandatory visits, addenda and buyer forms before approving your response.</p><p>AI works from the source requirements and your reviewed information. It does not invent quantities, prices or qualifications.</p></section><section class="card"><h2>One connected application.</h2><p>Open the opportunity, review requirements, reuse facts and documents, fill missing items and check your price. Review the exact package, then use supported email submission or the buyer's portal handoff. Keep the resulting evidence with that bid.</p><p>A prepared response is not a submitted bid. Mail-server acceptance and buyer confirmation remain distinct.</p></section><section><p class="eyebrow">DATED PUBLIC SOURCE SNAPSHOT</p><h2>Explore work worth checking.</h2><p>Source snapshot: '''+stamp+'''. '''+str(len(current))+''' records with a future deadline are present in this staged dataset. This is source-specific coverage, not every construction bid or a promise of matches for every contractor.</p>'''+results+'''</section><section class="card"><h2>One BidBell plan.</h2><p>Relevant alerts and AI-assisted bidding together. Free for 14 days, no card. Then US$39/month if you choose to continue. Existing trial dates, subscription rights and annual terms stay unchanged.</p><a class="btn" href="/start/">Start with your business</a></section></div>'''
+    write('construction-bids/', layout('construction-bids/', 'Construction bids and applications | BidBell', 'Construction opportunities, reusable company information and AI-assisted bid preparation in one BidBell workspace.', body))
+
+
 def main():
-    home(); start(); subscribe(); bid_pages(); legal(); extras()
+    home(); start(); subscribe(); bid_pages(); construction_page(); legal(); extras()
     print(f'built {len(PAGES)} pages + 404, sitemap, robots, security.txt; '
           f'/subscribe/ checkout {"ON (" + PADDLE["env"] + ")" if PADDLE_READY else "off (tools/paddle.json not filled in)"}; '
           f'phone {"shown" if PHONE.strip() else "not set"}')

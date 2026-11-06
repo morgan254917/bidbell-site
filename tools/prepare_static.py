@@ -3,6 +3,7 @@ from pathlib import Path
 from datetime import date, datetime, timezone
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -41,9 +42,29 @@ def stage_public_assets(commit, build_date, root=ROOT):
         destination = target / path.relative_to(root)
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(path, destination)
+        if os.environ.get('BIDBELL_STAGING') == '1' and path.suffix == '.html':
+            destination.write_text(preview_html(destination.read_text(encoding='utf-8')), encoding='utf-8', newline='\n')
+    if os.environ.get('BIDBELL_STAGING') == '1':
+        (target / 'staging.css').write_text('.staging-banner{padding:12px 20px;background:#EEE8FA;color:#191B30;text-align:center;font:600 14px/1.5 Arial,sans-serif}.industry-choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;margin:20px 0}.industry-choice{padding:24px;border:1px solid #DEDDD7;border-radius:14px;background:#fff}.industry-choice h3{margin-top:0}.industry-choice a{display:inline-block;background:#191B30;color:#fff;padding:14px 18px;border-radius:9px;text-decoration:none}.industry-choice p{font-size:15px}', encoding='utf-8')
+        (target / 'robots.txt').write_text('User-agent: *\nDisallow: /\n', encoding='utf-8')
     (target / 'release.json').write_text(json.dumps({'commit': commit, 'service': 'bidbell-public-site',
                                                    'build_date': build_date}) + '\n', encoding='utf-8', newline='\n')
     print(f'Staged {len(files)} public assets from {commit} built for {build_date} UTC')
+
+
+def preview_html(content):
+    """Make review builds incapable of submitting the public signup or opening checkout."""
+    content = content.replace('https://bidbell-workspace.onrender.com', 'http://127.0.0.1:8860')
+    content = content.replace('https://getbidbell.com', 'http://127.0.0.1:8861')
+    content = content.replace('href="/start/">Choose your construction trade', 'href="http://127.0.0.1:8860/app?industry=construction#register">Choose your construction trade')
+    content = content.replace('Current paid and trial alert coverage is limited to janitorial, carpet, window and exterior cleaning. HVAC maintenance and grounds coverage is being validated and is not included in current plans.', 'This staged expansion covers cleaning and selected construction trades. Coverage varies by trade, location and available sources. Construction is not yet enabled in production.')
+    content = re.sub(r'<script\b[^>]*src=["\'][^"\']*(?:paddle|checkout\.js)[^"\']*["\'][^>]*>.*?</script>', '', content, flags=re.I | re.S)
+    content = re.sub(r'<script\b[^>]*id=["\']paddle-config["\'][^>]*>.*?</script>', '', content, flags=re.I | re.S)
+    chooser = '''<section class="industry-choices" aria-label="Choose your industry"><article class="industry-choice"><h3>Cleaning</h3><p>Janitorial, carpet, window and exterior cleaning.</p><a href="http://127.0.0.1:8860/app?industry=cleaning#register">Start with cleaning</a></article><article class="industry-choice"><h3>Construction &amp; building trades</h3><p>Commercial renovation, repairs and supported specialist trades.</p><a href="http://127.0.0.1:8860/app?industry=construction#register">Start with construction</a></article></section><p>Your account and preferences stay together in BidBell. This preview uses fictional data and sends no production enrollment.</p>'''
+    content = re.sub(r'<form\b[^>]*action=["\']https://docs\.google\.com/forms/[^"\']*["\'][^>]*>.*?</form>', chooser, content, flags=re.I | re.S)
+    content = re.sub(r'https://docs\.google\.com/forms/[^\s"\'<>]+', 'http://127.0.0.1:8860/app#register', content)
+    content = content.replace('</head>', '<meta name="robots" content="noindex,nofollow"><link rel="stylesheet" href="/staging.css"></head>')
+    return re.sub(r'(<body\b[^>]*>)', r'\1<div class="staging-banner" role="note">Staging preview. Fictional accounts only. Production signup, email and billing stay unchanged.</div>', content, count=1, flags=re.I)
 
 
 def main():
