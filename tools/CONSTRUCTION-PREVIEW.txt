@@ -2,9 +2,10 @@ BidBell isolated construction preview, November 6, 2026
 
 This branch is review-only. Do not merge or publish until Morgan reviews it.
 
-Build normal generated pages with BIDBELL_STAGING=0, run tools/test_*.py,
-then build the review output with BIDBELL_STAGING=1 and stage_public_assets.
-The latter redirects actions to loopback app8860/site8861, replaces the Google
+Run tools/prepare_static.py with BIDBELL_STAGING=1 for the complete review build.
+It always generates canonical pages and runs their contract checks in normal
+mode. Only the _site projection uses staging behavior. This redirects actions
+to loopback app8860/site8861, replaces the Google
 signup form with industry choices, strips Paddle execution, labels staging and
 sets noindex. Never publish this loopback review output to production.
 

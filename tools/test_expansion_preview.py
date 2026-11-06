@@ -6,6 +6,16 @@ from unittest.mock import patch
 from prepare_static import stage_public_assets
 
 class ExpansionPreview(unittest.TestCase):
+ def test_preview_flag_never_changes_canonical_source_builder_contract(self):
+  from build import coverage_block
+  with patch.dict(os.environ,{'BIDBELL_STAGING':'1'}):
+   self.assertIn('Coverage being validated:',coverage_block())
+ def test_full_preview_build_runs_contract_checks_without_preview_environment(self):
+  import prepare_static
+  with patch.dict(os.environ,{'BIDBELL_STAGING':'1'}),patch.object(prepare_static.subprocess,'run') as run,patch.object(prepare_static.subprocess,'check_output',return_value='fictional'),patch.object(prepare_static,'stage_public_assets') as stage:
+   prepare_static.main()
+   for call in run.call_args_list:self.assertEqual(call.kwargs['env']['BIDBELL_STAGING'],'0')
+   stage.assert_called_once()
  def test_staged_customer_actions_never_post_or_checkout_on_production(self):
   with tempfile.TemporaryDirectory() as directory:
    root=Path(directory)

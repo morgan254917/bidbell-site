@@ -361,8 +361,6 @@ def signup_form():
 
 
 def coverage_block():
-    if os.environ.get('BIDBELL_STAGING') == '1':
-        return '<section class="card coverage-status"><p class="eyebrow">ONE BIDBELL. YOUR INDUSTRY.</p><h2>Start with the work your team can deliver.</h2><p>Choose cleaning or construction, then save your trade, territory and company information in the same workspace.</p><p>Coverage is source-specific. This staged expansion has not been published.</p></section>'
     return '<section class="card coverage-status" aria-labelledby="coverage-heading"><p class="eyebrow">BUILDING-SERVICE CONTRACTORS</p><h2 id="coverage-heading">Choose coverage that is ready for your trade.</h2><p><strong>Available daily alerts:</strong> janitorial, carpet, window and exterior cleaning.</p><p><strong>Coverage being validated:</strong> HVAC maintenance and landscaping / grounds maintenance. These trades are not included in the current trial or paid plans.</p><p><a href="mailto:hello@getbidbell.com?subject=Expanded%20trade%20coverage">Tell us your trade and service area</a> to ask about future coverage.</p></section>'
 
 
@@ -420,15 +418,6 @@ def start():
   <div class="cta-row"><a class="btn" href="/#sample">See what an alert looks like</a><a class="btn ghost" href="https://bidbell-workspace.onrender.com/app">Create your BidBell workspace account</a></div>
   <p class="small muted">No welcome email within an hour? Check your spam folder, then write to <a href="mailto:{C['email']}">{C['email']}</a> so we can make sure your sign-up reached us. Something wrong, or want to change your states? Email us at the same address.</p>
 </div></div>'''
-    if os.environ.get('BIDBELL_STAGING') == '1':
-        body = re.sub(r'<ol class="next-steps">.*?</ol>', '''<ol class="next-steps">
-        <li><span class="step-index" aria-hidden="true">1</span><div><b>Choose your industry</b><span>Create and verify one BidBell account. Select your trade and service area.</span></div></li>
-        <li><span class="step-index" aria-hidden="true">2</span><div><b>Find suitable work</b><span>Open matching opportunities and check the buyer's scope, deadlines and eligibility.</span></div></li>
-        <li><span class="step-index" aria-hidden="true">3</span><div><b>Reuse your information</b><span>Save company details and documents. Review AI-assisted answers, missing items and your price.</span></div></li>
-        <li><span class="step-index" aria-hidden="true">4</span><div><b>Review, submit and track</b><span>Approve the exact package. Use supported email delivery or the buyer's portal. Keep delivery evidence and buyer confirmation distinct.</span></div></li>
-      </ol>''', body, count=1, flags=re.S)
-        body = body.replace('Tell us what fits your business, then verify the same email in your workspace.', 'Choose your industry, create one account and save what fits your business.')
-        thanks = '<div class="wrap page"><h1>Continue in your BidBell account.</h1><p>This preview uses one local account. Complete email verification and choose your industry, trade and service area there. No production signup or welcome email is sent.</p><a class="btn" href="'+WORKSPACE_URL+'#company">Open company profile</a></div>'
     write('start/thanks/', layout('start/thanks/', 'Sign-up next steps | BidBell', 'How to check your BidBell sign-up.', thanks, noindex=True, promo=False), sitemap=False)
     write('start/', layout('start/', 'Start your free 14 days | BidBell',
                            'Try matching bid alerts and AI-assisted bidding together for 14 days. One BidBell plan, US$39/month if you continue. No card needed.', body,
@@ -808,7 +797,7 @@ def construction_page():
                 selected.append(candidate)
     for bid in selected:
         identity = str(bid.get('id', ''))
-        application = WORKSPACE_URL + '#opportunity/' + identity if re.fullmatch(r'[a-f0-9]{24}', identity) else WORKSPACE_URL + '?industry=construction#opportunities/open'
+        application = WORKSPACE_URL + '?industry=construction#opportunity/' + identity if re.fullmatch(r'[a-f0-9]{24}', identity) else WORKSPACE_URL + '?industry=construction#opportunities/open'
         source = str(bid.get('link') or bid.get('url') or '')
         if not source.startswith('https://'):
             continue
