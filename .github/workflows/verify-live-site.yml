@@ -1,6 +1,12 @@
 name: Verify live BidBell website
 on:
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      expected_mode:
+        description: Expected public release mode
+        type: choice
+        options: [auto, baseline, expanded]
+        default: auto
 permissions:
   contents: read
 jobs:
@@ -16,4 +22,6 @@ jobs:
           python3 -m venv "$RUNNER_TEMP/site-verify"
           "$RUNNER_TEMP/site-verify/bin/python" -m pip install --only-binary=:all: Pillow==13.0.0
       - name: Verify canonical HTTPS, current content and excluded paths
+        env:
+          BIDBELL_EXPECTED_SITE_MODE: ${{ inputs.expected_mode }}
         run: '"$RUNNER_TEMP/site-verify/bin/python" tools/check_live_site.py'

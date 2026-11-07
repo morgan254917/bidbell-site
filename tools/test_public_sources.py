@@ -12,9 +12,11 @@ class PublicSources(unittest.TestCase):
   excluded=['Eddyville Quarters Window Replacement','MT BFTC Carpet Replacement Conference Room',
             'Bureau of Building Broom Hall Windows & Doors Delta State University',
             'Window Tinting and Film','Carpet Installation','Janitorial Supplies',
-            'Cleaning Equipment Purchase','Purchase of Cleaning Equipment','Windows and Doors, Washington']
+            'Cleaning Equipment Purchase','Purchase of Cleaning Equipment','Windows and Doors, Washington',
+            'Snow and Ice Removal Services - Brockton, MA','Snow plowing services',
+            'Cleaning Equipment Procurement Services']
   accepted=['Window Cleaning Services','Carpet Cleaning','Floor Care','Custodial Services',
-            'Curtain Cleaning and Installation','Post-construction cleaning']
+            'Curtain Cleaning and Installation','Post-construction cleaning','Janitorial Services and Supplies']
   for code in ['561720','561740','561790']:
    for title in excluded+accepted:
     with self.subTest(code=code,title=title):
@@ -44,6 +46,10 @@ class PublicSources(unittest.TestCase):
  def test_timezone_fractional_and_no_invalid_date_truncation(self):
   self.assertEqual(M['parse_dt']('2026-10-25T08:00:00.500-04:00').hour,12)
   self.assertIsNone(M['parse_dt']('2026-10-25T99:00:00Z'))
+ def test_cleaning_snapshot_preserves_exact_deadline_for_expiry_checks(self):
+  cleaning,_,_=collect([row(ResponseDeadLine='2026-11-10T09:00:00-06:00')])
+  self.assertEqual(cleaning['bids'][0]['due_at'],'2026-11-10T15:00:00+00:00')
+  self.assertEqual(cleaning['bids'][0]['due_precision'],'time')
  def test_categories_conservative(self):
   rows=[row(),row(**{'Sol#':'G','NaicsCode':'561730','Title':'Grounds maintenance'}),row(**{'Sol#':'H','NaicsCode':'238220','Title':'HVAC preventive maintenance'})]
   self.assertEqual({b['category'] for b in collect(rows)[1]['bids']},{'cleaning','grounds','hvac'})

@@ -1,4 +1,5 @@
 /* One BidBell identity across website and workspace. */
+.nav a[aria-current="page"],.menu a[aria-current="page"]{font-weight:750;text-decoration:underline;text-underline-offset:6px;text-decoration-thickness:2px}
 @font-face{font-family:"Public Sans";src:url("fonts/public-sans.woff2") format("woff2");font-weight:100 900;font-style:normal;font-display:swap}
 :root{--ink:#191b30;--navy:#191b30;--navy-2:#343044;--muted:#60616d;--text:#4e4e5e;--line:#deddd7;--line-2:#c9c5d0;--cream:#faf8f3;--bg:#faf8f3;--paper:#faf8f3;--tint:#f1edf6;--tint-2:#e5dff7;--purple:#63527e;--red:#63527e;--red-dark:#4f4065;--lavender:#e5dff7;--coral:#d8664e;--sans:"Public Sans",Arial,Helvetica,sans-serif}
 body{font-family:var(--sans);background:var(--cream);color:var(--ink)}
