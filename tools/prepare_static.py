@@ -54,8 +54,12 @@ def stage_public_assets(commit, build_date, root=ROOT):
     if os.environ.get('BIDBELL_STAGING') == '1':
         (target / 'staging.css').write_text('.staging-banner{padding:12px 20px;background:#EEE8FA;color:#191B30;text-align:center;font:600 14px/1.5 Arial,sans-serif}.industry-choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;margin:20px 0}.industry-choice{padding:24px;border:1px solid #DEDDD7;border-radius:14px;background:#fff}.industry-choice h3{margin-top:0}.industry-choice a{display:inline-block;background:#191B30;color:#fff;padding:14px 18px;border-radius:9px;text-decoration:none}.industry-choice p{font-size:15px}', encoding='utf-8')
         (target / 'robots.txt').write_text('User-agent: *\nDisallow: /\n', encoding='utf-8')
-    (target / 'release.json').write_text(json.dumps({'commit': commit, 'service': 'bidbell-public-site',
-                                                   'build_date': build_date}) + '\n', encoding='utf-8', newline='\n')
+    release = {'commit': commit, 'service': 'bidbell-public-site', 'build_date': build_date}
+    if os.environ.get('BIDBELL_STAGING') == '1':
+        release['mode'] = 'staging'
+    elif os.environ.get('BIDBELL_CONSTRUCTION_ENABLED') == '1':
+        release['mode'] = 'expanded'
+    (target / 'release.json').write_text(json.dumps(release) + '\n', encoding='utf-8', newline='\n')
     print(f'Staged {len(files)} public assets from {commit} built for {build_date} UTC')
 
 
@@ -66,7 +70,7 @@ def expansion_html(content):
     content = re.sub(r'<ol class="next-steps">.*?</ol>', '''<ol class="next-steps">
         <li><span class="step-index" aria-hidden="true">1</span><div><b>Choose your industry</b><span>Create and verify one BidBell account. Select your trade and service area.</span></div></li>
         <li><span class="step-index" aria-hidden="true">2</span><div><b>Find suitable work</b><span>Open matching opportunities and check the buyer's scope, deadlines and eligibility.</span></div></li>
-        <li><span class="step-index" aria-hidden="true">3</span><div><b>Reuse your information</b><span>Save company details and documents. Review AI-assisted answers, missing items and your price.</span></div></li>
+        <li><span class="step-index" aria-hidden="true">3</span><div><b>Reuse your information</b><span>Save company details and documents. Build an estimate or quote from your inputs. Review AI-assisted answers and missing items.</span></div></li>
         <li><span class="step-index" aria-hidden="true">4</span><div><b>Review, submit and track</b><span>Approve the exact package. Use supported email delivery or the buyer's portal. Keep delivery evidence and buyer confirmation distinct.</span></div></li>
       </ol>''',content,count=1,flags=re.S)
     content = content.replace('Tell us what fits your business, then verify the same email in your workspace.', 'Choose your industry, create one account and save what fits your business.')
@@ -81,6 +85,7 @@ def expansion_html(content):
     content = content.replace('the full official notice and its attachments on SAM.gov before relying', 'the original buyer notice and its attachments before relying')
     content = content.replace('Start with your alert preferences, then create and verify your workspace account using the same email. Once your signup is processed, your existing alert trial dates also control preparation access.', 'Create and verify one account, save your company profile and confirm daily alerts. Your original trial dates cover alerts and the application workspace together.')
     content = content.replace('The construction preview covers commercial building, renovation, repairs and selected specialties.', 'Construction covers commercial building, renovation, repairs and selected specialties.')
+    content = content.replace('Awarded-contract endings appear separately as research forecasts, not open bids.', 'Cleaning contract forecasts, where available, appear separately from open bids.')
     content = content.replace('records with a future deadline are present in this staged dataset.', 'records with a future deadline are available in this source snapshot at build time.')
     content = content.replace('public government sources that can be incomplete,', 'supported public procurement sources that can be incomplete,')
     content = content.replace('These preferences shape your daily alerts. Next, use this same email to open your BidBell workspace and build your response.', 'Create one account. Verify your email, save your trade and service area, then confirm your daily alert preferences.')

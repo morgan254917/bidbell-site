@@ -1,6 +1,7 @@
-BidBell isolated construction preview, November 6, 2026
+BidBell coordinated release candidate, November 7, 2026
 
-This branch is review-only. Do not merge or publish until Morgan reviews it.
+Root coordinates publication only after the current release checks and protected
+owner-only gates are satisfied. Never publish loopback review output.
 
 Run tools/prepare_static.py with BIDBELL_STAGING=1 for the complete review build.
 It always generates canonical pages and runs their contract checks in normal
@@ -9,8 +10,10 @@ to loopback app8860/site8861, replaces the Google
 signup form with industry choices, strips Paddle execution, labels staging and
 sets noindex. Never publish this loopback review output to production.
 
-The construction landing consumes data/construction_bids.json. It excludes
-elapsed deadlines, shows dated source-specific counts and links exact24hex
+The construction landing consumes data/construction_bids.json. Public static
+snapshots omit notices that could close during the selected UTC build day,
+so the same commit and build date can be replayed. The live workspace uses
+exact deadlines. The site shows dated source-specific counts and links exact24hex
 application IDs. A12-card trade-balanced selection is an example, not a claim
 that these records match every customer. Raw source titles remain preserved in
 the source catalog; display casing and deadline formatting do not alter evidence.

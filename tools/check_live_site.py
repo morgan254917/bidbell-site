@@ -65,10 +65,22 @@ def validated_build_date(value, committed_timestamp, now=None):
     return value
 
 
+def validated_release_mode(value, expected='auto'):
+    mode = 'baseline' if value is None else value
+    if mode not in ('baseline', 'expanded'):
+        raise ValueError('Public deployment has an unsupported or staging release mode')
+    if expected not in ('', 'auto', 'baseline', 'expanded'):
+        raise ValueError('Expected site mode must be auto, baseline or expanded')
+    if expected not in ('', 'auto', mode):
+        raise ValueError(f'Deployed site mode is {mode}; expected {expected}')
+    return mode
+
+
 @contextmanager
-def trusted_build(commit, build_date, repository=ROOT):
+def trusted_build(commit, build_date, repository=ROOT, mode='baseline'):
     if not re.fullmatch(r'[0-9a-f]{40}', commit):
         raise ValueError('Expected a full trusted Git commit')
+    mode = validated_release_mode(mode)
     timestamp = int(subprocess.check_output(['git', 'show', '-s', '--format=%ct', commit], cwd=repository, text=True).strip())
     build_date = validated_build_date(build_date, timestamp)
     archive = subprocess.check_output(['git', '-c', 'core.autocrlf=false', 'archive', '--format=zip', commit], cwd=repository)
@@ -85,10 +97,19 @@ def trusted_build(commit, build_date, repository=ROOT):
                 if (item.external_attr >> 16) & 0o170000 == 0o120000:
                     raise ValueError('Site verification does not follow archived symlinks')
             bundle.extractall(target)
-        environment = dict(os.environ, BUILD_DATE=build_date)
+        environment = dict(os.environ, BUILD_DATE=build_date, BIDBELL_STAGING='0',
+                           BIDBELL_CONSTRUCTION_ENABLED='1' if mode == 'expanded' else '0')
         subprocess.run([sys.executable, 'tools/build.py'], cwd=target, env=environment,
                        check=True, capture_output=True, text=True)
-        yield target
+        if mode == 'expanded':
+            # Replay the same projection from the exact archived commit, without
+            # needing a mutable Git checkout or inheriting local preview flags.
+            script = 'import sys; sys.path.insert(0, "tools"); from prepare_static import stage_public_assets; stage_public_assets(sys.argv[1], sys.argv[2])'
+            subprocess.run([sys.executable, '-c', script, commit, build_date], cwd=target,
+                           env=environment, check=True, capture_output=True, text=True)
+            yield target / '_site'
+        else:
+            yield target
 
 
 def main():
@@ -96,9 +117,12 @@ def main():
     _, body = fetch('/release.json?check=' + expected)
     release = json.loads(body)
     assert release['commit'] == expected, 'Canonical domain is not serving the current checked release'
-    print('PASS canonical HTTPS and exact deployed commit')
-    with trusted_build(expected, release.get('build_date')) as trusted:
+    mode = validated_release_mode(release.get('mode'), os.environ.get('BIDBELL_EXPECTED_SITE_MODE', 'auto'))
+    print(f'PASS canonical HTTPS, exact deployed commit and {mode} release mode')
+    with trusted_build(expected, release.get('build_date'), mode=mode) as trusted:
         routes = list(PATHS)
+        if mode == 'expanded':
+            routes.append('/expansion.css')
         for page in sorted(trusted.rglob('*.html')):
             if not public_asset(page, root=trusted) or page.name == '404.html':
                 continue

@@ -20,6 +20,10 @@ const {chromium}=require(process.env.BIDBELL_PLAYWRIGHT_MODULE||'@playwright/tes
    for(const route of routes.filter(route=>!process.argv[3]||route===process.argv[3])){
     pageErrors.length=0;
     await page.goto('http://127.0.0.1:8861'+route,{waitUntil:'networkidle'});
+    if(route==='/'){
+     await page.locator('#faq summary').filter({hasText:'Where are bids from earlier alerts?'}).click();
+     await page.locator('#faq summary').filter({hasText:'Can I build my price in BidBell?'}).click();
+    }
     const data=await page.evaluate(()=>({text:document.body.innerText,width:innerWidth,scroll:document.documentElement.scrollWidth,forms:[...document.forms].map(f=>f.action),links:[...document.querySelectorAll('a[href]')].map(a=>a.href),scriptSources:[...document.scripts].map(s=>s.src)}));
     assert(data.text.includes('Staging preview'),route+' missing staging label');
     assert(data.scroll<=width+1,route+' horizontal overflow at'+width);
@@ -28,6 +32,7 @@ const {chromium}=require(process.env.BIDBELL_PLAYWRIGHT_MODULE||'@playwright/tes
     assert(!data.forms.some(url=>/docs.google.com|paddle.com/.test(url)),route+' production form');
     assert(!data.scriptSources.some(url=>/paddle.com|checkout.js/.test(url)),route+' active checkout script');
     assert(!data.links.some(url=>/^https:\/\/(?:getbidbell.com|bidbell-workspace.onrender.com)/.test(url)),route+' production action');
+    if(route==='/')assert(data.text.includes('Cleaning contract forecasts, where available'),'unsupported construction forecast promise');
     if(route==='/start/')assert(data.links.some(url=>url.includes('industry=construction#register')),'construction signup is disconnected');
     if(route==='/construction-bids/')assert(data.links.some(url=>/#opportunity\/[a-f0-9]{24}$/.test(url)),'no synced opportunity deep links');
     if(route==='/'&&width===375){
@@ -43,6 +48,7 @@ const {chromium}=require(process.env.BIDBELL_PLAYWRIGHT_MODULE||'@playwright/tes
      await page.screenshot({path:path.join(output,imageName+'-viewport.png')});
     }
     assert.deepEqual(pageErrors,[],route+' client script failure');
+    if(width===1440)fs.writeFileSync(path.join(output,'rendered-'+(route==='/'?'home':route.replaceAll('/','-'))+'.txt'),data.text);
     results.push({route,width,textCharacters:data.text.length,horizontalOverflow:false,productionActions:false,runtimeErrors:0});
    }
    await page.close();
