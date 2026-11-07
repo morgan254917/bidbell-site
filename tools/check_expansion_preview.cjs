@@ -11,12 +11,14 @@ const {chromium}=require(process.env.BIDBELL_PLAYWRIGHT_MODULE||'@playwright/tes
  try{
   for(const width of [375,1440]){
    const page=await browser.newPage({viewport:{width,height:1000}});
+   const pageErrors=[];page.on('pageerror',error=>pageErrors.push(error.message));
    await page.route('**/*',route=>new URL(route.request().url()).hostname==='127.0.0.1'?route.continue():route.abort());
    await page.goto('http://127.0.0.1:8861/',{waitUntil:'networkidle'});
    const before=cp.execFileSync('git',['show','09408ba:index.html'],{encoding:'utf8'});
    await page.setContent(before,{waitUntil:'networkidle'});
    await page.screenshot({path:path.join(output,`homepage-before-${width}.png`),fullPage:true});
    for(const route of routes.filter(route=>!process.argv[3]||route===process.argv[3])){
+    pageErrors.length=0;
     await page.goto('http://127.0.0.1:8861'+route,{waitUntil:'networkidle'});
     const data=await page.evaluate(()=>({text:document.body.innerText,width:innerWidth,scroll:document.documentElement.scrollWidth,forms:[...document.forms].map(f=>f.action),links:[...document.querySelectorAll('a[href]')].map(a=>a.href),scriptSources:[...document.scripts].map(s=>s.src)}));
     assert(data.text.includes('Staging preview'),route+' missing staging label');
@@ -40,7 +42,8 @@ const {chromium}=require(process.env.BIDBELL_PLAYWRIGHT_MODULE||'@playwright/tes
      await page.screenshot({path:path.join(output,imageName+'.png'),fullPage:true});
      await page.screenshot({path:path.join(output,imageName+'-viewport.png')});
     }
-    results.push({route,width,textCharacters:data.text.length,horizontalOverflow:false,productionActions:false});
+    assert.deepEqual(pageErrors,[],route+' client script failure');
+    results.push({route,width,textCharacters:data.text.length,horizontalOverflow:false,productionActions:false,runtimeErrors:0});
    }
    await page.close();
   }

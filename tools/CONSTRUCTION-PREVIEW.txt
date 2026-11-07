@@ -22,8 +22,14 @@ and brand.css. tools/check_expansion_preview.cjs exercises existing mobile menu
 keyboard, Escape/focus restoration, outside click and industry navigation.
 No competitor proprietary code or authenticated workflow was copied or inferred.
 
-Existing cleaning pages and original signup behavior are preserved in normal
-mode. Production activation requires coordinated app/source/reply flags and
+The default normal build preserves existing cleaning signup. The opt-in
+release package uses BIDBELL_CONSTRUCTION_ENABLED=1 with BIDBELL_STAGING=0.
+It keeps canonical production destinations and indexing while projecting the
+native one-account signup, cleaning/construction choices and matching coverage
+copy into _site. It does not change source pages or activate the application.
+Never publish until the application and operations enrollment flags and
+verification gates are approved together. Existing cleaning pages are retained.
+Production activation requires coordinated app/source/reply flags and
 review of the native signup route, its enrollment synchronization, migration,
 terms and approved release checks. No new production source schedule, billing,
 emails or industry is activated by this local preview.

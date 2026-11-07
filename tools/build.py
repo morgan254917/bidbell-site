@@ -14,7 +14,7 @@ Legal review notes are kept in the private repository (bidbell-morgan/legal/), n
 everything in this public repository, tools/ included, is served on getbidbell.com.
 """
 import html, json, os, re, shutil
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timezone, timedelta
 
 # ---------------------------------------------------------------- SUPPORT PHONE: SET IT HERE
 # Put the US support number between the quotes, e.g. PHONE = '(501) 555-0123', then run python3 tools/build.py.
@@ -765,6 +765,22 @@ def construction_deadline(bid):
     return label + value.strftime(' at %H:%M ') + zone
 
 
+def construction_is_open(bid, now):
+    """Do not invent a late closing time when a source only supplies a date."""
+    if bid.get('procurement_status', 'open') != 'open':
+        return False
+    due = str(bid.get('due_at') or bid.get('due') or '')
+    try:
+        parsed = datetime.fromisoformat(due.replace('Z', '+00:00'))
+        if bid.get('due_precision') == 'date' or len(due) == 10:
+            raw_date = str(bid.get('due') or due)[:10]
+            earliest = datetime.fromisoformat(raw_date).replace(tzinfo=timezone.utc) - timedelta(hours=14)
+            return now < earliest
+        return parsed.tzinfo is not None and parsed > now
+    except (ValueError, TypeError):
+        return False
+
+
 def construction_page():
     """Industry entry uses the same authenticated application, with dated public evidence."""
     path = os.path.join(ROOT, 'data', 'construction_bids.json')
@@ -772,16 +788,7 @@ def construction_page():
     current = []
     now = datetime.now(timezone.utc)
     for bid in catalog.get('bids', []):
-        if bid.get('procurement_status', 'open') != 'open':
-            continue
-        due = bid.get('due_at') or bid.get('due')
-        try:
-            parsed = datetime.fromisoformat(str(due).replace('Z', '+00:00'))
-            if parsed.tzinfo is None:
-                parsed = parsed.replace(hour=23, minute=59, tzinfo=timezone.utc)
-            if parsed <= now:
-                continue
-        except (ValueError, TypeError):
+        if not construction_is_open(bid, now):
             continue
         current.append(bid)
     trades = ['Commercial building & renovation', 'Electrical', 'HVAC & plumbing', 'Roofing', 'Flooring', 'Painting', 'Concrete']
