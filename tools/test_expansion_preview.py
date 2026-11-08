@@ -75,6 +75,24 @@ class ExpansionPreview(unittest.TestCase):
    (root/'index.html').write_text(original)
    with patch.dict(os.environ,{'BIDBELL_STAGING':'0'}):stage_public_assets('fictional','2026-11-06',root=root)
    self.assertEqual((root/'_site/index.html').read_text(),original)
+ def test_construction_preview_does_not_offer_cleaning_signup(self):
+  source=(Path(__file__).resolve().parents[1]/'construction-bids/index.html').read_text(encoding='utf-8')
+  with tempfile.TemporaryDirectory() as directory:
+   root=Path(directory);path=root/'construction-bids/index.html'
+   path.parent.mkdir();path.write_text(source,encoding='utf-8')
+   with patch.dict(os.environ,{'BIDBELL_STAGING':'0','BIDBELL_CONSTRUCTION_ENABLED':'0'}):
+    stage_public_assets('fictional','2026-11-08',root=root)
+   page=(root/'_site/construction-bids/index.html').read_text(encoding='utf-8')
+   self.assertIn('Construction alert signup is coming soon.',page)
+   self.assertIn('href="#construction-opportunities">Browse example notices',page)
+   self.assertIn('id="construction-opportunities"',page)
+   self.assertNotIn('href="/start/">Choose your construction trade',page)
+   self.assertNotIn('staged dataset',page)
+   with patch.dict(os.environ,{'BIDBELL_STAGING':'0','BIDBELL_CONSTRUCTION_ENABLED':'1'}):
+    stage_public_assets('fictional','2026-11-08',root=root)
+   page=(root/'_site/construction-bids/index.html').read_text(encoding='utf-8')
+   self.assertIn('https://bidbell-workspace.onrender.com/app?industry=construction#register">Choose your construction trade',page)
+   self.assertNotIn('Construction alert signup is coming soon.',page)
 
 class ConstructionPage(unittest.TestCase):
  def test_date_only_deadline_stops_at_earliest_possible_close(self):

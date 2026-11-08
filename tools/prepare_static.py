@@ -46,6 +46,8 @@ def stage_public_assets(commit, build_date, root=ROOT):
             content = destination.read_text(encoding='utf-8')
             if os.environ.get('BIDBELL_CONSTRUCTION_ENABLED') == '1' or os.environ.get('BIDBELL_STAGING') == '1':
                 content = expansion_html(content)
+            elif path.relative_to(root).as_posix() == 'construction-bids/index.html':
+                content = construction_preview_html(content)
             if os.environ.get('BIDBELL_STAGING') == '1':
                 content = preview_html(content)
             destination.write_text(content, encoding='utf-8', newline='\n')
@@ -61,6 +63,22 @@ def stage_public_assets(commit, build_date, root=ROOT):
         release['mode'] = 'expanded'
     (target / 'release.json').write_text(json.dumps(release) + '\n', encoding='utf-8', newline='\n')
     print(f'Staged {len(files)} public assets from {commit} built for {build_date} UTC')
+
+
+def construction_preview_html(content):
+    content = re.sub(
+        r'<div class="cta-row"><a class="btn" href="/start/">Choose your construction trade</a>.*?</div>',
+        '<p>Construction alert signup is coming soon.</p><div class="cta-row">'
+        '<a class="btn" href="#construction-opportunities">Browse example notices</a></div>',
+        content, count=1, flags=re.S,
+    )
+    content = content.replace('<section><p class="eyebrow">DATED PUBLIC SOURCE SNAPSHOT</p><h2>Explore work worth checking.',
+                              '<section id="construction-opportunities"><p class="eyebrow">DATED PUBLIC SOURCE SNAPSHOT</p><h2>Explore example notices.')
+    content = content.replace('records with a future deadline are present in this staged dataset.',
+                              'records had a future deadline when this page was built.')
+    content = content.replace('Try the complete workflow &rarr;', 'Start with cleaning &rarr;')
+    return content.replace('<a class="btn" href="/start/">Start with your business</a>',
+                           '<a class="btn" href="#construction-opportunities">Browse example notices</a>')
 
 
 def expansion_html(content):
