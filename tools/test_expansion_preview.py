@@ -88,10 +88,13 @@ class ExpansionPreview(unittest.TestCase):
    self.assertIn('id="construction-opportunities"',page)
    self.assertNotIn('href="/start/">Choose your construction trade',page)
    self.assertNotIn('staged dataset',page)
+   self.assertNotIn('?industry=construction#opportunity/',page)
+   self.assertIn('Read buyer notice',page)
    with patch.dict(os.environ,{'BIDBELL_STAGING':'0','BIDBELL_CONSTRUCTION_ENABLED':'1'}):
     stage_public_assets('fictional','2026-11-08',root=root)
    page=(root/'_site/construction-bids/index.html').read_text(encoding='utf-8')
    self.assertIn('https://bidbell-workspace.onrender.com/app?industry=construction#register">Choose your construction trade',page)
+   self.assertIn('?industry=construction#opportunity/',page)
    self.assertNotIn('Construction alert signup is coming soon.',page)
 
 class ConstructionPage(unittest.TestCase):

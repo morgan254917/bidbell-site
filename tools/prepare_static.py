@@ -77,6 +77,8 @@ def construction_preview_html(content):
     content = content.replace('records with a future deadline are present in this staged dataset.',
                               'records had a future deadline when this page was built.')
     content = content.replace('Try the complete workflow &rarr;', 'Start with cleaning &rarr;')
+    # The preview has public buyer links, but the workspace feed is gated.
+    content = re.sub(r'<a class="btn" href="https://bidbell-workspace\.onrender\.com/app\?industry=construction#opportunity/[a-f0-9]{24}">Open in BidBell</a>', '', content)
     return content.replace('<a class="btn" href="/start/">Start with your business</a>',
                            '<a class="btn" href="#construction-opportunities">Browse example notices</a>')
 
