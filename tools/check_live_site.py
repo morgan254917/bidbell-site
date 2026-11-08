@@ -101,15 +101,12 @@ def trusted_build(commit, build_date, repository=ROOT, mode='baseline'):
                            BIDBELL_CONSTRUCTION_ENABLED='1' if mode == 'expanded' else '0')
         subprocess.run([sys.executable, 'tools/build.py'], cwd=target, env=environment,
                        check=True, capture_output=True, text=True)
-        if mode == 'expanded':
-            # Replay the same projection from the exact archived commit, without
-            # needing a mutable Git checkout or inheriting local preview flags.
-            script = 'import sys; sys.path.insert(0, "tools"); from prepare_static import stage_public_assets; stage_public_assets(sys.argv[1], sys.argv[2])'
-            subprocess.run([sys.executable, '-c', script, commit, build_date], cwd=target,
-                           env=environment, check=True, capture_output=True, text=True)
-            yield target / '_site'
-        else:
-            yield target
+        # Replay the exact release projection in both public modes. The
+        # baseline projection also gates construction signup and notice links.
+        script = 'import sys; sys.path.insert(0, "tools"); from prepare_static import stage_public_assets; stage_public_assets(sys.argv[1], sys.argv[2])'
+        subprocess.run([sys.executable, '-c', script, commit, build_date], cwd=target,
+                       env=environment, check=True, capture_output=True, text=True)
+        yield target / '_site'
 
 
 def main():
