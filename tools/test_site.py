@@ -13,6 +13,16 @@ class Page(HTMLParser):
   if tag=='input':self.inputs.append(a)
   if tag=='form':self.forms.append(a)
 class Site(unittest.TestCase):
+ def test_public_positioning_separates_workspace_from_alert_coverage(self):
+  home=(ROOT/'index.html').read_text(encoding='utf-8')
+  start=(ROOT/'start/index.html').read_text(encoding='utf-8')
+  self.assertIn('<title>BidBell | Find opportunities. Build stronger bids.</title>',home)
+  self.assertIn('<h1>Find relevant work.<br><em>Build a stronger bid.</em></h1>',home)
+  self.assertNotIn('THE CLEANING BID WORKSPACE',home)
+  self.assertIn('Daily alerts currently cover janitorial, carpet, window and exterior cleaning.',home)
+  self.assertIn('<h1>Set up your bid alerts.<br>Start your free trial.</h1>',start)
+  self.assertIn('Look for the Google Forms confirmation',start)
+  self.assertIn('Available daily alerts: janitorial, carpet, window and exterior cleaning.',re.sub(r'<[^>]+>','',start))
  def test_home_routes_and_legacy_anchors(self):
   page=Page((ROOT/'index.html').read_text(encoding='utf-8'))
   self.assertEqual(len(page.ids),len(set(page.ids)))
