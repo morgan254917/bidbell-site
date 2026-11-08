@@ -45,11 +45,14 @@ def category(row):
     code, title = col(row, 'NaicsCode'), col(row, 'Title')
     if code in TRADES:
         # Cleaning NAICS can be misfiled: an object is not a cleaning scope.
-        supplies = re.search(r'\b(?:supplies|equipment\s+(?:purchase|procurement|supply))\b|\b(?:purchase|procurement|supply)\s+of\s+(?:(?:cleaning|janitorial|custodial)\s+)?equipment\b', title, re.I)
+        supplies = re.search(r'\bsupplies\b', title, re.I)
+        equipment_purchase = re.search(r'\bequipment\s+(?:purchase|procurement|supply)\b|\b(?:purchase|procurement|supply)\s+of\s+(?:(?:cleaning|janitorial|custodial)\s+)?equipment\b', title, re.I)
         action = re.search(r'\b(?:clean(?:ing|ers?)?|wash(?:ing)?|janitor\w*|custod\w*|housekeep\w*|saniti[sz]\w*|disinfect\w*|sweep\w*|polish\w*|buff\w*|strip(?:ping)?|wax(?:ing)?|care)\b', title, re.I)
+        cleaning_service = bool(action and re.search(r'\bservices?\b', title, re.I))
+        snow_only = re.search(r'\b(?:snow|ice)\b.*\b(?:removal|plow\w*|treat\w*|melt\w*)\b', title, re.I) and not action
         other_scope = re.search(r'\b(?:replacement|replace|installation|install|construction|renovation|tinting)\b', title, re.I)
         objects = re.search(r'\bwindows?\b|\bcarpets?\b|upholster|\brugs?\b|\bfloors?\b|\bdoors?\b', title, re.I)
-        if supplies or ((other_scope or objects) and not action):
+        if equipment_purchase or (supplies and not cleaning_service) or snow_only or ((other_scope or objects) and not action):
             return None
         return TRADES[code], 'cleaning'
     if code == '561730':
@@ -115,10 +118,11 @@ def collect(raw, now, min_rows=MIN_ROWS):
         bids.append({'trade': trade, 'category': group, 'title': col(row, 'Title'), 'type': col(row, 'Type', 'BaseType'),
                      'agency': string.capwords(col(row, 'Department/Ind.Agency', 'Sub-Tier').lower()),
                      'city': string.capwords(col(row, 'PopCity').lower()), 'state': state,
-                     'due': due.date().isoformat(), 'due_at': due.isoformat(), 'set_aside': col(row, 'SetASide'),
+                     'due': due.date().isoformat(), 'due_at': due.isoformat(),
+                     'due_precision': 'date' if len(col(row, 'ResponseDeadLine')) == 10 else 'time', 'set_aside': col(row, 'SetASide'),
                      'link': link, 'sol': col(row, 'Sol#').upper()})
     bids.sort(key=lambda b: (b['due_at'], b['sol']))
-    cleaning = [{k:v for k,v in b.items() if k not in ('category','due_at')} for b in bids if b['category']=='cleaning']
+    cleaning = [{k:v for k,v in b.items() if k != 'category'} for b in bids if b['category']=='cleaning']
     if not cleaning:
         raise ValueError('No open cleaning bids found; previous files retained')
     common = {'updated': now.date().isoformat(), 'source': 'SAM.gov public Contract Opportunities data'}

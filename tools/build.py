@@ -14,7 +14,7 @@ Legal review notes are kept in the private repository (bidbell-morgan/legal/), n
 everything in this public repository, tools/ included, is served on getbidbell.com.
 """
 import html, json, os, re, shutil
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timezone, timedelta
 
 # ---------------------------------------------------------------- SUPPORT PHONE: SET IT HERE
 # Put the US support number between the quotes, e.g. PHONE = '(501) 555-0123', then run python3 tools/build.py.
@@ -112,7 +112,7 @@ def checks(items):
 
 
 WORKSPACE_URL = 'https://bidbell-workspace.onrender.com/app'
-NAV_LINKS = [(WORKSPACE_URL, 'Your BidBell workspace'), ('/workspace/', 'Browse notices'), ('/#how', 'How it works'),
+NAV_LINKS = [(WORKSPACE_URL, 'Your BidBell workspace'), ('/workspace/', 'Browse notices'), ('/construction-bids/', 'Construction'), ('/#how', 'How it works'),
              ('/start/', 'Start free'), ('/#faq', 'FAQ')]
 MENU_ICON = ('<svg class="i-open" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" '
              'stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>'
@@ -132,7 +132,7 @@ def layout(path, title, desc, body, jsonld=None, updated=None, noindex=False, og
     is_404 = path == '404.html'
     canonical = '' if is_404 else f'<link rel="canonical" href="{url}">\n'
     og_url = '' if is_404 else f'<meta property="og:url" content="{url}">\n'
-    links = ''.join(f'<a href="{h}">{t}</a>' for h, t in NAV_LINKS)
+    links = ''.join(f'<a href="{h}"' + (' aria-current="page"' if h == '/' + path else '') + f'>{t}</a>' for h, t in NAV_LINKS)
     topbar = (f'<aside class="topbar" aria-label="BidBell trial offer"><b>Alerts + preparation: 14 days free</b>, no card needed. Then ${C["standard_price"]}/month, '
               f'cancel anytime. <a href="{E(start_url())}">Try the complete workflow &rarr;</a></aside>\n') if promo else ''
     head_cta = f'\n  <a class="btn small head-cta" href="{E(start_url())}">Start free</a>' if promo else ''
@@ -153,7 +153,7 @@ def layout(path, title, desc, body, jsonld=None, updated=None, noindex=False, og
 {og_url}<meta property="og:image" content="{BASE}/og.png?v=20261101-unified">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="BidBell: daily cleaning bid alerts and AI-assisted bid preparation in one plan.">
+<meta property="og:image:alt" content="BidBell: relevant opportunities and AI-assisted bidding in one plan.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#141728">
 <link rel="icon" href="/favicon.ico" sizes="32x32">
@@ -181,7 +181,7 @@ def layout(path, title, desc, body, jsonld=None, updated=None, noindex=False, og
   <div class="foot-grid">
     <div class="brand">
       <a class="logo" href="/">{BELL}BidBell<span class="brand-dot" aria-hidden="true">.</span></a>
-      <p class="foot-about">Find cleaning opportunities, build stronger applications with AI and send supported email bids. One BidBell plan, from daily alert to delivery record.</p>
+      <p class="foot-about">Find relevant opportunities, reuse company information and build stronger applications with AI. One BidBell plan, from daily alert to delivery record.</p>
       <p class="small">{E(C['mailing_address'])}<br><a href="mailto:{C['email']}">{C['email']}</a>{' &middot; ' + phone_link() if PHONE.strip() else ''}</p>
     </div>
     <nav aria-label="Product"><h2>Product</h2><ul>
@@ -277,8 +277,36 @@ def agency_name(a):
     return fix_case(a.replace('Dept Of', 'Department Of'))
 
 
+def public_build_cutoff():
+    """Static snapshots omit notices that could close during their UTC build day."""
+    return datetime.combine(TODAY, datetime.max.time(), tzinfo=timezone.utc)
+
+
 def open_bids(min_days=0):
-    return sorted((b for b in DATA['bids'] if (date.fromisoformat(b['due']) - TODAY).days >= min_days), key=lambda b: b['due'])
+    return [b for b in federal_notice_groups(DATA['bids'], public_build_cutoff())['bids']
+            if (date.fromisoformat(b['due']) - TODAY).days >= min_days]
+
+
+def federal_notice_groups(records, now):
+    groups = {'bids': [], 'early_signals': []}
+    for row in records:
+        if not construction_is_open(row, now):
+            continue
+        if row.get('type') in ('Solicitation', 'Combined Synopsis/Solicitation'):
+            groups['bids'].append(row)
+        elif row.get('type') in ('Presolicitation', 'Sources Sought'):
+            groups['early_signals'].append(row)
+    return {key: sorted(rows, key=lambda row: (row.get('due_at') or row['due'], row.get('sol', '')))
+            for key, rows in groups.items()}
+
+
+def early_signals_section(rows):
+    if not rows:
+        return ''
+    return ('<section class="mt"><h2>Early signals</h2><p>These are not open bid invitations. '
+            'Sources-sought requests ask for supplier information; presolicitations preview planned work. '
+            'Read the original notice before responding.</p>'
+            + bid_table(rows, f'{len(rows)} supplier-research or planned notices') + '</section>')
 
 
 def home():
@@ -385,7 +413,7 @@ def start():
 </div>'''
     body = f'''<div class="page-head signup-head"><div class="wrap">
   <p class="crumbs"><a href="/">Home</a> / Start your BidBell trial</p>
-  <p class="eyebrow">YOUR FREE 14 DAYS START HERE</p><h1>Set up your bid alerts.<br>Start your free trial.</h1>
+  <p class="eyebrow">YOUR FREE 14 DAYS START HERE</p><h1>Your next opportunity.<br>A faster start.</h1>
   <p class="lead">Get matching daily alerts, keep your company information ready and build a stronger response with source-linked AI. Tell us what fits your business, then verify the same email in your workspace. One BidBell plan. No card needed.</p>
   <div class="journey-strip" aria-label="Your BidBell workflow"><span>01 Find a matching bid</span><span>02 Reuse your details</span><span>03 Draft with AI</span><span>04 Review and send</span><span>05 Track the result</span></div>
 </div></div>
@@ -420,7 +448,7 @@ def start():
 </div></div>'''
     write('start/thanks/', layout('start/thanks/', 'Sign-up next steps | BidBell', 'How to check your BidBell sign-up.', thanks, noindex=True, promo=False), sitemap=False)
     write('start/', layout('start/', 'Start your free 14 days | BidBell',
-                           'Try daily cleaning bid alerts and AI-assisted bid preparation together for 14 days. One BidBell plan, US$39/month if you continue. No card needed.', body,
+                           'Try matching bid alerts and AI-assisted bidding together for 14 days. One BidBell plan, US$39/month if you continue. No card needed.', body,
                            promo=False))
 
 
@@ -432,7 +460,7 @@ def subscribe():
     agree = 'By continuing you agree to the <a href="/terms/">Terms</a> and the <a href="/refunds/">Refund Policy</a>.'
 
     plans = (f'<div class="plan best"><h3>One BidBell plan</h3><p class="price">US${sp}<span> /month</span></p>'
-             '<p class="desc">Daily cleaning alerts, saved company details, supported forms and reviewed email bids together. Renews monthly only after you choose to subscribe.</p>'
+             '<p class="desc">Relevant alerts, saved details, customer-input estimates and quotes, supported forms and reviewed email bids together. Renews monthly only after you choose to subscribe.</p>'
              '<p><a class="btn" href="https://bidbell-workspace.onrender.com/app#account">Sign in and continue</a></p>'
              '<p class="small">Your verified account checks alert enrollment and existing subscriptions before creating checkout.</p></div>')
     if PADDLE_READY:
@@ -485,14 +513,15 @@ def subscribe():
 
 
 # ------------------------------------------------------------------ public bid pages (gamechanger 1)
-def bid_pages():
+def bid_pages(now=None):
     upd = date.fromisoformat(DATA['updated'])
-    bids = [b for b in DATA['bids'] if b['due'] >= TODAY.isoformat()]   # drop notices whose deadline has passed
+    groups = federal_notice_groups(DATA['bids'], now or public_build_cutoff())
+    bids, early = groups['bids'], groups['early_signals']
     by_state = {}
     for b in bids:
         by_state.setdefault(b['state'], []).append(b)
-    teaser = (f'<p class="small muted">Last updated {long_date(upd)} from SAM.gov public data. This free page is updated weekly. It lists the open notices '
-              f'filed under the federal cleaning codes (NAICS 561720, 561740 and 561790), not filtered for any business. It is not a substitute for reading the official notice.</p>')
+    teaser = (f'<p class="small muted">Last updated {long_date(upd)} from SAM.gov public data. This free weekly snapshot shows selected federal cleaning solicitations '
+              'with stated US work states and future deadlines. Early signals appear separately. For bids closing today, check the workspace and original notice.</p>')
 
     def other_states(skip=None):
         items = ''.join(f'<li><a href="/cleaning-bids/{slug(STATES[s])}/">{STATES[s]}</a> ({len(by_state[s])})</li>'
@@ -502,7 +531,7 @@ def bid_pages():
     for code, name in STATES.items():
         sb = by_state.get(code, [])
         if sb:
-            lst = bid_table(sb, f'{len(sb)} open federal cleaning notice{"s" if len(sb) != 1 else ""} in {name}')
+            lst = bid_table(sb, f'{len(sb)} open federal cleaning solicitation{"s" if len(sb) != 1 else ""} in {name}')
         else:
             lst = f'<div class="note"><p>No open federal cleaning notices were listed for {name} in this week&rsquo;s data. Daily alerts check available sources for new matches against your selected services, location and eligibility filters.</p></div>'
         body = f'''<div class="page-head"><div class="wrap">
@@ -513,6 +542,7 @@ def bid_pages():
 </div></div>
 <div class="wrap page">
 {lst}
+{early_signals_section([row for row in early if row['state'] == code])}
 <div class="mt">{cta_box(f"Get {E(name)} cleaning bids every morning")}</div>
 <h2 class="mt">Other states with open cleaning notices</h2>
 {other_states(code)}
@@ -534,6 +564,7 @@ def bid_pages():
 </div></div>
 <div class="wrap page">
 {lst}
+{early_signals_section([row for row in early if row['trade'] == trade])}
 <div class="mt">{cta_box()}</div>
 </div>'''
         path = f'cleaning-bids/{trade}/'
@@ -549,9 +580,11 @@ def bid_pages():
 {teaser}
 </div></div>
 <div class="wrap page">
-<p><strong>{total}</strong> open notices this week. Also see <a href="/cleaning-bids/carpet/">carpet cleaning</a> and <a href="/cleaning-bids/window/">window and exterior cleaning</a>.</p>
+<p><strong>{total}</strong> open solicitation{'s' if total != 1 else ''} in this snapshot. Also see <a href="/cleaning-bids/carpet/">carpet cleaning</a> and <a href="/cleaning-bids/window/">window and exterior cleaning</a>.</p>
+<section class="card"><p class="eyebrow">FROM OPPORTUNITY TO A CLEAR PRICE</p><h2>Plan the cleaning work before you bid.</h2><p>Build an estimate from your measured areas, tasks, productivity and visits per week. Add wages, supplies, overhead and your target gross margin. Review the buyer proposal and proposed work schedule. Your inputs stay editable; internal wages and margin stay out of the buyer proposal.</p><a class="btn" href="{WORKSPACE_URL}?industry=cleaning#projects">Open your bids</a></section>
 <h2>States with open notices</h2>
 {other_states()}
+{early_signals_section(early)}
 <h2>All states</h2>
 <ul class="state-list">{''.join(f'<li><a href="/cleaning-bids/{slug(n)}/">{n}</a></li>' for n in STATES.values())}</ul>
 <div class="mt">{cta_box()}</div>
@@ -580,7 +613,7 @@ def legal():
     legal_page('terms/', 'Terms of Service', 'The terms that apply when you use BidBell.', f'''
 <section class="pilot-note"><h2>One BidBell subscription</h2>
 <p>BidBell includes supported daily bid alerts and access to the bid preparation workspace in the existing US$39/month subscription. Existing annual subscriptions retain their current terms. New no-card trials cover both for 14 days; existing trials keep their original end date. Use and verify the same email as your alert subscription to link access. Workspace registration does not start a second trial.</p>
-<p>The workspace helps organize documents, requirements, company facts, answers and pricing. It retains original files saved for reuse and submission and can fill supported standard PDF text fields from explicitly reviewed facts. Document size and account storage limits apply and are shown in the workspace. Supported email submission requires original buyer instructions specifying all supported submission recipients, a current-notice and deadline check, and your review and final confirmation of the exact message and files. Portal-only submissions continue in the buyer's portal. Mail-server acceptance is not proof of buyer receipt; uncertain delivery is not automatically retried. BidBell does not sign declarations. AI suggestions require your review and are subject to usage limits. You remain responsible for official notices, amendments, eligibility, complete forms and final submission. BidBell does not promise completeness, compliance or an award.</p></section>
+<p>The workspace helps organize documents, requirements, company facts, answers, customer-input cleaning estimates and construction quotes. It retains original files saved for reuse and submission and can fill supported standard PDF text fields from explicitly reviewed facts. Document size and account storage limits apply and are shown in the workspace. Supported email submission requires original buyer instructions specifying all supported submission recipients, a current-notice and deadline check, and your review and final confirmation of the exact message and files. Portal-only submissions continue in the buyer's portal. Mail-server acceptance is not proof of buyer receipt; uncertain delivery is not automatically retried. BidBell does not sign declarations. AI suggestions require your review and are subject to usage limits. You remain responsible for official notices, amendments, eligibility, complete forms and final submission. BidBell does not promise completeness, compliance or an award.</p></section>
 <p>These terms are an agreement between you (the business using BidBell, and the person accepting for it) and {seller}. {contact}. By starting a trial or subscription you accept them. Nothing in these terms takes away rights you have under a law that cannot be excluded by contract.</p>
 <h2>1. What BidBell is</h2>
 <p>BidBell provides contract opportunity alerts for building-service contractors. Current paid and trial alert coverage is limited to janitorial, carpet, window and exterior cleaning. HVAC maintenance and grounds coverage is being validated and is not included in current plans. Each morning we read new US federal contract notices published on SAM.gov, select the ones that match the trades, states and eligibility you give us, and email them to you. Where we can, we add information from USAspending.gov about the likely current or previous contract for the same work. Your alerts also carry reminders and updates for bids we sent you and, on Mondays, federal contracts in your states that end in 3 to 6 months. We send a daily email, including a short status update when there are no new matching notices. We also publish free public pages listing open federal cleaning notices by state. We are not a government service, a bidding agent, a law firm or a consultant.</p>
@@ -615,7 +648,7 @@ def legal():
     legal_page('privacy/', 'Privacy Policy', 'What BidBell collects, why, who processes it, how long we keep it and your rights.', f'''
 <p>This policy explains how {seller}, handles personal information. Our contact details are at the end of this policy. We collect as little as we can, we do not sell it, and this website uses no tracking or advertising cookies.</p>
 <section class="pilot-note"><h2>Preparation workspace data</h2>
-<p>The BidBell workspace stores account details, password hashes, session records, original files you save for reuse or submission, extracted solicitation and company text, company facts, requirements, answers, pricing estimates, completed supported forms, submission messages and delivery activity records needed to operate your workspace. It is hosted on Render. Signed-in access uses a necessary session cookie; the public marketing pages and the signed-in workspace are different surfaces.</p>
+<p>The BidBell workspace stores account details, password hashes, session records, original files you save for reuse or submission, extracted solicitation and company text, company facts, requirements, answers, pricing scenarios, customer-entered measurements and cost assumptions, completed supported forms, submission messages and delivery activity records needed to operate your workspace. It is hosted on Render. Signed-in access uses a necessary session cookie; the public marketing pages and the signed-in workspace are different surfaces.</p>
 <p>When you explicitly use an enabled AI action, relevant source text or requirements and company facts are sent to OpenAI for that action. AI actions may be unavailable when configuration or usage limits do not permit them. Upload only material you are authorized to share, and avoid credentials, payment details and unnecessary personal records.</p>
 <p>When you confirm a supported email bid, the exact reviewed message and selected files are sent to the buyer submission address you reviewed, using BidBell's Google Workspace email service. Submission history records the send and delivery status; mail-server acceptance does not confirm buyer receipt. Workspace records are not published as public website content. Contact {mail} for access, correction or deletion requests. Deletion is handled through support, not an instant in-app control; a request is not confirmation that every record or backup has already been removed. The alert collection and retention practices below also apply to alerts within your BidBell plan. No workspace-specific deletion deadline is promised here.</p></section>
 <h2>1. What we collect</h2>
@@ -686,7 +719,7 @@ def legal():
     legal_page('disclaimer/', 'Disclaimer', 'Important limits of BidBell information.', f'''
 <section class="pilot-note"><h2>Preparation support, not certified compliance</h2>
 <p>Source checks confirm that selected text appears in an uploaded document or saved company facts. They do not certify that your facts are true, that every requirement was captured, or that your response is legally compliant, eligible or competitive. Rules and AI can miss relevant instructions. Blank or scanned pages may have no extracted text.</p>
-<p>AI suggestions are factual starting points for review and editing, not a complete persuasive proposal. Readiness checks identify specific recorded gaps; a passing check is not a guarantee that the bid is complete. Cost estimates depend on your inputs and do not guarantee profit.</p>
+<p>AI suggestions are factual starting points for review and editing, not a complete persuasive proposal. Readiness checks identify specific recorded gaps; a passing check is not a guarantee that the bid is complete. Pricing calculations use your measurements, quantities and rates. Review your chosen price and buyer-required schedule before submitting.</p>
 <p>BidBell sends supported email bids only after your explicit final confirmation and the required source, recipient and deadline checks. It does not automatically apply to buyer portals, sign declarations or guarantee awards. You must check completed forms; only supported standard fillable PDF text fields can be completed from reviewed facts. Mail-server acceptance does not prove buyer receipt. You remain responsible for the full official notice, amendments, required forms, signatures, deadlines and final submission. Bid preparation is included in the existing alert subscription. Existing trial end dates and annual subscription terms are preserved.</p></section>
 <h2>Not a government service</h2>
 <p>BidBell is a private service. It is not affiliated with, endorsed by or connected to SAM.gov, the General Services Administration, USAspending.gov or any government agency.</p>
@@ -743,8 +776,84 @@ def extras():
         BELL.replace('aria-hidden="true" focusable="false"', 'xmlns="http://www.w3.org/2000/svg"').replace('currentColor', '#C8102E'))
 
 
+def construction_title(value):
+    value = clean_title(value)
+    if value.isupper():
+        acronyms = {'HVAC', 'RFP', 'RFQ', 'NYC', 'DOT', 'VA', 'ADA', 'LED', 'US', 'USA', 'ID', 'ITB'}
+        value = ' '.join(word if word in acronyms or any(c.isdigit() for c in word) else word.title() for word in value.split())
+        value = fix_case(value)
+    return value
+
+
+def construction_deadline(bid):
+    try:
+        value = datetime.fromisoformat(str(bid.get('due_at') or bid.get('due')).replace('Z', '+00:00'))
+    except (ValueError, TypeError):
+        return 'Check the buyer notice'
+    label = nice(value.date().isoformat())
+    if bid.get('due_precision') == 'date' or len(str(bid.get('due_at') or bid.get('due'))) <= 10:
+        return label + ' (time not provided)'
+    offset = value.strftime('%z')
+    zone = '(UTC' + offset[:3] + ':' + offset[3:] + ')' if offset else '(confirm source time zone)'
+    return label + value.strftime(' at %H:%M ') + zone
+
+
+def construction_is_open(bid, now):
+    """Do not invent a late closing time when a source only supplies a date."""
+    if bid.get('procurement_status', 'open') != 'open':
+        return False
+    due = str(bid.get('due_at') or bid.get('due') or '')
+    try:
+        parsed = datetime.fromisoformat(due.replace('Z', '+00:00'))
+        if bid.get('due_precision') == 'date' or len(due) == 10:
+            raw_date = str(bid.get('due') or due)[:10]
+            earliest = datetime.fromisoformat(raw_date).replace(tzinfo=timezone.utc) - timedelta(hours=14)
+            return now < earliest
+        return parsed.tzinfo is not None and parsed > now
+    except (ValueError, TypeError):
+        return False
+
+
+def construction_page():
+    """Industry entry uses the same authenticated application, with dated public evidence."""
+    path = os.path.join(ROOT, 'data', 'construction_bids.json')
+    catalog = json.load(open(path, encoding='utf-8')) if os.path.isfile(path) else {'bids': [], 'updated': None}
+    current = []
+    now = public_build_cutoff()
+    for bid in catalog.get('bids', []):
+        if not construction_is_open(bid, now):
+            continue
+        current.append(bid)
+    trades = ['Commercial building & renovation', 'Electrical', 'HVAC & plumbing', 'Roofing', 'Flooring', 'Painting', 'Concrete']
+    cards = ''.join('<li>'+E(t)+'</li>' for t in trades)
+    rows = []
+    labels = dict(zip(['building-renovation','electrical','hvac-plumbing','roofing','flooring','painting','concrete'], trades))
+    selected = []
+    ordered = sorted(current, key=lambda bid: str(bid.get('due_at') or bid.get('due')))
+    for _ in range(2):
+        for trade in labels:
+            candidate = next((bid for bid in ordered if bid not in selected and trade in bid.get('trades', [])), None)
+            if candidate and len(selected) < 12:
+                selected.append(candidate)
+    for bid in selected:
+        identity = str(bid.get('id', ''))
+        application = WORKSPACE_URL + '?industry=construction#opportunity/' + identity if re.fullmatch(r'[a-f0-9]{24}', identity) else WORKSPACE_URL + '?industry=construction#opportunities/open'
+        source = str(bid.get('link') or bid.get('url') or '')
+        if not source.startswith('https://'):
+            continue
+        row_trades = ', '.join(labels[t] for t in bid.get('trades', []) if t in labels)
+        verified = str(bid.get('verified_at') or '')
+        checked = nice(verified[:10]) if re.match(r'^\d{4}-\d{2}-\d{2}', verified) else 'See source inventory'
+        rows.append('<article class="card"><p class="eyebrow">'+E(bid.get('source', 'Official public source'))+'</p><h3>'+E(construction_title(bid.get('title', 'Construction opportunity')))+'</h3><p>'+E(agency_name(bid.get('agency', '')))+' · '+E(STATES.get(bid.get('state'), bid.get('state')) or 'Check work location')+'</p><p><b>Trade:</b> '+E(row_trades)+'</p><p><b>Deadline:</b> '+E(construction_deadline(bid))+'</p><p class="small muted">Source checked '+E(checked)+'. Review the current buyer notice.</p><div class="cta-row"><a class="btn" href="'+E(application)+'">Open in BidBell</a><a class="btn ghost" href="'+E(source)+'" rel="noopener">Read buyer notice</a></div></article>')
+    results = ''.join(rows) if rows else '<div class="note"><p>No verified, currently open construction records have been added to this preview yet. The collection evidence will appear here after validation. No sample opportunity is presented as real.</p></div>'
+    raw_stamp = str(catalog.get('updated') or '')
+    stamp = E(nice(raw_stamp[:10]) + ' UTC' if re.match(r'^\d{4}-\d{2}-\d{2}',raw_stamp) else 'Not yet collected')
+    body = '''<div class="page-head"><div class="wrap"><p class="crumbs"><a href="/">Home</a> / Construction</p><p class="eyebrow">LESS PAPERWORK. A STRONGER NEXT BID.</p><h1>Construction &amp; building trades.<br>Keep the next bid moving.</h1><p class="lead">Find suitable work, reuse your company information and prepare a clear response in the same BidBell workspace. Your final review stays in the journey.</p><div class="cta-row"><a class="btn" href="/start/">Choose your construction trade</a><a class="btn ghost" href="'''+WORKSPACE_URL+'''?industry=construction#opportunities/open">Open your workspace</a></div></div></div><div class="wrap page"><section class="card"><h2>Built around the work your team can deliver.</h2><ul class="plain-list">'''+cards+'''</ul><p>Match by trade and service area. Check licenses, insurance, bonding, project experience, mandatory visits, addenda and buyer forms before approving your response.</p><p>Build an editable quote from your quantities and unit prices. Keep scope inclusions, exclusions, allowances and optional alternates clear. Reuse private templates for similar work, then review the buyer proposal and selected files.</p><p>AI works from the source requirements and your reviewed information. It does not invent quantities, prices or qualifications.</p></section><section class="card"><h2>One connected application.</h2><p>Open the opportunity, review requirements, reuse facts and documents, fill missing items and check your price. Review the exact package, then use supported email submission or the buyer's portal handoff. Keep the resulting evidence with that bid.</p><p>A prepared response is not a submitted bid. Mail-server acceptance and buyer confirmation remain distinct.</p></section><section><p class="eyebrow">DATED PUBLIC SOURCE SNAPSHOT</p><h2>Explore work worth checking.</h2><p>Source snapshot: '''+stamp+'''. '''+str(len(current))+''' records with a future deadline are present in this staged dataset. This is source-specific coverage, not every construction bid or a promise of matches for every contractor.</p>'''+results+'''</section><section class="card"><h2>One BidBell plan.</h2><p>Relevant alerts and AI-assisted bidding together. Free for 14 days, no card. Then US$39/month if you choose to continue. Existing trial dates, subscription rights and annual terms stay unchanged.</p><a class="btn" href="/start/">Start with your business</a></section></div>'''
+    write('construction-bids/', layout('construction-bids/', 'Construction bids and applications | BidBell', 'Construction opportunities, editable customer-input quotes, reusable company information and AI-assisted bids in one BidBell workspace.', body))
+
+
 def main():
-    home(); start(); subscribe(); bid_pages(); legal(); extras()
+    home(); start(); subscribe(); bid_pages(); construction_page(); legal(); extras()
     print(f'built {len(PAGES)} pages + 404, sitemap, robots, security.txt; '
           f'/subscribe/ checkout {"ON (" + PADDLE["env"] + ")" if PADDLE_READY else "off (tools/paddle.json not filled in)"}; '
           f'phone {"shown" if PHONE.strip() else "not set"}')
