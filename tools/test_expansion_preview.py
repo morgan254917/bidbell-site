@@ -41,6 +41,12 @@ class ExpansionPreview(unittest.TestCase):
   self.assertIn('Cleaning contract forecasts',page)
   self.assertNotIn('on Mondays, federal contracts in your states',page)
   self.assertNotIn('limited to janitorial',page)
+ def test_public_workspace_account_copy_is_ready_for_release(self):
+  from prepare_static import expansion_html
+  workspace=(Path(__file__).resolve().parents[1]/'workspace/index.html').read_text(encoding='utf-8')
+  for page in (workspace, expansion_html(workspace)):
+   self.assertNotIn('staged account experience',page)
+   self.assertIn('Manage daily alerts in your BidBell account.',page)
  def test_expanded_privacy_and_disclaimer_name_native_enrollment_and_original_sources(self):
   from prepare_static import expansion_html
   root=Path(__file__).resolve().parents[1]
