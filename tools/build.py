@@ -382,7 +382,7 @@ def signup_form():
   <div class="form-foot">
     <label class="agree"><input type="checkbox" name="{f['agree']}" value="{E(AGREE)}" required><span>I agree to the BidBell <a href="/terms/">Terms</a> and <a href="/privacy/">Privacy Policy</a>.</span></label>
     <button class="btn" type="submit">Start my free 14 days {ICON['arrow']}</button>
-    <p class="small muted">No card needed. Your signup finishes on Google Forms. Look for its confirmation before closing.</p>
+    <p class="small muted">No card needed. Look for the Google Forms confirmation after submitting. Then use the same email to verify your BidBell account.</p>
   </div>
 </form>
 <script src="/form.js?v=20261101-clear-signup" defer></script>'''
