@@ -1,49 +1,7 @@
 {
- "updated": "2026-11-07",
+ "updated": "2026-11-09",
  "source": "SAM.gov public Contract Opportunities data",
  "bids": [
-  {
-   "trade": "janitorial",
-   "title": "JANITORIAL SERVICE - Kentucky Area",
-   "type": "Solicitation",
-   "agency": "Agriculture, Department Of",
-   "city": "Frankfort",
-   "state": "KY",
-   "due": "2026-11-09",
-   "due_at": "2026-11-09T19:00:00+00:00",
-   "due_precision": "time",
-   "set_aside": "Small Business Set Aside - Total",
-   "link": "https://sam.gov/workspace/contract/opp/d53b4c82b5de4084a87589cf40232fbe/view",
-   "sol": "12639527Q0005"
-  },
-  {
-   "trade": "carpet",
-   "title": "Carpet Cleaning Vandenberg SFB CA",
-   "type": "Combined Synopsis/Solicitation",
-   "agency": "Dept Of Defense",
-   "city": "Lompoc",
-   "state": "CA",
-   "due": "2026-11-09",
-   "due_at": "2026-11-09T20:00:00+00:00",
-   "due_precision": "time",
-   "set_aside": "Small Business Set Aside - Total",
-   "link": "https://sam.gov/workspace/contract/opp/e09345b04d2e4a91bdf5cf013614c011/view",
-   "sol": "FA461027Q0250"
-  },
-  {
-   "trade": "janitorial",
-   "title": "Fort Bliss Custodial Service Contract",
-   "type": "Solicitation",
-   "agency": "Dept Of Defense",
-   "city": "Fort Bliss",
-   "state": "TX",
-   "due": "2026-11-09",
-   "due_at": "2026-11-09T22:00:00+00:00",
-   "due_precision": "time",
-   "set_aside": "8(a) Set-Aside (FAR 19.8)",
-   "link": "https://sam.gov/workspace/contract/opp/facb8373363547f1ae1ba379e7800235/view",
-   "sol": "W911SG25RA004"
-  },
   {
    "trade": "janitorial",
    "title": "Janitorial Services on the Homochitto Ranger District, MS",
@@ -55,7 +13,7 @@
    "due_at": "2026-11-12T14:00:00+00:00",
    "due_precision": "time",
    "set_aside": "Small Business Set Aside - Total",
-   "link": "https://sam.gov/workspace/contract/opp/00c5dd423425455caa5222c1b215f7b9/view",
+   "link": "https://sam.gov/workspace/contract/opp/291139df21f042688a8f85fbbb35e477/view",
    "sol": "12444027Q0005"
   },
   {
@@ -97,7 +55,7 @@
    "due_at": "2026-11-12T20:00:00+00:00",
    "due_precision": "time",
    "set_aside": "Small Business Set Aside - Total",
-   "link": "https://sam.gov/workspace/contract/opp/b8ccbbe3ee9548bb9ba4f1617224649d/view",
+   "link": "https://sam.gov/workspace/contract/opp/b415fa15a1794dcca672bfa6009a88c8/view",
    "sol": "1240LS26Q0044"
   },
   {
@@ -213,6 +171,20 @@
    "sol": "N4008027RMCBQ"
   },
   {
+   "trade": "janitorial",
+   "title": "USCG Sector Key West Recurring Janitorial Services in Key West, FL",
+   "type": "Combined Synopsis/Solicitation",
+   "agency": "Homeland Security, Department Of",
+   "city": "",
+   "state": "FL",
+   "due": "2026-11-20",
+   "due_at": "2026-11-20T20:00:00+00:00",
+   "due_precision": "time",
+   "set_aside": "Small Business Set Aside - Total",
+   "link": "https://sam.gov/workspace/contract/opp/4b6c32fbb0b146d29d4315cc8c49a4e9/view",
+   "sol": "70ZL26-27-SECTORKWJANITORIALSERVICES"
+  },
+  {
    "trade": "window",
    "title": "USAG Pressure Washing",
    "type": "Combined Synopsis/Solicitation",
@@ -297,6 +269,20 @@
    "sol": "697DCK-27-R-00038"
   },
   {
+   "trade": "carpet",
+   "title": "637TRSS Carpet Cleaning",
+   "type": "Solicitation",
+   "agency": "Dept Of Defense",
+   "city": "Jbsa Lackland",
+   "state": "TX",
+   "due": "2026-12-01",
+   "due_at": "2026-12-01T20:00:00+00:00",
+   "due_precision": "time",
+   "set_aside": "Service-Disabled Veteran-Owned Small Business (SDVOSB) Set-Aside (FAR 19.14)",
+   "link": "https://sam.gov/workspace/contract/opp/59b8212d339a4e768a3327fcce7d1659/view",
+   "sol": "FA301626Q0012"
+  },
+  {
    "trade": "janitorial",
    "title": "Custodial Services",
    "type": "Sources Sought",
@@ -309,6 +295,20 @@
    "set_aside": "8(a) Set-Aside (FAR 19.8)",
    "link": "https://sam.gov/workspace/contract/opp/8a3c247f801e40bda623b7c12e69f7c9/view",
    "sol": "W911S6-27-R-A001"
+  },
+  {
+   "trade": "janitorial",
+   "title": "S201--SEMI-ANNUAL WINDOW CLEANING",
+   "type": "Solicitation",
+   "agency": "Veterans Affairs, Department Of",
+   "city": "",
+   "state": "CA",
+   "due": "2026-12-07",
+   "due_at": "2026-12-07T20:00:00+00:00",
+   "due_precision": "time",
+   "set_aside": "",
+   "link": "https://sam.gov/workspace/contract/opp/1993ac15b5e84365a35a46c85f2400c7/view",
+   "sol": "36C26227Q0081"
   }
  ]
 }
